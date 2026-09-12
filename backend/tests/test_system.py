@@ -13,9 +13,10 @@ def test_health():
 
     data = response.json()
 
-    assert data["status"] == "ok"
-    assert data["application"] == "EduSphere"
-    assert data["version"] == "0.1.0"
+    assert data["success"] is True
+    assert data["data"]["status"] == "ok"
+    assert data["data"]["application"] == "EduSphere"
+    assert data["data"]["version"] == "0.1.0"
 
 
 def test_database_health():
@@ -25,5 +26,6 @@ def test_database_health():
 
     data = response.json()
 
-    assert data["status"] == "ok"
-    assert data["database"] == "connected"
+    assert data["success"] is True
+    assert data["data"]["status"] == "ok"
+    assert data["data"]["database"] == "connected"
