@@ -7,7 +7,7 @@ from app.api.routes.system import router as system_router
 from app.core.config import get_settings
 from app.core.exceptions import EduSphereException
 from app.core.logging import configure_logging
-
+from app.middleware.request_id import RequestIDMiddleware
 
 configure_logging()
 
@@ -20,7 +20,7 @@ app = FastAPI(
     description="Production-grade School Operating System API",
     version=settings.app_version,
 )
-
+app.add_middleware(RequestIDMiddleware)
 
 @app.exception_handler(EduSphereException)
 async def edusphere_exception_handler(
