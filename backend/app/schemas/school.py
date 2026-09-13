@@ -4,8 +4,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class SchoolCreate(BaseModel):
-    name: str = Field(min_length=1, max_length=200)
-    code: str = Field(min_length=1, max_length=50)
+    name: str = Field(min_length=2, max_length=200)
+    code: str = Field(min_length=2, max_length=50)
     email: str | None = Field(default=None, max_length=255)
     phone: str | None = Field(default=None, max_length=30)
     address: str | None = None
@@ -20,7 +20,7 @@ class SchoolCreate(BaseModel):
 
 
 class SchoolUpdate(BaseModel):
-    name: str | None = Field(default=None, min_length=1, max_length=200)
+    name: str | None = Field(default=None, min_length=2, max_length=200)
     email: str | None = Field(default=None, max_length=255)
     phone: str | None = Field(default=None, max_length=30)
     address: str | None = None
@@ -57,7 +57,6 @@ class SchoolResponse(BaseModel):
 
 
 class AcademicSessionCreate(BaseModel):
-    school_id: int = Field(gt=0)
     name: str = Field(min_length=1, max_length=50)
     start_date: date
     end_date: date

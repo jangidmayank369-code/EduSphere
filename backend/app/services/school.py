@@ -1,8 +1,8 @@
 from datetime import date
 
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import ConflictError, NotFoundError
 from app.models.school import AcademicSession, School
 from app.repositories.school import (
     AcademicSessionRepository,
@@ -14,56 +14,27 @@ class SchoolService:
     def __init__(self, db: Session):
         self.repository = SchoolRepository(db)
 
-    def create(
-        self,
-        *,
-        name: str,
-        code: str,
-        email: str | None = None,
-        phone: str | None = None,
-        address: str | None = None,
-        city: str | None = None,
-        state: str | None = None,
-        country: str = "India",
-        postal_code: str | None = None,
-        website: str | None = None,
-        affiliation: str | None = None,
-        principal_name: str | None = None,
-        logo_url: str | None = None,
-    ) -> School:
-        normalized_code = code.strip().upper()
+    def create(self, **data) -> School:
+        code = data["code"].strip().upper()
 
-        if self.repository.get_by_code(normalized_code):
-            raise ConflictError(
-                "School code already exists.",
-                code="SCHOOL_CODE_EXISTS",
+        if self.repository.get_by_code(code):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="School code already exists.",
             )
 
-        school = School(
-            name=name.strip(),
-            code=normalized_code,
-            email=email,
-            phone=phone,
-            address=address,
-            city=city,
-            state=state,
-            country=country.strip(),
-            postal_code=postal_code,
-            website=website,
-            affiliation=affiliation,
-            principal_name=principal_name,
-            logo_url=logo_url,
-        )
+        data["code"] = code
 
+        school = School(**data)
         return self.repository.create(school)
 
     def get(self, school_id: int) -> School:
         school = self.repository.get_by_id(school_id)
 
         if not school:
-            raise NotFoundError(
-                "School not found.",
-                code="SCHOOL_NOT_FOUND",
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="School not found.",
             )
 
         return school
@@ -84,16 +55,30 @@ class SchoolService:
     def update(
         self,
         school_id: int,
-        **updates,
+        **data,
     ) -> School:
         school = self.get(school_id)
 
-        for field, value in updates.items():
-            if value is not None:
-                if isinstance(value, str):
-                    value = value.strip()
+        if "code" in data and data["code"] is not None:
+            new_code = data["code"].strip().upper()
 
-                setattr(school, field, value)
+            existing = self.repository.get_by_code(new_code)
+
+            if existing and existing.id != school_id:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="School code already exists.",
+                )
+
+            data["code"] = new_code
+
+        for key, value in data.items():
+            if value is not None:
+                setattr(
+                    school,
+                    key,
+                    value.strip() if isinstance(value, str) else value,
+                )
 
         return self.repository.save(school)
 
@@ -122,15 +107,15 @@ class AcademicSessionService:
         end_date: date,
     ) -> AcademicSession:
         if not self.school_repository.get_by_id(school_id):
-            raise NotFoundError(
-                "School not found.",
-                code="SCHOOL_NOT_FOUND",
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="School not found.",
             )
 
         if end_date <= start_date:
-            raise ConflictError(
-                "Academic session end date must be after start date.",
-                code="INVALID_SESSION_DATES",
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="End date must be after start date.",
             )
 
         session = AcademicSession(
@@ -144,13 +129,16 @@ class AcademicSessionService:
 
         return self.repository.create(session)
 
-    def get(self, session_id: int) -> AcademicSession:
+    def get(
+        self,
+        session_id: int,
+    ) -> AcademicSession:
         session = self.repository.get_by_id(session_id)
 
         if not session:
-            raise NotFoundError(
-                "Academic session not found.",
-                code="ACADEMIC_SESSION_NOT_FOUND",
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Academic session not found.",
             )
 
         return session
@@ -164,9 +152,9 @@ class AcademicSessionService:
         is_active: bool | None = None,
     ) -> tuple[list[AcademicSession], int]:
         if not self.school_repository.get_by_id(school_id):
-            raise NotFoundError(
-                "School not found.",
-                code="SCHOOL_NOT_FOUND",
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="School not found.",
             )
 
         return self.repository.list_for_school(
@@ -176,67 +164,65 @@ class AcademicSessionService:
             is_active=is_active,
         )
 
-    def get_current(self, school_id: int) -> AcademicSession:
+    def get_current(
+        self,
+        school_id: int,
+    ) -> AcademicSession | None:
         if not self.school_repository.get_by_id(school_id):
-            raise NotFoundError(
-                "School not found.",
-                code="SCHOOL_NOT_FOUND",
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="School not found.",
             )
 
-        session = self.repository.get_current(school_id)
+        return self.repository.get_current(school_id)
 
-        if not session:
-            raise NotFoundError(
-                "No current academic session found.",
-                code="CURRENT_SESSION_NOT_FOUND",
+    def update(
+        self,
+        session_id: int,
+        **data,
+    ) -> AcademicSession:
+        session = self.get(session_id)
+
+        start_date = data.get(
+            "start_date",
+            session.start_date,
+        )
+        end_date = data.get(
+            "end_date",
+            session.end_date,
+        )
+
+        if end_date <= start_date:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="End date must be after start date.",
             )
 
-        return session
+        for key, value in data.items():
+            if value is not None:
+                setattr(
+                    session,
+                    key,
+                    value.strip() if isinstance(value, str) else value,
+                )
 
-    def set_current(self, session_id: int) -> AcademicSession:
+        return self.repository.save(session)
+
+    def set_current(
+        self,
+        session_id: int,
+    ) -> AcademicSession:
         session = self.get(session_id)
 
         if not session.is_active:
-            raise ConflictError(
-                "Inactive academic session cannot be made current.",
-                code="SESSION_INACTIVE",
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Inactive academic session cannot be current.",
             )
 
         self.repository.clear_current(session.school_id)
 
         session.is_current = True
-
-        return self.repository.save(session)
-
-    def update(
-        self,
-        session_id: int,
-        **updates,
-    ) -> AcademicSession:
-        session = self.get(session_id)
-
-        start_date = updates.get(
-            "start_date",
-            session.start_date,
-        )
-        end_date = updates.get(
-            "end_date",
-            session.end_date,
-        )
-
-        if start_date is not None and end_date is not None:
-            if end_date <= start_date:
-                raise ConflictError(
-                    "Academic session end date must be after start date.",
-                    code="INVALID_SESSION_DATES",
-                )
-
-        for field, value in updates.items():
-            if value is not None:
-                if isinstance(value, str):
-                    value = value.strip()
-
-                setattr(session, field, value)
 
         return self.repository.save(session)
 
@@ -248,9 +234,9 @@ class AcademicSessionService:
         session = self.get(session_id)
 
         if not is_active and session.is_current:
-            raise ConflictError(
-                "Current academic session cannot be deactivated.",
-                code="CURRENT_SESSION_CANNOT_BE_INACTIVE",
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current academic session cannot be deactivated.",
             )
 
         session.is_active = is_active

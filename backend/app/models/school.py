@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import Boolean, Date, DateTime, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, String, Text, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 
@@ -99,6 +99,11 @@ class School(Base):
         nullable=False,
     )
 
+    academic_sessions: Mapped[list["AcademicSession"]] = relationship(
+        back_populates="school",
+        cascade="all, delete-orphan",
+    )
+
 
 class AcademicSession(Base):
     __tablename__ = "academic_sessions"
@@ -106,6 +111,7 @@ class AcademicSession(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     school_id: Mapped[int] = mapped_column(
+        ForeignKey("schools.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -115,12 +121,12 @@ class AcademicSession(Base):
         nullable=False,
     )
 
-    start_date: Mapped[datetime] = mapped_column(
+    start_date: Mapped[date] = mapped_column(
         Date,
         nullable=False,
     )
 
-    end_date: Mapped[datetime] = mapped_column(
+    end_date: Mapped[date] = mapped_column(
         Date,
         nullable=False,
     )
@@ -150,4 +156,8 @@ class AcademicSession(Base):
         server_default=func.now(),
         onupdate=func.now(),
         nullable=False,
+    )
+
+    school: Mapped[School] = relationship(
+        back_populates="academic_sessions",
     )

@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models.school import AcademicSession, School
@@ -42,12 +42,14 @@ class SchoolRepository:
 
         items = list(self.db.scalars(items_query).all())
 
-        count_query = select(School.id)
+        count_query = select(func.count()).select_from(School)
 
         if is_active is not None:
-            count_query = count_query.where(School.is_active == is_active)
+            count_query = count_query.where(
+                School.is_active == is_active
+            )
 
-        total = len(self.db.scalars(count_query).all())
+        total = self.db.scalar(count_query) or 0
 
         return items, total
 
@@ -67,7 +69,10 @@ class AcademicSessionRepository:
         self.db.refresh(session)
         return session
 
-    def get_by_id(self, session_id: int) -> AcademicSession | None:
+    def get_by_id(
+        self,
+        session_id: int,
+    ) -> AcademicSession | None:
         return self.db.get(AcademicSession, session_id)
 
     def list_for_school(
@@ -96,8 +101,10 @@ class AcademicSessionRepository:
 
         items = list(self.db.scalars(items_query).all())
 
-        count_query = select(AcademicSession.id).where(
-            AcademicSession.school_id == school_id
+        count_query = (
+            select(func.count())
+            .select_from(AcademicSession)
+            .where(AcademicSession.school_id == school_id)
         )
 
         if is_active is not None:
@@ -105,7 +112,7 @@ class AcademicSessionRepository:
                 AcademicSession.is_active == is_active
             )
 
-        total = len(self.db.scalars(count_query).all())
+        total = self.db.scalar(count_query) or 0
 
         return items, total
 
@@ -132,7 +139,10 @@ class AcademicSessionRepository:
         for session in sessions:
             session.is_current = False
 
-    def save(self, session: AcademicSession) -> AcademicSession:
+    def save(
+        self,
+        session: AcademicSession,
+    ) -> AcademicSession:
         self.db.commit()
         self.db.refresh(session)
         return session
