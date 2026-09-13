@@ -1,6 +1,14 @@
 from datetime import date, datetime
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, String, Text, func
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    String,
+    Text,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -9,18 +17,20 @@ from app.core.database import Base
 class School(Base):
     __tablename__ = "schools"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+    )
 
     name: Mapped[str] = mapped_column(
-        String(200),
+        String(255),
         nullable=False,
     )
 
     code: Mapped[str] = mapped_column(
         String(50),
+        nullable=False,
         unique=True,
         index=True,
-        nullable=False,
     )
 
     email: Mapped[str | None] = mapped_column(
@@ -29,7 +39,7 @@ class School(Base):
     )
 
     phone: Mapped[str | None] = mapped_column(
-        String(30),
+        String(20),
         nullable=True,
     )
 
@@ -65,17 +75,17 @@ class School(Base):
     )
 
     affiliation: Mapped[str | None] = mapped_column(
-        String(150),
+        String(255),
         nullable=True,
     )
 
     principal_name: Mapped[str | None] = mapped_column(
-        String(200),
+        String(255),
         nullable=True,
     )
 
     logo_url: Mapped[str | None] = mapped_column(
-        String(500),
+        Text,
         nullable=True,
     )
 
@@ -88,18 +98,35 @@ class School(Base):
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=func.now(),
         nullable=False,
+        server_default=func.now(),
     )
 
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
-        nullable=False,
     )
 
-    academic_sessions: Mapped[list["AcademicSession"]] = relationship(
+    academic_sessions: Mapped[
+        list["AcademicSession"]
+    ] = relationship(
+        back_populates="school",
+        cascade="all, delete-orphan",
+    )
+
+    students: Mapped[list["Student"]] = relationship(
+        back_populates="school",
+        cascade="all, delete-orphan",
+    )
+
+    parents: Mapped[list["Parent"]] = relationship(
+        back_populates="school",
+        cascade="all, delete-orphan",
+    )
+
+    admissions: Mapped[list["Admission"]] = relationship(
         back_populates="school",
         cascade="all, delete-orphan",
     )
@@ -108,16 +135,21 @@ class School(Base):
 class AcademicSession(Base):
     __tablename__ = "academic_sessions"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+    )
 
     school_id: Mapped[int] = mapped_column(
-        ForeignKey("schools.id", ondelete="CASCADE"),
+        ForeignKey(
+            "schools.id",
+            ondelete="CASCADE",
+        ),
         nullable=False,
         index=True,
     )
 
     name: Mapped[str] = mapped_column(
-        String(50),
+        String(100),
         nullable=False,
     )
 
@@ -147,17 +179,30 @@ class AcademicSession(Base):
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=func.now(),
         nullable=False,
+        server_default=func.now(),
     )
 
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
-        nullable=False,
     )
 
     school: Mapped[School] = relationship(
         back_populates="academic_sessions",
+    )
+
+    students: Mapped[
+        list["Student"]
+    ] = relationship(
+        back_populates="academic_session",
+    )
+
+    admissions: Mapped[
+        list["Admission"]
+    ] = relationship(
+        back_populates="academic_session",
+        cascade="all, delete-orphan",
     )

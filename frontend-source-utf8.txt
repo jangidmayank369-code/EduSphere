@@ -1,0 +1,6203 @@
+﻿===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\App.css =====
+
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\App.jsx =====
+import { Navigate, Route, Routes } from "react-router-dom";
+
+import ProtectedRoute from "./auth/ProtectedRoute";
+import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import SchoolProfile from "./pages/SchoolProfile";
+import UserManagement from "./pages/UserManagement";
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/school-profile" element={<SchoolProfile />} />
+        <Route path="/users" element={<UserManagement />} />
+      </Route>
+
+      <Route
+        path="*"
+        element={<Navigate to="/dashboard" replace />}
+      />
+    </Routes>
+  );
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\index.css =====
+:root {
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  color: #10213f;
+  background: #f4f7fb;
+
+  --navy-950: #07152f;
+  --navy-900: #0b1d3a;
+  --navy-800: #102b55;
+  --navy-700: #173d73;
+
+  --blue: #315fba;
+
+  --text: #10213f;
+  --muted: #68778d;
+  --muted-light: #8c98aa;
+
+  --border: #e1e7ef;
+  --border-light: #edf1f6;
+
+  --surface: #ffffff;
+  --background: #f4f7fb;
+
+  --green: #139b68;
+  --amber: #b77a18;
+  --red: #d34a4a;
+
+  --shadow-sm: 0 4px 16px rgba(8, 25, 53, 0.045);
+  --shadow-md: 0 12px 30px rgba(8, 25, 53, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* =========================================================
+   APP SHELL
+========================================================= */
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--background);
+}
+
+.app-main {
+  min-width: 0;
+  min-height: 100vh;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content {
+  flex: 1;
+  padding: 24px;
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+  position: sticky;
+  top: 0;
+
+  z-index: 100;
+
+  width: 250px;
+  height: 100vh;
+
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 22px 13px;
+
+  background:
+    radial-gradient(
+      circle at 10% 0%,
+      rgba(62, 103, 165, 0.2),
+      transparent 30%
+    ),
+    linear-gradient(
+      180deg,
+      #081733 0%,
+      #07132c 100%
+    );
+
+  color: #fff;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  padding: 2px 9px 26px;
+}
+
+.sidebar-logo {
+  width: 43px;
+  height: 43px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 12px;
+
+  background: #fff;
+  color: var(--navy-900);
+
+  font-size: 18px;
+  font-weight: 900;
+
+  box-shadow:
+    0 9px 22px rgba(0, 0, 0, 0.18);
+}
+
+.sidebar-brand-text strong {
+  display: block;
+
+  color: #fff;
+
+  font-size: 15px;
+  line-height: 1.2;
+  font-weight: 850;
+}
+
+.sidebar-brand-text span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #91a5c4;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.sidebar-workspace {
+  padding: 0 10px 8px;
+}
+
+.sidebar-workspace span {
+  color: #6f86aa;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.15em;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  flex: 1;
+
+  overflow-y: auto;
+}
+
+.nav-item {
+  min-height: 45px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding: 0 10px;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  color: #afbed5;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.055);
+  color: #fff;
+}
+
+.nav-item.active {
+  background: #fff;
+  border-color: rgba(255, 255, 255, 0.9);
+
+  color: #0b2751;
+
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.nav-icon {
+  width: 32px;
+  height: 32px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 8px;
+
+  color: #8fa6c9;
+}
+
+.nav-item.active .nav-icon {
+  color: #315fba;
+  background: #f0f4fb;
+}
+
+.nav-label {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.nav-label strong {
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.nav-label small {
+  font-size: 9px;
+  line-height: 1.2;
+
+  color: #7287a7;
+}
+
+.nav-item.active .nav-label small {
+  color: #71819a;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+}
+
+.sidebar-system {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+
+  margin: 15px 4px 12px;
+  padding: 12px 9px;
+
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.sidebar-system strong,
+.sidebar-system small {
+  display: block;
+}
+
+.sidebar-system strong {
+  color: #d8e2f0;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.sidebar-system small {
+  margin-top: 3px;
+
+  color: #7186a5;
+  font-size: 8px;
+}
+
+.system-live-dot {
+  width: 7px;
+  height: 7px;
+
+  margin-top: 4px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #20b77b;
+  box-shadow: 0 0 0 4px rgba(32, 183, 123, 0.1);
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 11px 9px 1px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+
+  color: #7388a8;
+
+  font-size: 8px;
+  font-weight: 650;
+}
+
+.sidebar-footer small {
+  color: #536986;
+}
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+  position: sticky;
+  top: 0;
+
+  z-index: 80;
+
+  min-height: 74px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 11px 25px;
+
+  border-bottom: 1px solid var(--border);
+
+  background: rgba(255, 255, 255, 0.97);
+
+  backdrop-filter: blur(15px);
+}
+
+.topbar-left {
+  min-width: 0;
+}
+
+.topbar-title {
+  color: #0b2144;
+
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: -0.25px;
+}
+
+.session-pill {
+  min-height: 27px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-top: 4px;
+  padding: 0 9px;
+
+  border: 1px solid #dfe6ef;
+  border-radius: 999px;
+
+  background: #f8fafd;
+
+  color: #617087;
+
+  font-size: 9px;
+  font-weight: 650;
+
+  white-space: nowrap;
+}
+
+.session-pill strong {
+  color: #183967;
+  font-weight: 850;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+}
+
+.live-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  white-space: nowrap;
+}
+
+.live-time strong {
+  color: #162b4d;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.live-time span {
+  margin-top: 1px;
+
+  color: #8894a5;
+
+  font-size: 8px;
+}
+
+.topbar-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  color: var(--green);
+
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: var(--green);
+
+  box-shadow:
+    0 0 0 4px rgba(19, 155, 104, 0.1);
+}
+
+.language-switch {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  padding: 3px;
+
+  border: 1px solid #e0e6ef;
+  border-radius: 9px;
+
+  background: #f6f8fb;
+}
+
+.language-switch button {
+  width: 35px;
+  height: 29px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #7c899c;
+
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.language-switch button:hover {
+  color: #193762;
+}
+
+.language-switch button.active {
+  background: var(--navy-900);
+  color: #fff;
+
+  box-shadow:
+    0 4px 10px rgba(7, 21, 47, 0.16);
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-avatar {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #edf2fb;
+  color: #234b83;
+
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.user-details {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.user-details strong {
+  max-width: 145px;
+
+  overflow: hidden;
+
+  color: #122846;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-details span {
+  margin-top: 1px;
+
+  color: #8995a6;
+
+  font-size: 8px;
+}
+
+.logout-button {
+  border: 0;
+
+  background: transparent;
+
+  color: #69778b;
+
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.logout-button:hover {
+  color: var(--red);
+}
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+.dashboard-page {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+/* COMMAND SEARCH */
+
+.command-search {
+  min-height: 48px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  margin-bottom: 15px;
+  padding: 7px 9px;
+
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  background: #fff;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.command-search-icon {
+  width: 32px;
+  height: 32px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 8px;
+
+  background: #f0f4fa;
+  color: #31598e;
+}
+
+.command-search-content {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.command-search-content span {
+  color: #718097;
+
+  font-size: 8px;
+  font-weight: 750;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.command-search-content strong {
+  margin-top: 1px;
+
+  color: #637188;
+
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.command-search kbd {
+  padding: 4px 7px;
+
+  border: 1px solid #dce3ec;
+  border-radius: 5px;
+
+  background: #f7f9fc;
+  color: #8994a5;
+
+  font-size: 8px;
+}
+
+/* HERO */
+
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+
+  min-height: 218px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  margin-bottom: 16px;
+  padding: 31px 34px;
+
+  border-radius: 19px;
+
+  background:
+    radial-gradient(
+      circle at 90% 20%,
+      rgba(74, 112, 181, 0.38),
+      transparent 31%
+    ),
+    linear-gradient(
+      135deg,
+      #07152f 0%,
+      #0c2350 58%,
+      #183e75 100%
+    );
+
+  color: #fff;
+
+  box-shadow:
+    0 17px 38px rgba(7, 21, 47, 0.14);
+}
+
+.dashboard-hero::after {
+  content: "";
+
+  position: absolute;
+
+  right: -80px;
+  bottom: -170px;
+
+  width: 350px;
+  height: 350px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 0 35px rgba(255, 255, 255, 0.025),
+    0 0 0 70px rgba(255, 255, 255, 0.018);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-bottom: 11px;
+
+  color: #a6b9d5;
+
+  font-size: 9px;
+  font-weight: 850;
+
+  letter-spacing: 0.15em;
+}
+
+.hero-live-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #20bd82;
+
+  box-shadow:
+    0 0 0 4px rgba(32, 189, 130, 0.12);
+}
+
+.dashboard-hero h1 {
+  margin: 0;
+
+  color: #fff;
+
+  font-size: clamp(27px, 3vw, 38px);
+  line-height: 1.12;
+  font-weight: 850;
+
+  letter-spacing: -1.2px;
+}
+
+.dashboard-hero p {
+  max-width: 650px;
+
+  margin: 9px 0 0;
+
+  color: #bac9df;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  margin-top: 19px;
+}
+
+.hero-meta > span {
+  min-height: 31px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 0 10px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+
+  background: rgba(255, 255, 255, 0.065);
+
+  color: #bdcbe0;
+
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.hero-meta strong {
+  color: #fff;
+}
+
+.hero-small-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #21b97d;
+}
+
+.hero-date {
+  position: relative;
+  z-index: 2;
+
+  min-width: 185px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  padding: 17px 18px;
+
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 13px;
+
+  background: rgba(255, 255, 255, 0.075);
+
+  backdrop-filter: blur(8px);
+}
+
+.hero-date span {
+  color: #9fb3d2;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero-date strong {
+  margin-top: 5px;
+
+  color: #fff;
+
+  font-size: 25px;
+  line-height: 1;
+  font-weight: 850;
+}
+
+.hero-date small {
+  margin-top: 8px;
+
+  color: #b8c8de;
+
+  font-size: 8px;
+}
+
+/* =========================================================
+   KPI
+========================================================= */
+
+.stats-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 13px;
+
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  min-height: 120px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 12px;
+
+  padding: 17px;
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+
+  background: #fff;
+
+  box-shadow: var(--shadow-sm);
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 10px;
+}
+
+.stat-blue {
+  background: #edf3ff;
+  color: #315fba;
+}
+
+.stat-navy {
+  background: #eef1f7;
+  color: #173d73;
+}
+
+.stat-green {
+  background: #eaf8f2;
+  color: #159b68;
+}
+
+.stat-amber {
+  background: #fff6e6;
+  color: #b7791f;
+}
+
+.stat-body {
+  min-width: 0;
+}
+
+.stat-label {
+  display: block;
+
+  color: #647289;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.stat-value {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #0b1f42;
+
+  font-size: 26px;
+  line-height: 1;
+
+  font-weight: 850;
+  letter-spacing: -0.7px;
+}
+
+.stat-description {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #929dad;
+
+  font-size: 8px;
+}
+
+/* =========================================================
+   MAIN GRID
+========================================================= */
+
+.dashboard-main-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.4fr)
+    minmax(320px, 0.82fr);
+
+  gap: 16px;
+
+  margin-bottom: 16px;
+}
+
+.content-card {
+  padding: 20px;
+
+  border: 1px solid var(--border);
+  border-radius: 15px;
+
+  background: #fff;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 18px;
+}
+
+.section-title-group {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+}
+
+.section-icon {
+  width: 37px;
+  height: 37px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 10px;
+
+  background: #eff3f9;
+  color: #234b83;
+}
+
+.section-heading h2 {
+  margin: 0;
+
+  color: #0b1f42;
+
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.section-heading p {
+  margin: 3px 0 0;
+
+  color: #8995a6;
+
+  font-size: 8px;
+}
+
+.live-badge,
+.healthy-badge,
+.ready-badge {
+  min-height: 25px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 0 8px;
+
+  border-radius: 999px;
+
+  font-size: 8px;
+  font-weight: 850;
+}
+
+.live-badge,
+.healthy-badge {
+  background: #eaf8f2;
+  color: #139b68;
+}
+
+.ready-badge {
+  background: #eef3fb;
+  color: #315fba;
+}
+
+/* =========================================================
+   PULSE
+========================================================= */
+
+.pulse-panel {
+  min-height: 128px;
+
+  display: grid;
+
+  grid-template-columns:
+    170px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 18px;
+
+  border: 1px solid #edf1f6;
+  border-radius: 12px;
+
+  background: #f9fbfd;
+}
+
+.pulse-summary > span {
+  display: block;
+
+  color: #68778d;
+
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.pulse-summary strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #0b1f42;
+
+  font-size: 29px;
+  line-height: 1;
+  font-weight: 850;
+}
+
+.pulse-summary small {
+  display: block;
+
+  max-width: 155px;
+
+  margin-top: 7px;
+
+  color: #8c98aa;
+
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.pulse-visual {
+  height: 85px;
+
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.pulse-visual span {
+  flex: 1;
+
+  min-width: 5px;
+
+  border-radius: 5px 5px 2px 2px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #bfd2f1,
+      #e9eef7
+    );
+}
+
+/* =========================================================
+   EMPTY STATES
+========================================================= */
+
+.empty-state {
+  min-height: 115px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 15px;
+
+  border: 1px dashed #dfe6ef;
+  border-radius: 11px;
+
+  background: #fafbfd;
+}
+
+.empty-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 9px;
+
+  background: #f0f4f9;
+  color: #61748f;
+}
+
+.empty-state strong {
+  display: block;
+
+  color: #273a58;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.empty-state p {
+  margin: 4px 0 0;
+
+  color: #8a96a7;
+
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+/* =========================================================
+   THREE COLUMN
+========================================================= */
+
+.three-column-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 16px;
+
+  margin-bottom: 16px;
+}
+
+.three-column-grid .content-card {
+  min-width: 0;
+}
+
+.feature-status {
+  min-height: 115px;
+
+  padding: 16px;
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f6f9fd,
+      #eef4fb
+    );
+
+  border: 1px solid #e5ebf3;
+}
+
+.feature-status strong {
+  color: #173b6e;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.feature-status p {
+  margin: 7px 0 0;
+
+  color: #7c8a9e;
+
+  font-size: 8px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   INTELLIGENCE
+========================================================= */
+
+.intelligence-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 13px;
+
+  margin-bottom: 16px;
+}
+
+.intelligence-card {
+  min-height: 112px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 11px;
+
+  padding: 16px;
+
+  border: 1px solid var(--border);
+  border-radius: 13px;
+
+  background: #fff;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.intelligence-icon {
+  width: 37px;
+  height: 37px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 10px;
+
+  background: #eff3fa;
+  color: #31598e;
+}
+
+.intelligence-card > div:last-child {
+  min-width: 0;
+}
+
+.intelligence-card span {
+  display: block;
+
+  color: #748197;
+
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.intelligence-card strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #172e50;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.intelligence-card small {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #929dac;
+
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
+
+.quick-card {
+  margin-bottom: 16px;
+}
+
+.quick-actions {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+.quick-action {
+  min-height: 72px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 12px;
+
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  background: #fbfcfe;
+
+  color: inherit;
+
+  text-align: left;
+
+  transition:
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+button.quick-action {
+  font-family: inherit;
+}
+
+.quick-action:hover {
+  transform: translateY(-1px);
+
+  border-color: #cbd8e8;
+
+  background: #fff;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.quick-action-icon {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 9px;
+
+  background: #edf3fb;
+  color: #234b83;
+}
+
+.quick-action-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.quick-action-content strong {
+  display: block;
+
+  color: #142c4e;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.quick-action-content small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #8c98a9;
+
+  font-size: 8px;
+}
+
+.quick-action-arrow {
+  width: 26px;
+  height: 26px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 7px;
+
+  background: #f0f3f7;
+  color: #718096;
+}
+
+/* =========================================================
+   SYSTEM
+========================================================= */
+
+.system-card {
+  margin-bottom: 2px;
+}
+
+.system-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  border: 1px solid #edf1f6;
+  border-radius: 11px;
+
+  overflow: hidden;
+}
+
+.system-item {
+  min-height: 58px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 10px 13px;
+
+  border-right: 1px solid #edf1f6;
+}
+
+.system-item:last-child {
+  border-right: 0;
+}
+
+.system-item-icon {
+  width: 29px;
+  height: 29px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 8px;
+
+  background: #f1f4f8;
+  color: #5d718f;
+}
+
+.system-item-label {
+  flex: 1;
+
+  color: #5e6d83;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.system-connected {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  color: #139b68;
+
+  font-size: 8px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+.auth-page {
+  min-height: 100vh;
+
+  display: grid;
+  place-items: center;
+
+  padding: 24px;
+
+  background:
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(44, 83, 143, 0.14),
+      transparent 30%
+    ),
+    #f1f5fa;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+
+  padding: 33px;
+
+  border: 1px solid var(--border);
+  border-radius: 19px;
+
+  background: #fff;
+
+  box-shadow:
+    0 25px 60px rgba(7, 21, 47, 0.1);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  margin-bottom: 28px;
+}
+
+.brand-mark {
+  width: 45px;
+  height: 45px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 11px;
+
+  background: var(--navy-900);
+  color: #fff;
+
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.brand h1 {
+  margin: 0;
+
+  color: #0b1f42;
+
+  font-size: 19px;
+  font-weight: 850;
+}
+
+.brand p {
+  margin: 2px 0 0;
+
+  color: #8490a2;
+
+  font-size: 9px;
+}
+
+.login-heading h2 {
+  margin: 0;
+
+  color: #0b1f42;
+
+  font-size: 24px;
+  font-weight: 850;
+}
+
+.login-heading p {
+  margin: 6px 0 22px;
+
+  color: #7e8b9d;
+
+  font-size: 11px;
+}
+
+.login-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-card label {
+  margin-bottom: 6px;
+
+  color: #34445d;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.login-card input {
+  width: 100%;
+  height: 43px;
+
+  margin-bottom: 14px;
+  padding: 0 11px;
+
+  border: 1px solid #dce3ec;
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #fbfcfe;
+  color: #142747;
+
+  font-size: 11px;
+}
+
+.login-card input:focus {
+  border-color: #7897c0;
+
+  background: #fff;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 65px;
+}
+
+.password-toggle {
+  position: absolute;
+
+  right: 6px;
+  top: 3px;
+
+  height: 37px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+  color: #4c6382;
+
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.form-error {
+  margin: 0 0 12px;
+  padding: 9px 10px;
+
+  border: 1px solid #efcaca;
+  border-radius: 8px;
+
+  background: #fff4f4;
+  color: #b73535;
+
+  font-size: 9px;
+}
+
+.login-button {
+  width: 100%;
+  height: 44px;
+
+  margin-top: 4px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: var(--navy-900);
+  color: #fff;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  box-shadow:
+    0 7px 16px rgba(7, 21, 47, 0.15);
+}
+
+.login-button:hover {
+  background: #12376b;
+}
+
+.login-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* =========================================================
+   SCHOOL PROFILE
+========================================================= */
+
+.school-profile-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 18px;
+}
+
+.page-heading h1 {
+  margin: 0;
+
+  color: #0b1f42;
+
+  font-size: 25px;
+  font-weight: 850;
+}
+
+.page-heading p {
+  margin: 5px 0 0;
+
+  color: #78869a;
+
+  font-size: 11px;
+}
+
+.panel,
+.school-card,
+.form-card {
+  padding: 21px;
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+
+  background: #fff;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.form-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 15px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field.full {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  color: #34445d;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+
+  min-height: 41px;
+
+  padding: 8px 10px;
+
+  border: 1px solid #dce3ec;
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #fbfcfe;
+  color: #142747;
+
+  font-size: 11px;
+}
+
+.form-field textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: #7897c0;
+
+  background: #fff;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.primary-button,
+.secondary-button,
+.danger-button {
+  min-height: 39px;
+
+  padding: 0 14px;
+
+  border-radius: 8px;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.primary-button {
+  border: 0;
+
+  background: var(--navy-900);
+  color: #fff;
+}
+
+.secondary-button {
+  border: 1px solid #dce3ec;
+
+  background: #fff;
+  color: #34445d;
+}
+
+.danger-button {
+  border: 1px solid #efcaca;
+
+  background: #fff5f5;
+  color: #b73535;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 225px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .intelligence-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 950px) {
+  .sidebar {
+    width: 76px;
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .sidebar-brand {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .sidebar-brand-text,
+  .sidebar-workspace,
+  .nav-label,
+  .sidebar-system,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .nav-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .topbar {
+    padding-left: 17px;
+    padding-right: 17px;
+  }
+
+  .user-details {
+    display: none;
+  }
+
+  .logout-button {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-content {
+    padding: 15px;
+  }
+
+  .topbar {
+    min-height: 66px;
+  }
+
+  .live-time {
+    display: none;
+  }
+
+  .dashboard-hero {
+    min-height: auto;
+
+    flex-direction: column;
+    align-items: flex-start;
+
+    padding: 25px 21px;
+  }
+
+  .hero-date {
+    width: 100%;
+    min-width: 0;
+
+    align-items: flex-start;
+  }
+
+  .dashboard-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .three-column-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .system-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .system-item {
+    border-right: 0;
+    border-bottom: 1px solid #edf1f6;
+  }
+
+  .system-item:last-child {
+    border-bottom: 0;
+  }
+
+  .pulse-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .pulse-visual {
+    height: 70px;
+  }
+}
+
+@media (max-width: 560px) {
+  .app-content {
+    padding: 11px;
+  }
+
+  .sidebar {
+    width: 62px;
+  }
+
+  .topbar {
+    padding: 8px 11px;
+  }
+
+  .topbar-title {
+    font-size: 12px;
+  }
+
+  .session-pill {
+    max-width: 150px;
+    overflow: hidden;
+
+    font-size: 8px;
+    text-overflow: ellipsis;
+  }
+
+  .topbar-live {
+    display: none;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .intelligence-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .command-search kbd {
+    display: none;
+  }
+
+  .dashboard-hero h1 {
+    font-size: 25px;
+  }
+
+  .dashboard-hero p {
+    font-size: 10px;
+  }
+
+  .hero-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .content-card {
+    padding: 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-field.full {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 390px) {
+  .sidebar {
+    width: 56px;
+  }
+
+  .sidebar-logo {
+    width: 38px;
+    height: 38px;
+  }
+
+  .topbar {
+    gap: 8px;
+  }
+
+  .session-pill {
+    max-width: 125px;
+  }
+
+  .user-avatar {
+    width: 31px;
+    height: 31px;
+  }
+
+  .language-switch button {
+    width: 31px;
+  }
+}
+
+/* =========================================================
+   EDUSPHERE NEO DASHBOARD — READABLE / FUTURISTIC SYSTEM
+   ========================================================= */
+.neo-dashboard{width:100%;max-width:1560px;margin:0 auto;padding-bottom:28px;color:#10213f}.neo-commandbar{position:relative;display:flex;align-items:center;gap:14px;min-height:66px;margin-bottom:14px;padding:9px 12px;border:1px solid #dce5f1;border-radius:16px;background:rgba(255,255,255,.94);box-shadow:0 10px 28px rgba(13,35,70,.07)}.neo-command-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:#eef3ff;color:#315fba}.neo-command-copy{min-width:0;flex:1}.neo-command-copy span{display:block;color:#315fba;font-size:11px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}.neo-command-copy input{width:100%;margin-top:2px;padding:0;border:0;outline:0;background:transparent;color:#162d50;font-size:16px;font-weight:550}.neo-command-copy input::placeholder{color:#8290a5}.neo-commandbar kbd{padding:6px 9px;border:1px solid #dce4ef;border-radius:7px;background:#f8faff;color:#77869c;font-size:11px}.neo-command-results{position:relative;z-index:20;display:grid;gap:6px;margin:-7px 0 14px;padding:8px;border:1px solid #dce5f1;border-radius:14px;background:#fff;box-shadow:0 16px 40px rgba(12,35,70,.12)}.neo-result{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid transparent;border-radius:10px;background:#fbfcff;color:inherit;text-align:left}.neo-result:hover{border-color:#dce6f4;background:#f4f7fd}.neo-result>span{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;background:#edf3ff;color:#315fba}.neo-result div{min-width:0;flex:1}.neo-result strong,.neo-result small{display:block}.neo-result strong{font-size:14px}.neo-result small{margin-top:3px;color:#78879c;font-size:12px}.neo-result>svg{color:#7c8ca3}.neo-no-results{padding:16px}.neo-no-results strong,.neo-no-results span{display:block}.neo-no-results strong{font-size:14px}.neo-no-results span{margin-top:3px;color:#7b899d;font-size:12px}
+.neo-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:30px;min-height:276px;margin-bottom:16px;padding:36px 40px;border:1px solid #273f88;border-radius:24px;background:radial-gradient(circle at 90% 15%,rgba(111,140,255,.32),transparent 27%),radial-gradient(circle at 70% 110%,rgba(65,91,190,.25),transparent 35%),linear-gradient(135deg,#07132e 0%,#101e55 54%,#263c96 100%);color:#fff;box-shadow:0 24px 55px rgba(15,30,76,.22)}.neo-hero-grid{position:absolute;inset:0;opacity:.32;background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:38px 38px;mask-image:linear-gradient(to right,transparent,black 45%,black)}.neo-hero-content{position:relative;z-index:2;max-width:900px}.neo-kicker{display:flex;align-items:center;gap:9px;color:#b9c8ef;font-size:12px;font-weight:850;letter-spacing:.16em}.neo-kicker i,.neo-hero-meta>span>i{width:8px;height:8px;border-radius:50%;background:#1bd28c;box-shadow:0 0 0 5px rgba(27,210,140,.11)}.neo-hero h1{margin:15px 0 0;font-size:clamp(38px,4.2vw,58px);line-height:1.02;letter-spacing:-2px;font-weight:850}.neo-hero h1 b{color:#d9e3ff}.neo-hero p{max-width:790px;margin:14px 0 0;color:#c3d0ec;font-size:16px;line-height:1.65}.neo-hero-meta{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}.neo-hero-meta>span{display:inline-flex;align-items:center;gap:8px;min-height:37px;padding:0 13px;border:1px solid rgba(255,255,255,.13);border-radius:10px;background:rgba(255,255,255,.075);color:#c5d2eb;font-size:12px;font-weight:650}.neo-hero-meta b{color:#fff}.neo-clock{position:relative;z-index:2;min-width:225px;padding:23px 22px;border:1px solid rgba(255,255,255,.16);border-radius:18px;background:rgba(255,255,255,.09);backdrop-filter:blur(14px);text-align:right;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}.neo-clock span,.neo-clock small{display:block;color:#aebde0;font-size:11px}.neo-clock strong{display:block;margin-top:8px;color:#fff;font-size:32px;line-height:1;font-weight:850}.neo-clock small{margin-top:9px}.neo-clock-ring{position:absolute;right:-100px;bottom:-115px;width:260px;height:260px;border:1px solid rgba(255,255,255,.09);border-radius:50%;box-shadow:0 0 0 30px rgba(255,255,255,.025),0 0 0 60px rgba(255,255,255,.018)}
+.neo-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}.neo-stat{position:relative;overflow:hidden;display:flex;align-items:flex-start;gap:14px;min-height:132px;padding:20px;border:1px solid #dfe6f0;border-radius:17px;background:#fff;box-shadow:0 8px 24px rgba(10,32,67,.055);transition:.2s}.neo-stat:hover{transform:translateY(-2px);box-shadow:0 15px 34px rgba(10,32,67,.1)}.neo-stat-icon{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:13px}.neo-stat-blue .neo-stat-icon{background:#edf3ff;color:#315fba}.neo-stat-purple .neo-stat-icon{background:#f0edff;color:#6354bf}.neo-stat-green .neo-stat-icon{background:#e8f8f1;color:#159b68}.neo-stat-amber .neo-stat-icon{background:#fff5df;color:#b87915}.neo-stat span,.neo-stat small{display:block}.neo-stat span{color:#52647e;font-size:13px;font-weight:750}.neo-stat strong{display:block;margin-top:6px;color:#0b1f42;font-size:30px;line-height:1;font-weight:850}.neo-stat small{margin-top:8px;color:#8997a9;font-size:11px}.neo-stat>i{position:absolute;right:-20px;bottom:-32px;width:100px;height:100px;border:1px solid #e7edf5;border-radius:50%}
+.neo-board-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(360px,.9fr);gap:16px;margin-bottom:16px}.neo-board-three{grid-template-columns:repeat(3,minmax(0,1fr))}.neo-panel,.neo-launch{padding:22px;border:1px solid #dfe6f0;border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(10,32,67,.05)}.neo-section-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:19px}.neo-heading-left{display:flex;align-items:center;gap:12px;min-width:0}.neo-icon{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border-radius:12px;background:#eef3fc;color:#3156a4}.neo-section-heading h2{margin:0;color:#0b1f42;font-size:17px;font-weight:850;letter-spacing:-.25px}.neo-section-heading p{margin:4px 0 0;color:#8190a4;font-size:12px}.neo-badge{display:inline-flex;align-items:center;min-height:27px;padding:0 10px;border-radius:999px;background:#e9f8f1;color:#159b68;font-size:11px;font-weight:850}.neo-pulse-body{display:grid;grid-template-columns:190px minmax(0,1fr);align-items:center;gap:22px;min-height:158px;padding:19px;border:1px solid #e6edf5;border-radius:14px;background:linear-gradient(135deg,#f9fbfe,#f3f7fd)}.neo-pulse-body>div:first-child>span{color:#667790;font-size:12px;font-weight:750}.neo-pulse-body strong{display:block;margin-top:7px;font-size:31px;line-height:1;color:#0b1f42}.neo-pulse-body p{margin:8px 0 0;color:#8492a5;font-size:11px;line-height:1.6}.neo-chart{position:relative;height:105px;display:flex;align-items:flex-end;gap:7px;padding:0 2px}.neo-chart i{position:relative;z-index:2;flex:1;min-width:5px;border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,#718fe0,#dce5f7);opacity:.9}.neo-chart-line{position:absolute;left:0;right:0;bottom:20%;height:1px;background:#d9e2ef}.neo-empty{min-height:145px;display:grid;align-content:center;justify-items:start;padding:20px;border:1px dashed #d8e1ed;border-radius:14px;background:#fafcff}.neo-empty-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:12px;background:#edf7f2;color:#159b68}.neo-empty strong{margin-top:12px;color:#213754;font-size:14px}.neo-empty p{max-width:470px;margin:5px 0 0;color:#8794a7;font-size:11px;line-height:1.6}.neo-feature{min-height:145px;display:flex;align-items:flex-start;gap:13px;padding:20px;border:1px solid #e4eaf3;border-radius:14px;background:linear-gradient(135deg,#f9fbff,#f2f6fd)}.neo-feature-dot{width:10px;height:10px;flex:0 0 10px;margin-top:4px;border-radius:50%;background:#315fba;box-shadow:0 0 0 5px rgba(49,95,186,.09)}.neo-feature strong{display:block;color:#1b3558;font-size:14px}.neo-feature p{margin:7px 0 0;color:#8491a4;font-size:11px;line-height:1.6}
+.neo-launch{margin-bottom:16px}.neo-launch-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.neo-launch-item{display:flex;align-items:center;gap:12px;min-height:82px;padding:13px;border:1px solid #dfe6f0;border-radius:13px;background:#fbfcff;color:inherit;text-align:left;transition:.18s}.neo-launch-item:hover{border-color:#c6d4e7;transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,38,75,.07);background:#fff}.neo-launch-item>span{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border-radius:11px;background:#edf3fc;color:#315fba}.neo-launch-item div{min-width:0;flex:1}.neo-launch-item strong,.neo-launch-item small{display:block}.neo-launch-item strong{font-size:13px;color:#142d50}.neo-launch-item small{margin-top:4px;color:#8794a6;font-size:10.5px;line-height:1.35}.neo-launch-item>svg{color:#8291a5}.neo-health{margin-bottom:16px}.neo-health-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid #e5ebf3;border-radius:13px;overflow:hidden}.neo-health-grid>div{display:flex;align-items:center;gap:10px;min-height:66px;padding:11px 15px;border-right:1px solid #e5ebf3}.neo-health-grid>div:last-child{border-right:0}.neo-health-grid span{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:#f0f4fa;color:#607493}.neo-health-grid strong{flex:1;font-size:12px;color:#5d6d83}.neo-health-grid b{color:#159b68;font-size:11px}.neo-saved{display:flex;align-items:center;gap:14px;padding:17px 20px;border:1px solid #dbe5f2;border-radius:16px;background:linear-gradient(100deg,#f5f8ff,#fff);box-shadow:0 8px 24px rgba(10,32,67,.045)}.neo-saved-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:#eef3ff;color:#315fba}.neo-saved span,.neo-saved small{display:block}.neo-saved span{color:#536681;font-size:12px;font-weight:750}.neo-saved strong{display:inline-block;margin:3px 8px 0 0;color:#0b1f42;font-size:25px}.neo-saved small{display:inline;color:#8996a8;font-size:11px}
+@media (max-width:1200px){.neo-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.neo-launch-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.neo-board-three{grid-template-columns:1fr 1fr}.neo-board-three article:last-child{grid-column:1/-1}}
+@media (max-width:950px){.neo-hero{padding:30px}.neo-hero h1{font-size:42px}.neo-clock{min-width:190px}.neo-board-grid{grid-template-columns:1fr}.neo-board-three{grid-template-columns:1fr}.neo-board-three article:last-child{grid-column:auto}}
+@media (max-width:760px){.neo-dashboard{padding-bottom:16px}.neo-command-copy input{font-size:14px}.neo-commandbar kbd{display:none}.neo-hero{align-items:flex-start;flex-direction:column;min-height:auto;padding:28px 24px}.neo-hero h1{font-size:35px;letter-spacing:-1.2px}.neo-hero p{font-size:14px}.neo-clock{width:100%;min-width:0;text-align:left}.neo-pulse-body{grid-template-columns:1fr}.neo-chart{height:90px}.neo-launch-grid,.neo-health-grid{grid-template-columns:1fr}.neo-health-grid>div{border-right:0;border-bottom:1px solid #e5ebf3}.neo-health-grid>div:last-child{border-bottom:0}.neo-saved{align-items:flex-start}.neo-saved small{display:block;margin-top:2px}}
+@media (max-width:560px){.neo-stats{grid-template-columns:1fr}.neo-panel,.neo-launch{padding:17px}.neo-section-heading h2{font-size:16px}.neo-section-heading p{font-size:11px}.neo-hero h1{font-size:31px}.neo-hero-meta{flex-direction:column;align-items:stretch}.neo-hero-meta>span{width:100%}.neo-stat{min-height:120px}.neo-commandbar{min-height:62px}.neo-command-icon{width:39px;height:39px;flex-basis:39px}.neo-command-copy span{font-size:10px}.neo-command-copy input{font-size:13px}}
+
+/* =========================================================
+   EDUSPHERE LIGHT FUTURE UI OVERRIDES
+   Dashboard + light futuristic navigation
+========================================================= */
+:root {
+  --es-ink: #10153d;
+  --es-ink-2: #26305d;
+  --es-blue: #4356d8;
+  --es-cyan: #19b9c9;
+  --es-purple: #7a5cff;
+  --es-green: #12a875;
+  --es-amber: #d79520;
+  --es-red: #df5a68;
+  --es-bg: #f5f7fc;
+  --es-card: rgba(255,255,255,.92);
+  --es-border: #e1e6f2;
+  --es-shadow: 0 16px 45px rgba(35, 43, 92, .08);
+  --es-shadow-hover: 0 22px 55px rgba(49, 58, 121, .14);
+}
+
+body { background: var(--es-bg); color: var(--es-ink); }
+
+/* LIGHT SIDEBAR */
+.sidebar {
+  width: 252px !important;
+  padding: 20px 14px !important;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(122,92,255,.10), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, #f7f8fd 100%) !important;
+  color: var(--es-ink) !important;
+  border-right: 1px solid #e5e8f2;
+  box-shadow: 8px 0 30px rgba(31,39,82,.035);
+}
+.sidebar-brand { padding: 3px 10px 25px !important; gap: 12px !important; }
+.sidebar-logo {
+  width: 46px !important; height: 46px !important; border-radius: 14px !important;
+  background: linear-gradient(145deg,#111640,#3847b9) !important;
+  color: #fff !important; box-shadow: 0 10px 24px rgba(43,52,133,.20) !important;
+  position: relative;
+}
+.sidebar-logo span { position: relative; z-index: 2; font-size: 18px; font-weight: 900; }
+.sidebar-logo i { position:absolute; width:8px; height:8px; right:7px; top:7px; border-radius:50%; background:#24d0a0; box-shadow:0 0 0 4px rgba(36,208,160,.14); }
+.sidebar-brand-text strong { color: #111640 !important; font-size: 16px !important; }
+.sidebar-brand-text span { color: #7b84a1 !important; font-size: 10px !important; }
+.sidebar-workspace { display:flex; align-items:center; gap:8px; padding:0 11px 9px !important; }
+.sidebar-workspace span { color:#8a91ad !important; font-size:10px !important; letter-spacing:.16em !important; }
+.sidebar-workspace i { width:6px; height:6px; border-radius:50%; background:#19b9c9; box-shadow:0 0 0 4px rgba(25,185,201,.10); }
+.sidebar-nav { gap:6px !important; }
+.nav-item {
+  min-height: 50px !important; padding:0 12px !important; border-radius:13px !important;
+  color:#626d8e !important; border:1px solid transparent !important;
+  transition:all .2s ease !important;
+}
+.nav-item:hover { background:#f1f3fb !important; color:#1c2450 !important; border-color:#e5e8f2 !important; transform:translateX(2px); }
+.nav-item.active {
+  color:#171c4b !important;
+  background:linear-gradient(90deg,#eef0ff,#ffffff) !important;
+  border-color:#dfe3fb !important;
+  box-shadow:0 9px 25px rgba(67,86,216,.10) !important;
+}
+.nav-icon { width:34px !important; height:34px !important; border-radius:10px !important; color:#7d87a8 !important; }
+.nav-item.active .nav-icon { color:#4356d8 !important; background:#e9ecff !important; }
+.nav-label strong { font-size:12px !important; font-weight:800 !important; }
+.nav-label small { color:#99a0b6 !important; font-size:9px !important; }
+.nav-item.active .nav-label small { color:#70799b !important; }
+.nav-arrow { margin-left:auto; color:#b0b7ca; font-size:22px; line-height:1; }
+.nav-item.active .nav-arrow { color:#4356d8; }
+.sidebar-system {
+  margin:15px 4px 12px !important; padding:13px 11px !important; border:1px solid #e5e8f1 !important;
+  border-radius:13px !important; background:#fff !important; box-shadow:0 8px 22px rgba(30,39,84,.05);
+}
+.sidebar-system strong { color:#30385e !important; font-size:11px !important; }
+.sidebar-system small { color:#8c94ad !important; font-size:9px !important; }
+.sidebar-system b { margin-left:auto; color:#11a574; font-size:8px; letter-spacing:.08em; }
+.system-live-dot { background:#18b98a !important; box-shadow:0 0 0 4px rgba(24,185,138,.10) !important; }
+.sidebar-footer { border-top:1px solid #e6e9f1 !important; color:#7c85a2 !important; font-size:9px !important; }
+.sidebar-footer small { color:#a2a9bd !important; }
+
+/* DASHBOARD CANVAS */
+.dash-page { width:100%; max-width:1540px; margin:0 auto; padding-bottom:24px; }
+.dash-commandbar {
+  min-height:68px; display:flex; align-items:center; gap:14px; margin-bottom:18px; padding:9px 13px;
+  border:1px solid #dfe4f0; border-radius:16px; background:rgba(255,255,255,.92); box-shadow:var(--es-shadow);
+}
+.dash-command-icon { width:44px; height:44px; flex:0 0 44px; display:grid; place-items:center; border-radius:12px; color:#4356d8; background:linear-gradient(145deg,#eef0ff,#f5f6ff); }
+.dash-command-copy { min-width:0; flex:1; display:flex; flex-direction:column; }
+.dash-command-copy span { color:#7e87a5; font-size:10px; font-weight:850; letter-spacing:.12em; }
+.dash-command-copy input { width:100%; border:0; outline:0; background:transparent; color:#1c2450; font-size:15px; font-weight:600; padding:3px 0 0; }
+.dash-command-copy input::placeholder { color:#9299b0; font-weight:500; }
+.dash-command-hint { display:flex; gap:4px; }
+.dash-command-hint span { min-width:24px; height:25px; display:grid; place-items:center; border:1px solid #dde2ed; border-radius:7px; color:#8b93aa; background:#fafbfe; font-size:10px; font-weight:800; }
+.dash-command-results { margin:-8px 0 18px; padding:8px; border:1px solid #dfe4f0; border-radius:14px; background:#fff; box-shadow:var(--es-shadow); }
+.dash-result { width:100%; display:flex; align-items:center; gap:12px; padding:11px; border:0; border-radius:10px; background:transparent; color:inherit; text-align:left; }
+.dash-result:hover { background:#f5f6fd; }
+.dash-result>span { width:36px; height:36px; display:grid; place-items:center; border-radius:10px; color:#4356d8; background:#edf0ff; }
+.dash-result div { min-width:0; flex:1; }
+.dash-result strong { display:block; font-size:12px; color:#1c2450; }
+.dash-result small { display:block; margin-top:2px; color:#8a92aa; font-size:10px; }
+.dash-no-results { padding:15px; color:#7e87a2; }
+.dash-no-results strong { display:block; color:#252d56; font-size:12px; }
+.dash-no-results span { font-size:10px; }
+
+/* FUTURISTIC HERO */
+.dash-hero {
+  position:relative; overflow:hidden; min-height:250px; display:flex; align-items:center; justify-content:space-between; gap:34px;
+  margin-bottom:18px; padding:34px 38px; border-radius:24px; color:#fff;
+  background:linear-gradient(135deg,#111640 0%,#202a6c 52%,#4351c4 100%); box-shadow:0 25px 55px rgba(35,42,105,.22);
+}
+.hero-grid-lines { position:absolute; inset:0; opacity:.32; background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px); background-size:34px 34px; mask-image:linear-gradient(90deg,#000,transparent 85%); }
+.hero-glow { position:absolute; border-radius:50%; filter:blur(2px); pointer-events:none; }
+.hero-glow-a { width:360px; height:360px; right:-100px; top:-160px; background:rgba(105,126,255,.28); box-shadow:0 0 100px rgba(105,126,255,.20); }
+.hero-glow-b { width:180px; height:180px; right:28%; bottom:-130px; background:rgba(22,201,211,.12); }
+.hero-content { position:relative; z-index:2; max-width:900px; }
+.hero-kicker { display:flex; align-items:center; gap:8px; color:#b9c4ff; font-size:10px; font-weight:850; letter-spacing:.16em; }
+.hero-kicker i { width:8px; height:8px; border-radius:50%; background:#2ad5a3; box-shadow:0 0 0 5px rgba(42,213,163,.13),0 0 16px rgba(42,213,163,.55); }
+.hero-kicker b { padding:4px 8px; border:1px solid rgba(255,255,255,.13); border-radius:999px; background:rgba(255,255,255,.08); color:#d5dcff; font-size:8px; letter-spacing:.08em; }
+.dash-hero h1 { margin:13px 0 0; color:#fff; font-size:clamp(34px,4vw,52px); line-height:1.02; font-weight:900; letter-spacing:-1.8px; }
+.dash-hero h1 em { color:#9fe9ff; font-style:normal; }
+.dash-hero p { max-width:820px; margin:12px 0 0; color:#cbd2f2; font-size:14px; line-height:1.65; }
+.hero-meta { display:flex; flex-wrap:wrap; gap:9px; margin-top:22px; }
+.hero-meta>span { min-height:35px; display:inline-flex; align-items:center; gap:7px; padding:0 11px; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:rgba(255,255,255,.07); color:#c7cff0; font-size:10px; font-weight:700; backdrop-filter:blur(8px); }
+.hero-meta b { color:#fff; }
+.hero-meta i { width:6px; height:6px; border-radius:50%; background:#26c99b; box-shadow:0 0 8px rgba(38,201,155,.65); }
+.hero-clock { position:relative; z-index:2; flex:0 0 220px; display:grid; place-items:center; }
+.hero-clock-ring { width:198px; height:198px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,.18); border-radius:50%; background:radial-gradient(circle,rgba(255,255,255,.13),rgba(255,255,255,.04) 58%,transparent 59%); box-shadow:inset 0 0 35px rgba(255,255,255,.05),0 0 0 18px rgba(255,255,255,.025); text-align:center; }
+.hero-clock-ring:before { content:""; position:absolute; width:228px; height:228px; border:1px dashed rgba(255,255,255,.16); border-radius:50%; }
+.hero-clock span { color:#aeb9e8; font-size:10px; font-weight:850; letter-spacing:.14em; }
+.hero-clock strong { margin-top:6px; color:#fff; font-size:29px; font-weight:900; letter-spacing:-1px; }
+.hero-clock small { margin-top:5px; color:#bec7e7; font-size:9px; }
+
+/* KPI */
+.dash-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin-bottom:18px; }
+.dash-stat { position:relative; overflow:hidden; min-height:138px; display:flex; align-items:flex-start; gap:14px; padding:20px; border:1px solid var(--es-border); border-radius:17px; background:var(--es-card); box-shadow:var(--es-shadow); transition:.22s ease; }
+.dash-stat:hover { transform:translateY(-3px); box-shadow:var(--es-shadow-hover); }
+.dash-stat-icon { width:45px; height:45px; flex:0 0 45px; display:grid; place-items:center; border-radius:13px; }
+.tone-blue .dash-stat-icon { color:#4356d8; background:#ebeeff; }
+.tone-purple .dash-stat-icon { color:#7a5cff; background:#f0ebff; }
+.tone-green .dash-stat-icon { color:#12a875; background:#e7f8f1; }
+.tone-amber .dash-stat-icon { color:#d79520; background:#fff5df; }
+.dash-stat-copy span { color:#707b9b; font-size:11px; font-weight:750; }
+.dash-stat-copy strong { display:block; margin-top:8px; color:#111640; font-size:31px; line-height:1; font-weight:900; letter-spacing:-1px; }
+.dash-stat-copy small { display:block; margin-top:9px; color:#9aa2b8; font-size:9px; }
+.dash-stat-orb { position:absolute; width:105px; height:105px; right:-45px; bottom:-55px; border-radius:50%; border:1px solid #e8ebf5; box-shadow:0 0 0 16px #f8f9fd,0 0 0 17px #e7eaf4; }
+
+/* PANELS */
+.dash-grid-two,.dash-grid-three,.dash-intelligence-grid { display:grid; gap:16px; margin-bottom:16px; }
+.dash-grid-two { grid-template-columns:minmax(0,1.42fr) minmax(330px,.86fr); }
+.dash-grid-three { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.dash-intelligence-grid { grid-template-columns:minmax(0,1.35fr) minmax(260px,.72fr) minmax(260px,.72fr); }
+.dash-panel { min-width:0; padding:21px; border:1px solid var(--es-border); border-radius:18px; background:var(--es-card); box-shadow:var(--es-shadow); }
+.dash-heading { display:flex; align-items:center; justify-content:space-between; gap:15px; margin-bottom:18px; }
+.dash-heading-left { display:flex; align-items:center; gap:11px; min-width:0; }
+.dash-icon { width:40px; height:40px; flex:0 0 40px; display:grid; place-items:center; border-radius:12px; color:#4356d8; background:linear-gradient(145deg,#eef0ff,#f5f6fc); }
+.dash-heading h2 { margin:0; color:#131842; font-size:16px; font-weight:900; letter-spacing:-.25px; }
+.dash-heading p { margin:3px 0 0; color:#8b93aa; font-size:9px; }
+.dash-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 9px; border:1px solid #dcefe8; border-radius:999px; color:#0b9a70; background:#edfaf5; font-size:8px; font-weight:850; letter-spacing:.04em; }
+.dash-badge i { width:6px; height:6px; border-radius:50%; background:#15b487; box-shadow:0 0 0 3px rgba(21,180,135,.10); }
+
+/* PULSE */
+.pulse-main { display:grid; grid-template-columns:210px minmax(0,1fr); gap:24px; align-items:center; min-height:170px; padding:17px; border:1px solid #e8ebf4; border-radius:14px; background:linear-gradient(145deg,#fbfcff,#f6f8fd); }
+.pulse-summary>span { color:#7d86a2; font-size:10px; font-weight:750; }
+.pulse-summary>strong { display:block; margin-top:7px; color:#111640; font-size:35px; line-height:1; font-weight:900; }
+.pulse-summary>p { margin:9px 0 0; color:#8d95aa; font-size:10px; line-height:1.55; }
+.pulse-summary>small { display:inline-block; margin-top:12px; padding:5px 7px; border-radius:6px; color:#6c75a0; background:#eef0ff; font-size:7px; font-weight:850; letter-spacing:.08em; }
+.pulse-chart { position:relative; height:145px; padding:8px 0 20px; }
+.line-chart { width:100%; height:100%; color:#5063e4; overflow:visible; }
+.chart-labels { position:absolute; top:0; right:0; left:0; display:flex; justify-content:space-between; color:#b0b6c7; font-size:7px; font-weight:800; }
+.chart-x { display:flex; justify-content:space-between; margin-top:4px; color:#a1a8bc; font-size:7px; font-weight:800; letter-spacing:.05em; }
+.pulse-chart .chart-x { position:absolute; left:0; right:0; bottom:0; }
+
+/* EMPTY / AUTOMATION */
+.dash-empty { min-height:138px; display:flex; align-items:center; gap:14px; padding:16px; border:1px dashed #dce2ef; border-radius:14px; background:#fbfcff; }
+.dash-empty>span { width:43px; height:43px; flex:0 0 43px; display:grid; place-items:center; border-radius:12px; color:#66739b; background:#eff2f9; }
+.dash-empty strong { display:block; color:#252d55; font-size:12px; font-weight:850; }
+.dash-empty p { margin:5px 0 0; color:#929ab0; font-size:9px; line-height:1.6; }
+.automation-card { min-height:138px; padding:16px; border:1px solid #e1e5f3; border-radius:14px; background:linear-gradient(145deg,#f7f8ff,#eef1ff); }
+.automation-flow { display:flex; align-items:center; gap:7px; color:#5d69bd; font-size:7px; font-weight:900; letter-spacing:.06em; }
+.automation-flow span { padding:5px 7px; border:1px solid #dce1fa; border-radius:6px; background:#fff; }
+.automation-flow b { color:#a0a7c0; }
+.automation-card>strong { display:block; margin-top:15px; color:#202957; font-size:13px; }
+.automation-card>p { margin:5px 0 0; color:#858da9; font-size:9px; line-height:1.55; }
+.automation-track { display:flex; gap:6px; margin-top:15px; }
+.automation-track i { height:4px; flex:1; border-radius:999px; background:linear-gradient(90deg,#6676e8,#b8c0ff); }
+
+/* INTELLIGENCE CHARTS */
+.large-chart { height:220px; display:flex; gap:10px; padding:8px 8px 0 0; }
+.chart-y { width:28px; display:flex; flex-direction:column; justify-content:space-between; padding:3px 0 22px; color:#a0a8bb; font-size:8px; font-weight:750; text-align:right; }
+.chart-field { position:relative; min-width:0; flex:1; }
+.chart-field .grid-lines { position:absolute; inset:0 0 23px; background:repeating-linear-gradient(to bottom,#e9edf5 0,#e9edf5 1px,transparent 1px,transparent 25%); }
+.chart-field .line-chart { position:absolute; inset:0 0 23px; color:#4356d8; }
+.chart-field .chart-x { position:absolute; bottom:0; left:0; right:0; }
+.chart-note { margin:8px 0 0; color:#a0a7b9; font-size:8px; line-height:1.45; }
+.bar-chart { height:190px; display:flex; align-items:flex-end; gap:7px; padding:15px 3px 21px; border-bottom:1px solid #e6eaf2; background:repeating-linear-gradient(to bottom,transparent 0,transparent 24%,#edf0f6 25%); }
+.bar-wrap { height:100%; flex:1; display:flex; align-items:flex-end; }
+.bar-wrap span { width:100%; border-radius:7px 7px 2px 2px; background:linear-gradient(180deg,#7080ec,#d4d9ff); box-shadow:inset 0 1px 0 rgba(255,255,255,.55); }
+.activity-foot { display:flex; align-items:center; justify-content:space-between; margin-top:11px; color:#8c95ac; font-size:9px; }
+.activity-foot span { display:flex; align-items:center; gap:6px; }
+.activity-foot i { width:6px; height:6px; border-radius:50%; background:#18b98a; }
+.activity-foot strong { color:#111640; font-size:16px; }
+.donut-wrap { display:flex; flex-direction:column; align-items:center; gap:18px; }
+.donut { position:relative; width:150px; height:150px; display:grid; place-items:center; border-radius:50%; background:conic-gradient(#4356d8 0 33.33%,#7a5cff 33.33% 66.66%,#d79520 66.66% 100%); box-shadow:0 0 0 1px #e5e8f2; }
+.donut:after { content:""; position:absolute; width:105px; height:105px; border-radius:50%; background:#fff; }
+.donut>div { position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; }
+.donut strong { color:#111640; font-size:27px; }
+.donut span { color:#929ab0; font-size:7px; font-weight:850; letter-spacing:.12em; }
+.donut-legend { display:grid; gap:7px; width:100%; }
+.donut-legend span { display:flex; align-items:center; gap:7px; color:#707a98; font-size:9px; }
+.donut-legend i { width:8px; height:8px; border-radius:3px; }
+.legend-blue { background:#4356d8; }.legend-purple { background:#7a5cff; }.legend-amber { background:#d79520; }
+
+/* READINESS / SAVED / QUICK / HEALTH */
+.readiness { min-height:138px; display:flex; align-items:center; gap:14px; padding:16px; border:1px solid #e6e9f2; border-radius:14px; background:linear-gradient(145deg,#fcfdff,#f6f8fc); }
+.readiness-score { width:58px; height:58px; flex:0 0 58px; display:grid; place-items:center; border:6px solid #edf0ff; border-right-color:#6474e7; border-radius:50%; color:#4c5ed5; font-size:16px; font-weight:900; }
+.readiness strong { color:#252d55; font-size:12px; }
+.readiness p { margin:5px 0 0; color:#929ab0; font-size:9px; line-height:1.55; }
+.dash-saved { position:relative; display:flex; align-items:center; gap:14px; min-height:94px; margin-bottom:16px; padding:16px 19px; border:1px solid #dfe4f0; border-radius:17px; background:linear-gradient(100deg,#f0f2ff,#ffffff 55%,#f0fbfa); box-shadow:var(--es-shadow); }
+.saved-visual { width:52px; height:52px; flex:0 0 52px; display:grid; place-items:center; position:relative; border-radius:15px; color:#5365df; background:#e9ecff; }
+.saved-visual span { position:absolute; bottom:3px; font-size:5px; font-weight:900; letter-spacing:.12em; }
+.dash-saved>div:nth-child(2) { min-width:0; }
+.dash-saved>div:nth-child(2)>span { display:block; color:#747e9d; font-size:10px; font-weight:800; }
+.dash-saved>div:nth-child(2)>strong { display:block; margin-top:3px; color:#111640; font-size:24px; line-height:1; font-weight:900; }
+.dash-saved>div:nth-child(2)>small { display:block; margin-top:4px; color:#9aa2b7; font-size:8px; }
+.saved-chip { margin-left:auto; display:flex; align-items:center; gap:6px; padding:6px 9px; border-radius:999px; color:#0b9b70; background:#edfaf5; font-size:8px; font-weight:850; }
+.saved-chip i { width:6px; height:6px; border-radius:50%; background:#16b587; }
+.dash-quick { margin-bottom:16px; }
+.quick-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:11px; }
+.quick-item { min-height:82px; display:flex; align-items:center; gap:11px; padding:13px; border:1px solid #e0e5f0; border-radius:13px; background:#fbfcff; color:inherit; text-align:left; transition:.2s ease; }
+.quick-item:hover { transform:translateY(-2px); border-color:#cfd6f1; background:#fff; box-shadow:0 10px 25px rgba(40,49,106,.08); }
+.quick-item>span { width:40px; height:40px; flex:0 0 40px; display:grid; place-items:center; border-radius:11px; color:#4356d8; background:#edf0ff; }
+.quick-item div { min-width:0; flex:1; }
+.quick-item strong { display:block; color:#222952; font-size:11px; font-weight:850; }
+.quick-item small { display:block; margin-top:4px; color:#929ab0; font-size:8px; line-height:1.4; }
+.quick-item>svg { color:#9ba3b8; }
+.dash-health { margin-bottom:2px; }
+.health-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border:1px solid #e6eaf2; border-radius:13px; overflow:hidden; }
+.health-grid>div { min-height:68px; display:flex; align-items:center; gap:10px; padding:12px 14px; border-right:1px solid #e6eaf2; }
+.health-grid>div:last-child { border-right:0; }
+.health-grid>div>span { width:34px; height:34px; display:grid; place-items:center; border-radius:10px; color:#65729a; background:#f0f2f8; }
+.health-grid>div>div { min-width:0; flex:1; }
+.health-grid strong { display:block; color:#4e5877; font-size:10px; }
+.health-grid small { display:block; margin-top:3px; color:#13a877; font-size:8px; font-weight:800; }
+.health-grid>div>i { width:8px; height:8px; border-radius:50%; background:#18b98a; box-shadow:0 0 0 4px rgba(24,185,138,.10); }
+.health-message { display:flex; align-items:center; gap:8px; margin-top:10px; padding:9px 11px; border-radius:10px; background:#f5fbf8; color:#58705f; }
+.health-message>span { color:#13a877; }.health-message strong { font-size:9px; }.health-message small { color:#8c9a92; font-size:8px; }
+
+/* RESPONSIVE */
+@media (max-width:1200px) {
+  .sidebar { width:228px !important; }
+  .dash-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .dash-intelligence-grid { grid-template-columns:1.3fr 1fr; }
+  .dash-intelligence-grid article:last-child { grid-column:1/-1; }
+  .quick-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:950px) {
+  .sidebar { width:78px !important; padding-left:9px !important; padding-right:9px !important; }
+  .sidebar-brand { justify-content:center; padding-left:0 !important; padding-right:0 !important; }
+  .sidebar-brand-text,.sidebar-workspace,.nav-label,.nav-arrow,.sidebar-system,.sidebar-footer { display:none !important; }
+  .nav-item { justify-content:center; padding:0 !important; }
+  .nav-icon { width:38px !important; height:38px !important; }
+  .dash-grid-two,.dash-grid-three { grid-template-columns:1fr 1fr; }
+  .dash-grid-three article:last-child { grid-column:1/-1; }
+  .dash-hero { padding:30px; }
+}
+@media (max-width:760px) {
+  .app-content { padding:15px !important; }
+  .dash-command-copy input { font-size:13px; }
+  .dash-command-hint { display:none; }
+  .dash-hero { min-height:auto; flex-direction:column; align-items:flex-start; padding:28px 24px; }
+  .dash-hero h1 { font-size:36px; }
+  .hero-clock { width:100%; flex-basis:auto; justify-content:flex-start; }
+  .hero-clock-ring { width:150px; height:150px; }
+  .hero-clock-ring:before { width:174px; height:174px; }
+  .dash-grid-two,.dash-grid-three,.dash-intelligence-grid { grid-template-columns:1fr; }
+  .dash-grid-three article:last-child,.dash-intelligence-grid article:last-child { grid-column:auto; }
+  .pulse-main { grid-template-columns:1fr; }
+  .health-grid { grid-template-columns:1fr; }
+  .health-grid>div { border-right:0; border-bottom:1px solid #e6eaf2; }
+  .health-grid>div:last-child { border-bottom:0; }
+}
+@media (max-width:560px) {
+  .sidebar { width:62px !important; }
+  .dash-page { padding-bottom:14px; }
+  .dash-stats,.quick-grid { grid-template-columns:1fr; }
+  .dash-panel { padding:16px; }
+  .dash-heading h2 { font-size:14px; }
+  .dash-heading p { font-size:8px; }
+  .dash-hero h1 { font-size:31px; }
+  .dash-hero p { font-size:12px; }
+  .hero-meta { flex-direction:column; align-items:stretch; }
+  .hero-meta>span { width:100%; }
+  .dash-stat { min-height:120px; }
+  .dash-saved { align-items:flex-start; }
+  .saved-chip { display:none; }
+}
+
+/* =========================================================
+   FINAL PRODUCT UI OVERRIDES
+   Light premium sidebar + readable typography
+   ========================================================= */
+
+:root {
+  --ui-ink: #172044;
+  --ui-ink-2: #344164;
+  --ui-muted: #667392;
+  --ui-muted-2: #7a86a3;
+  --ui-border: #dce3f0;
+  --ui-blue: #4356d8;
+}
+
+body {
+  font-size: 15px;
+}
+
+/* LIGHT PREMIUM SIDEBAR */
+.sidebar {
+  width: 270px !important;
+  padding: 22px 14px !important;
+  color: var(--ui-ink) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f8fc 100%) !important;
+  border-right: 1px solid #dfe5ef !important;
+  box-shadow: 8px 0 28px rgba(34, 46, 92, 0.045) !important;
+}
+
+.sidebar-brand {
+  padding: 3px 10px 28px !important;
+}
+
+.sidebar-logo {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 15px !important;
+  background: linear-gradient(145deg, #1a2355, #5263df) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(67, 86, 216, .20) !important;
+}
+
+.sidebar-logo span { font-size: 19px !important; font-weight: 900 !important; }
+.sidebar-brand-text strong { color: #182044 !important; font-size: 19px !important; line-height: 1.2 !important; }
+.sidebar-brand-text span { color: #65718f !important; font-size: 12px !important; margin-top: 3px !important; }
+
+.sidebar-workspace {
+  padding: 0 11px 12px !important;
+}
+.sidebar-workspace span {
+  color: #6f7a98 !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  letter-spacing: .14em !important;
+}
+
+.sidebar-nav { gap: 8px !important; }
+.nav-item {
+  min-height: 58px !important;
+  padding: 0 13px !important;
+  gap: 13px !important;
+  border-radius: 14px !important;
+  color: #4d5b7d !important;
+  border: 1px solid transparent !important;
+}
+.nav-item:hover {
+  color: #1c2850 !important;
+  background: #f0f3fb !important;
+  border-color: #e0e5f0 !important;
+  transform: translateX(2px);
+}
+.nav-item.active {
+  color: #172044 !important;
+  background: linear-gradient(90deg, #eef0ff 0%, #ffffff 100%) !important;
+  border-color: #d7ddf8 !important;
+  box-shadow: 0 9px 24px rgba(67, 86, 216, .10) !important;
+}
+.nav-icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 11px !important;
+  color: #596783 !important;
+  background: #f1f4f9 !important;
+}
+.nav-item.active .nav-icon {
+  color: #4356d8 !important;
+  background: #e8ebff !important;
+}
+.nav-label strong {
+  color: inherit !important;
+  font-size: 16px !important;
+  line-height: 1.3 !important;
+  font-weight: 800 !important;
+}
+.nav-label small { display: none !important; }
+.nav-arrow {
+  margin-left: auto !important;
+  color: #8994ae !important;
+  font-size: 25px !important;
+}
+.nav-item.active .nav-arrow { color: #4356d8 !important; }
+
+.sidebar-bottom { margin-top: auto !important; }
+.sidebar-system {
+  margin: 15px 4px 14px !important;
+  min-height: 70px !important;
+  padding: 13px 12px !important;
+  border: 1px solid #dce3ef !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(31, 43, 85, .055) !important;
+}
+.sidebar-system strong { color: #2b3658 !important; font-size: 13px !important; }
+.sidebar-system small { color: #687492 !important; font-size: 10.5px !important; margin-top: 3px !important; }
+.sidebar-system b { color: #0b9d71 !important; font-size: 9px !important; }
+.sidebar-footer { border-top: 1px solid #dfe5ef !important; color: #697592 !important; font-size: 11px !important; padding-top: 13px !important; }
+.sidebar-footer small { color: #7e89a3 !important; font-size: 10px !important; }
+
+/* TOPBAR + DASHBOARD TEXT: stronger contrast */
+.topbar-title { color: #172044 !important; font-size: 18px !important; font-weight: 850 !important; }
+.session-pill { color: #596682 !important; font-size: 12px !important; }
+.session-pill strong { color: #1d2850 !important; font-size: 12px !important; }
+.live-time strong { color: #172044 !important; font-size: 14px !important; }
+.live-time span { color: #697694 !important; font-size: 11px !important; }
+.topbar-live { color: #168a67 !important; font-size: 12px !important; }
+.user-details strong { color: #1c2549 !important; font-size: 13px !important; }
+.user-details small { color: #66728f !important; font-size: 11px !important; }
+.logout-button { color: #586582 !important; font-size: 12px !important; }
+
+/* DASHBOARD: readable secondary text */
+.dash-command-copy span { color: #667392 !important; font-size: 11px !important; }
+.dash-command-copy input { color: #243052 !important; font-size: 16px !important; }
+.dash-command-copy input::placeholder { color: #687593 !important; opacity: 1 !important; }
+.dash-command-results { color: #253052 !important; }
+.dash-result strong { color: #202a4d !important; font-size: 14px !important; }
+.dash-result small { color: #64718f !important; font-size: 11px !important; }
+.dash-no-results { color: #667392 !important; }
+.dash-no-results strong { color: #243052 !important; font-size: 14px !important; }
+.dash-no-results span { font-size: 11px !important; }
+
+.dash-hero p { color: #d9def5 !important; font-size: 15px !important; }
+.hero-kicker { font-size: 11px !important; }
+.hero-kicker b { font-size: 9px !important; }
+.hero-meta>span { color: #d5dbf4 !important; font-size: 11px !important; }
+.hero-clock span { font-size: 11px !important; }
+.hero-clock small { color: #c4cbea !important; font-size: 11px !important; }
+
+.stat-label { color: #4e5c7c !important; font-size: 14px !important; font-weight: 750 !important; }
+.stat-value { color: #182044 !important; font-size: 30px !important; }
+.stat-description { color: #697694 !important; font-size: 12px !important; }
+
+.dash-heading h2 { color: #182044 !important; font-size: 18px !important; }
+.dash-heading p { color: #667392 !important; font-size: 11px !important; }
+.dash-empty strong { color: #293453 !important; font-size: 14px !important; }
+.dash-empty p { color: #697694 !important; font-size: 11px !important; }
+.automation-card>strong { color: #253052 !important; font-size: 14px !important; }
+.automation-card>p { color: #687492 !important; font-size: 11px !important; }
+.automation-flow { font-size: 9px !important; }
+
+.chart-note { color: #697694 !important; font-size: 10px !important; }
+.chart-y { color: #6d7894 !important; font-size: 9px !important; }
+.chart-x { color: #697694 !important; font-size: 9px !important; }
+.activity-foot { color: #697694 !important; font-size: 10px !important; }
+.activity-foot strong { color: #182044 !important; font-size: 18px !important; }
+.donut-legend span { color: #5e6b88 !important; font-size: 11px !important; }
+.readiness strong { color: #293453 !important; font-size: 14px !important; }
+.readiness p { color: #697694 !important; font-size: 11px !important; }
+
+.dash-saved>div:nth-child(2)>span { color: #5f6d8a !important; font-size: 11px !important; }
+.dash-saved>div:nth-child(2)>strong { color: #182044 !important; font-size: 28px !important; }
+.dash-saved>div:nth-child(2)>small { color: #697694 !important; font-size: 10px !important; }
+.quick-item strong { color: #263153 !important; font-size: 13px !important; }
+.quick-item small { color: #697694 !important; font-size: 10px !important; }
+.health-grid strong { color: #4b5878 !important; font-size: 11px !important; }
+.health-grid small { color: #159a73 !important; font-size: 9px !important; }
+.health-message { color: #53627e !important; }
+.health-message strong { font-size: 10px !important; }
+.health-message small { color: #687593 !important; font-size: 9px !important; }
+
+/* Keep readable sizes on smaller screens too */
+@media (max-width: 950px) {
+  .sidebar { width: 82px !important; }
+  .nav-label, .sidebar-brand-text, .sidebar-workspace, .nav-arrow, .sidebar-system, .sidebar-footer { display: none !important; }
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\main.jsx =====
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+
+import App from "./App";
+import { AuthProvider } from "./auth/AuthContext";
+import "./index.css";
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
+  </StrictMode>,
+);
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\users.css =====
+.users-page {
+  min-height: 100%;
+  padding: 28px;
+  color: #172033;
+}
+
+.users-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.users-eyebrow,
+.modal-eyebrow {
+  color: #7569d8;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  margin-bottom: 8px;
+}
+
+.users-header h1 {
+  margin: 0;
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.users-header p {
+  margin: 10px 0 0;
+  color: #697386;
+  font-size: 15px;
+}
+
+.users-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.users-button {
+  border: 0;
+  border-radius: 12px;
+  min-height: 42px;
+  padding: 0 17px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.users-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.users-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.users-button.primary {
+  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    #7166d9,
+    #8a73e8
+  );
+  box-shadow: 0 8px 22px rgba(113, 102, 217, 0.2);
+}
+
+.users-button.secondary {
+  color: #394255;
+  background: #ffffff;
+  border: 1px solid #e3e6ef;
+}
+
+.users-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 12px 15px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.users-alert > span {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  flex: 0 0 25px;
+}
+
+.users-alert > div {
+  flex: 1;
+}
+
+.users-alert button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.users-alert.error {
+  background: #fff1f1;
+  color: #9d3030;
+  border: 1px solid #ffd5d5;
+}
+
+.users-alert.error > span {
+  background: #ffdede;
+}
+
+.users-alert.success {
+  background: #effaf3;
+  color: #287145;
+  border: 1px solid #d3f0dc;
+}
+
+.users-alert.success > span {
+  background: #d8f4df;
+}
+
+.users-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.user-stat-card {
+  min-height: 110px;
+  padding: 18px;
+  background: #ffffff;
+  border: 1px solid #e8eaf1;
+  border-radius: 16px;
+  box-shadow: 0 7px 24px rgba(32, 39, 58, 0.05);
+}
+
+.user-stat-card span {
+  display: block;
+  color: #737b8c;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.user-stat-card strong {
+  display: block;
+  margin-top: 12px;
+  color: #20283a;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.users-panel {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e8eaf1;
+  border-radius: 18px;
+  box-shadow: 0 9px 30px rgba(32, 39, 58, 0.06);
+}
+
+.users-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 17px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.users-search {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-height: 43px;
+  gap: 9px;
+  padding: 0 13px;
+  border: 1px solid #e2e5ed;
+  border-radius: 11px;
+  background: #fbfcfe;
+}
+
+.users-search span {
+  color: #8b92a1;
+  font-size: 22px;
+}
+
+.users-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #1e2636;
+  font: inherit;
+  font-size: 14px;
+}
+
+.users-search input::placeholder {
+  color: #9ca3b1;
+}
+
+.users-filter {
+  min-width: 145px;
+  height: 43px;
+  padding: 0 12px;
+  border: 1px solid #e2e5ed;
+  border-radius: 11px;
+  background: #fbfcfe;
+  color: #394255;
+  outline: 0;
+  font: inherit;
+  font-size: 14px;
+}
+
+.users-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  min-width: 850px;
+  border-collapse: collapse;
+}
+
+.users-table th {
+  padding: 14px 18px;
+  text-align: left;
+  background: #fafbfe;
+  border-bottom: 1px solid #edf0f5;
+  color: #737b8c;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.users-table td {
+  padding: 15px 18px;
+  border-bottom: 1px solid #f0f2f6;
+  color: #4a5365;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.users-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.users-table tbody tr:hover {
+  background: #fcfcff;
+}
+
+.user-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.user-name-cell > div:last-child {
+  min-width: 0;
+}
+
+.user-name-cell strong {
+  display: block;
+  color: #252d3d;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.user-name-cell small {
+  display: block;
+  margin-top: 3px;
+  color: #9097a6;
+  font-size: 11px;
+}
+
+.user-avatar,
+.user-detail-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: #6559c7;
+  background: #eeebff;
+  font-weight: 800;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  font-size: 13px;
+}
+
+.role-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.role-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 25px;
+  padding: 0 8px;
+  border-radius: 7px;
+  background: #f0efff;
+  color: #5d54b6;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.muted {
+  color: #9aa1af;
+  font-size: 12px;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 27px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.status-chip i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.status-chip.active {
+  color: #277043;
+  background: #ebf8ef;
+}
+
+.status-chip.active i {
+  background: #42a964;
+}
+
+.status-chip.inactive {
+  color: #8a5c20;
+  background: #fff5e6;
+}
+
+.status-chip.inactive i {
+  background: #d58d32;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.user-actions button {
+  min-width: 32px;
+  height: 31px;
+  padding: 0 7px;
+  border: 1px solid #e5e7ee;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #5a6374;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.user-actions button:hover:not(:disabled) {
+  border-color: #cfcaf6;
+  color: #5f55bd;
+  background: #f8f7ff;
+}
+
+.user-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.user-actions button.danger:hover:not(:disabled) {
+  border-color: #ffd1d1;
+  color: #b73737;
+  background: #fff5f5;
+}
+
+.users-empty {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 35px;
+  color: #727b8d;
+  text-align: center;
+}
+
+.users-empty strong {
+  color: #394255;
+  font-size: 15px;
+}
+
+.users-empty span {
+  font-size: 13px;
+}
+
+.users-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 5px;
+  border-radius: 15px;
+  background: #f1f0ff;
+  color: #7569d8;
+  font-size: 27px;
+}
+
+.users-loader {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 8px;
+  border: 3px solid #e8e7f8;
+  border-top-color: #7569d8;
+  border-radius: 50%;
+  animation: users-spin 0.8s linear infinite;
+}
+
+@keyframes users-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.users-modal-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(24, 29, 43, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.users-modal {
+  width: min(620px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 22px;
+  border: 1px solid #e4e6ed;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(25, 31, 48, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #20283a;
+  font-size: 24px;
+  letter-spacing: -0.025em;
+}
+
+.modal-header > button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 9px;
+  background: #f5f6f9;
+  color: #5d6575;
+  font-size: 21px;
+  cursor: pointer;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.form-grid.single {
+  grid-template-columns: 1fr;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-grid label span {
+  color: #535d70;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.form-grid input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 43px;
+  padding: 0 12px;
+  border: 1px solid #dfe3eb;
+  border-radius: 10px;
+  outline: 0;
+  background: #fbfcfe;
+  color: #20283a;
+  font: inherit;
+  font-size: 14px;
+}
+
+.form-grid input:focus {
+  border-color: #938be2;
+  box-shadow: 0 0 0 3px rgba(117, 105, 216, 0.1);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 25px;
+  padding-top: 18px;
+  border-top: 1px solid #edf0f5;
+}
+
+.user-detail-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 13px;
+  background: #f8f8fd;
+}
+
+.user-detail-avatar {
+  width: 52px;
+  height: 52px;
+  font-size: 18px;
+}
+
+.user-detail-profile h3 {
+  margin: 0;
+  color: #252d3d;
+  font-size: 17px;
+}
+
+.user-detail-profile p {
+  margin: 4px 0 0;
+  color: #7b8494;
+  font-size: 13px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+  margin-top: 15px;
+}
+
+.detail-grid > div {
+  padding: 14px;
+  border: 1px solid #eceef4;
+  border-radius: 11px;
+}
+
+.detail-grid span {
+  display: block;
+  margin-bottom: 6px;
+  color: #858c9b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.detail-grid strong {
+  color: #394255;
+  font-size: 13px;
+}
+
+.password-user {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 18px;
+  padding: 13px;
+  border-radius: 11px;
+  background: #f8f8fd;
+}
+
+.password-user strong {
+  color: #303849;
+  font-size: 14px;
+}
+
+.password-user span {
+  color: #7e8797;
+  font-size: 12px;
+}
+
+.users-processing {
+  position: fixed;
+  z-index: 1100;
+  right: 22px;
+  bottom: 22px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #ffffff;
+  background: #252d3d;
+  box-shadow: 0 9px 30px rgba(20, 25, 37, 0.2);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+@media (max-width: 1000px) {
+  .users-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .users-page {
+    padding: 18px;
+  }
+
+  .users-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .users-header-actions {
+    width: 100%;
+  }
+
+  .users-header-actions .users-button {
+    flex: 1;
+  }
+
+  .users-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .users-filter {
+    width: 100%;
+  }
+
+  .form-grid,
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .users-page {
+    padding: 14px;
+  }
+
+  .users-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .users-header h1 {
+    font-size: 28px;
+  }
+
+  .users-modal-backdrop {
+    padding: 10px;
+  }
+
+  .users-modal {
+    padding: 17px;
+    border-radius: 15px;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer .users-button {
+    width: 100%;
+  }
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\api\auth.js =====
+import apiClient from "./client";
+
+function unwrap(response) {
+  return response?.data ?? response;
+}
+
+export async function login(email, password) {
+  const response = await apiClient.post("/auth/login", {
+    email,
+    password,
+  });
+
+  const payload = unwrap(response);
+
+  const token =
+    payload?.access_token ||
+    payload?.data?.access_token;
+
+  if (!token) {
+    throw new Error("Login succeeded but no access token was returned.");
+  }
+
+  return {
+    ...payload,
+    access_token: token,
+  };
+}
+
+export async function getCurrentUser() {
+  const response = await apiClient.get("/auth/me");
+
+  return unwrap(response);
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\api\client.js =====
+import axios from "axios";
+
+const apiClient = axios.create({
+  baseURL: "http://127.0.0.1:8000/api/v1",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("edusphere_access_token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+export default apiClient;
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\api\school.js =====
+import apiClient from "./client";
+
+export async function getSchools(params = {}) {
+  const response = await apiClient.get("/schools", { params });
+  return response.data;
+}
+
+export async function getSchool(schoolId) {
+  const response = await apiClient.get(`/schools/${schoolId}`);
+  return response.data;
+}
+
+export async function createSchool(data) {
+  const response = await apiClient.post("/schools", data);
+  return response.data;
+}
+
+export async function updateSchool(schoolId, data) {
+  const response = await apiClient.patch(`/schools/${schoolId}`, data);
+  return response.data;
+}
+
+export async function updateSchoolStatus(schoolId, isActive) {
+  const response = await apiClient.patch(`/schools/${schoolId}/status`, {
+    is_active: isActive,
+  });
+  return response.data;
+}
+
+export async function getAcademicSessions(schoolId, params = {}) {
+  const response = await apiClient.get(
+    `/schools/${schoolId}/academic-sessions`,
+    { params },
+  );
+  return response.data;
+}
+
+export async function getCurrentAcademicSession(schoolId) {
+  const response = await apiClient.get(
+    `/schools/${schoolId}/academic-sessions/current`,
+  );
+  return response.data;
+}
+
+export async function getAcademicSession(sessionId) {
+  const response = await apiClient.get(
+    `/schools/academic-sessions/${sessionId}`,
+  );
+  return response.data;
+}
+
+export async function createAcademicSession(schoolId, data) {
+  const response = await apiClient.post(
+    `/schools/${schoolId}/academic-sessions`,
+    data,
+  );
+  return response.data;
+}
+
+export async function updateAcademicSession(sessionId, data) {
+  const response = await apiClient.patch(
+    `/schools/academic-sessions/${sessionId}`,
+    data,
+  );
+  return response.data;
+}
+
+export async function setCurrentAcademicSession(sessionId) {
+  const response = await apiClient.post(
+    `/schools/academic-sessions/${sessionId}/set-current`,
+  );
+  return response.data;
+}
+
+export async function updateAcademicSessionStatus(sessionId, isActive) {
+  const response = await apiClient.patch(
+    `/schools/academic-sessions/${sessionId}/status`,
+    {
+      is_active: isActive,
+    },
+  );
+  return response.data;
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\api\users.js =====
+import apiClient from "./client";
+
+function unwrap(response) {
+  return response?.data?.data ?? response?.data;
+}
+
+export async function getUsers(params = {}) {
+  const response = await apiClient.get("/users", {
+    params,
+  });
+
+  return response.data;
+}
+
+export async function getUserRoles() {
+  const response = await apiClient.get("/users/roles");
+
+  return unwrap(response);
+}
+
+export async function getUser(userId) {
+  const response = await apiClient.get(
+    `/users/${userId}`,
+  );
+
+  return unwrap(response);
+}
+
+export async function createUser(data) {
+  const response = await apiClient.post(
+    "/users",
+    data,
+  );
+
+  return unwrap(response);
+}
+
+export async function updateUser(userId, data) {
+  const response = await apiClient.patch(
+    `/users/${userId}`,
+    data,
+  );
+
+  return unwrap(response);
+}
+
+export async function updateUserStatus(
+  userId,
+  isActive,
+) {
+  const response = await apiClient.patch(
+    `/users/${userId}/status`,
+    null,
+    {
+      params: {
+        is_active: isActive,
+      },
+    },
+  );
+
+  return unwrap(response);
+}
+
+export async function resetUserPassword(
+  userId,
+  password,
+) {
+  const response = await apiClient.post(
+    `/users/${userId}/password`,
+    {
+      password,
+    },
+  );
+
+  return unwrap(response);
+}
+
+export async function deleteUser(userId) {
+  const response = await apiClient.delete(
+    `/users/${userId}`,
+  );
+
+  return response.data;
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\auth\AuthContext.jsx =====
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
+import {
+  getCurrentUser,
+  login as loginRequest,
+} from "../api/auth";
+
+const AuthContext = createContext(null);
+
+const TOKEN_KEY = "edusphere_access_token";
+
+function extractUser(response) {
+  return response?.data ?? response;
+}
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const loadUser = useCallback(async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+
+    if (!token) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await getCurrentUser();
+      const currentUser = extractUser(response);
+
+      if (!currentUser) {
+        throw new Error("Unable to load current user.");
+      }
+
+      setUser(currentUser);
+    } catch {
+      localStorage.removeItem(TOKEN_KEY);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function initializeAuth() {
+      const token = localStorage.getItem(TOKEN_KEY);
+
+      if (!token) {
+        if (mounted) {
+          setUser(null);
+          setLoading(false);
+        }
+        return;
+      }
+
+      try {
+        const response = await getCurrentUser();
+        const currentUser = extractUser(response);
+
+        if (mounted) {
+          setUser(currentUser || null);
+        }
+      } catch {
+        localStorage.removeItem(TOKEN_KEY);
+
+        if (mounted) {
+          setUser(null);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    initializeAuth();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const login = useCallback(async (email, password) => {
+    const response = await loginRequest(email, password);
+
+    const token =
+      response?.access_token ||
+      response?.data?.access_token;
+
+    if (!token) {
+      throw new Error(
+        "Login failed: server did not return an access token.",
+      );
+    }
+
+    localStorage.setItem(TOKEN_KEY, token);
+
+    try {
+      const currentUserResponse = await getCurrentUser();
+      const currentUser = extractUser(currentUserResponse);
+
+      if (!currentUser) {
+        throw new Error("Unable to load logged-in user.");
+      }
+
+      setUser(currentUser);
+
+      return currentUser;
+    } catch (error) {
+      localStorage.removeItem(TOKEN_KEY);
+      setUser(null);
+      throw error;
+    }
+  }, []);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem(TOKEN_KEY);
+    setUser(null);
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+      isAuthenticated: Boolean(user),
+      login,
+      logout,
+      loadUser,
+    }),
+    [user, loading, login, logout, loadUser],
+  );
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error(
+      "useAuth must be used inside AuthProvider.",
+    );
+  }
+
+  return context;
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\auth\ProtectedRoute.jsx =====
+import { Navigate, Outlet } from "react-router-dom";
+
+import { useAuth } from "./AuthContext";
+
+export default function ProtectedRoute() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="page-loading">
+        Loading EduSphere...
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />;
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\components\AppShell.jsx =====
+import Sidebar from "./Sidebar";
+import Topbar from "./Topbar";
+
+export default function AppShell({ children }) {
+  return (
+    <div className="app-shell">
+      <Sidebar />
+
+      <div className="app-main">
+        <Topbar />
+
+        <main className="app-content">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\components\Sidebar.jsx =====
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+
+const navigation = [
+  {
+    en: "Dashboard",
+    hi: "डैशबोर्ड",
+    path: "/dashboard",
+    icon: "grid",
+  },
+  {
+    en: "School Profile",
+    hi: "स्कूल प्रोफ़ाइल",
+    path: "/school-profile",
+    icon: "school",
+  },
+  {
+    en: "Users & Identity",
+    hi: "यूज़र और पहचान",
+    path: "/users",
+    icon: "users",
+  },
+];
+
+const TEXT = {
+  EN: {
+    workspace: "WORKSPACE",
+    system: "System Online",
+    services: "Core services operational",
+    live: "LIVE",
+  },
+  HI: {
+    workspace: "कार्य क्षेत्र",
+    system: "सिस्टम ऑनलाइन",
+    services: "मुख्य सेवाएँ सक्रिय हैं",
+    live: "लाइव",
+  },
+};
+
+function Icon({ name, size = 20 }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true,
+  };
+
+  const icons = {
+    grid: (
+      <>
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </>
+    ),
+
+    school: (
+      <>
+        <path d="m3 10 9-6 9 6" />
+        <path d="M5 10v9h14v-9" />
+        <path d="M9 19v-5h6v5" />
+        <path d="M3 21h18" />
+      </>
+    ),
+
+    users: (
+      <>
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </>
+    ),
+  };
+
+  return <svg {...common}>{icons[name]}</svg>;
+}
+
+export default function Sidebar() {
+  const [language, setLanguage] = useState(() =>
+    localStorage.getItem("edusphere_language") === "HI"
+      ? "HI"
+      : "EN",
+  );
+
+  useEffect(() => {
+    const onLanguageChange = (event) => {
+      setLanguage(event.detail === "HI" ? "HI" : "EN");
+    };
+
+    window.addEventListener(
+      "edusphere-language-change",
+      onLanguageChange,
+    );
+
+    return () =>
+      window.removeEventListener(
+        "edusphere-language-change",
+        onLanguageChange,
+      );
+  }, []);
+
+  const t = TEXT[language];
+
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-brand">
+        <div className="sidebar-logo">E</div>
+
+        <div className="sidebar-brand-text">
+          <strong>EduSphere</strong>
+          <span>School Operating System</span>
+        </div>
+      </div>
+
+      <div className="sidebar-workspace">
+        <span>{t.workspace}</span>
+      </div>
+
+      <nav className="sidebar-nav">
+        {navigation.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `nav-item ${isActive ? "active" : ""}`
+            }
+          >
+            <span className="nav-icon">
+              <Icon name={item.icon} />
+            </span>
+
+            <span className="nav-label">
+              <strong>
+                {language === "HI" ? item.hi : item.en}
+              </strong>
+            </span>
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className="sidebar-bottom">
+        <div className="sidebar-system">
+          <span className="system-live-dot" />
+
+          <div>
+            <strong>{t.system}</strong>
+            <small>{t.services}</small>
+          </div>
+
+          <span className="sidebar-live">{t.live}</span>
+        </div>
+
+        <div className="sidebar-footer">
+          <span>EduSphere</span>
+          <small>v0.1.0</small>
+        </div>
+      </div>
+    </aside>
+  );
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\components\Topbar.jsx =====
+import { useEffect, useMemo, useState } from "react";
+
+import { useAuth } from "../auth/AuthContext";
+
+const TEXT = {
+  EN: {
+    session: "Academic Session",
+    live: "LIVE",
+    logout: "Logout",
+    admin: "Administrator",
+  },
+  HI: {
+    session: "शैक्षणिक सत्र",
+    live: "लाइव",
+    logout: "लॉगआउट",
+    admin: "प्रशासक",
+  },
+};
+
+function Icon({ name, size = 16 }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true,
+  };
+
+  const icons = {
+    calendar: (
+      <>
+        <rect x="3" y="4" width="18" height="17" rx="2" />
+        <path d="M8 2v4M16 2v4M3 10h18" />
+      </>
+    ),
+    logout: (
+      <>
+        <path d="M10 17l5-5-5-5" />
+        <path d="M15 12H3" />
+        <path d="M21 19V5a2 2 0 0 0-2-2h-5" />
+      </>
+    ),
+  };
+
+  return <svg {...common}>{icons[name]}</svg>;
+}
+
+export default function Topbar() {
+  const { user, logout } = useAuth();
+
+  const [language, setLanguage] = useState(
+    () => localStorage.getItem("edusphere_language") || "EN",
+  );
+
+  const [currentTime, setCurrentTime] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    const handleLanguageChange = (event) => {
+      const nextLanguage = event.detail === "HI" ? "HI" : "EN";
+      setLanguage(nextLanguage);
+    };
+
+    window.addEventListener(
+      "edusphere-language-change",
+      handleLanguageChange,
+    );
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener(
+        "edusphere-language-change",
+        handleLanguageChange,
+      );
+    };
+  }, []);
+
+  const t = TEXT[language];
+
+  const timeText = useMemo(
+    () =>
+      currentTime.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
+    [currentTime],
+  );
+
+  const dateText = useMemo(
+    () =>
+      currentTime.toLocaleDateString(
+        language === "HI" ? "hi-IN" : "en-IN",
+        {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        },
+      ),
+    [currentTime, language],
+  );
+
+  const firstName =
+    user?.full_name?.trim()?.split(" ")[0] ||
+    user?.email?.split("@")[0] ||
+    "Admin";
+
+  const avatarLetter = firstName.charAt(0).toUpperCase();
+
+  const changeLanguage = (nextLanguage) => {
+    setLanguage(nextLanguage);
+    localStorage.setItem("edusphere_language", nextLanguage);
+
+    window.dispatchEvent(
+      new CustomEvent("edusphere-language-change", {
+        detail: nextLanguage,
+      }),
+    );
+  };
+
+  return (
+    <header className="topbar">
+      <div className="topbar-left">
+        <div className="topbar-title">
+          EduSphere School Operating System
+        </div>
+
+        <div className="session-pill">
+          <Icon name="calendar" size={12} />
+          <span>{t.session}</span>
+          <strong>2026–27</strong>
+        </div>
+      </div>
+
+      <div className="topbar-right">
+        <div className="live-time">
+          <strong>{timeText}</strong>
+          <span>{dateText}</span>
+        </div>
+
+        <div className="topbar-live">
+          <span className="status-dot" />
+          {t.live}
+        </div>
+
+        <div
+          className="language-switch"
+          aria-label="Language selection"
+        >
+          <button
+            type="button"
+            className={language === "EN" ? "active" : ""}
+            onClick={() => changeLanguage("EN")}
+            aria-label="Switch to English"
+          >
+            EN
+          </button>
+
+          <button
+            type="button"
+            className={language === "HI" ? "active" : ""}
+            onClick={() => changeLanguage("HI")}
+            aria-label="हिंदी में बदलें"
+          >
+            HI
+          </button>
+        </div>
+
+        <div className="user-menu">
+          <div className="user-avatar" title={user?.full_name || user?.email}>
+            {avatarLetter}
+          </div>
+
+          <div className="user-details">
+            <strong>{firstName}</strong>
+            <small>{t.admin}</small>
+          </div>
+
+          <button
+            type="button"
+            className="logout-button"
+            onClick={logout}
+          >
+            <Icon name="logout" size={14} />
+            {t.logout}
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\pages\Dashboard.jsx =====
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+
+import AppShell from "../components/AppShell";
+import { useAuth } from "../auth/AuthContext";
+
+const TEXT = {
+  EN: {
+    command: "COMMAND SEARCH", search: "Search students, fees, attendance, reports or type a command...",
+    live: "LIVE", today: "TODAY", schoolOS: "EDUSPHERE SCHOOL OS", welcome: "Good evening",
+    overview: "Your school's operational command center — people, processes, risks and decisions in one place.",
+    session: "Academic Session", operations: "School operations", foundation: "Foundation active",
+    students: "Students", teachers: "Teachers", attendance: "Attendance", actions: "Pending Actions",
+    awaiting: "Connect module to show live value", pulse: "School Pulse", pulseSub: "Live operational overview",
+    pulseText: "The live pulse will combine attendance, fees, timetable, admissions and staff signals as modules connect.",
+    pulsePreview: "VISUAL PREVIEW", action: "Action Center", actionSub: "Priorities, approvals and exceptions",
+    actionEmpty: "No live actions yet", actionDesc: "Approvals, follow-ups, exceptions and important tasks will surface here automatically.",
+    exceptions: "Exceptions", exceptionSub: "Problems detected across operations", exceptionEmpty: "No exceptions available",
+    exceptionDesc: "Attendance gaps, fee risks, timetable conflicts and data issues will appear here.",
+    schedule: "Today's Schedule", scheduleSub: "Current academic activity", scheduleEmpty: "Timetable data not connected",
+    scheduleDesc: "Current period, classes, substitutions and timetable changes will appear here.",
+    automation: "Automation", automationSub: "School workflows", automationTitle: "Automation Engine ready",
+    automationDesc: "WHEN → CONDITION → ACTION workflows will run from this control center.",
+    upcoming: "Upcoming", upcomingSub: "Next important events", upcomingEmpty: "No upcoming events yet",
+    quality: "Data Quality", qualitySub: "School data health", qualityTitle: "Ready for live checks",
+    qualityDesc: "Missing, duplicate and inconsistent records will be surfaced here.",
+    workload: "Workload", workloadSub: "Staff workload intelligence", workloadTitle: "Optimizer ready",
+    workloadDesc: "Staff load, pressure, balancing and substitute requirements will be calculated here.",
+    saved: "Human Work Saved", savedSub: "Time saved through EduSphere", savedTitle: "Measurement starts with automation",
+    savedDesc: "Actual administrative time saved will be calculated from completed workflows.",
+    quick: "Quick Actions", quickSub: "Jump into important work", school: "School Profile", schoolDesc: "Manage identity and settings",
+    sessions: "Academic Sessions", sessionsDesc: "Manage current and future sessions", assistant: "Smart Assistant",
+    assistantDesc: "Ask EduSphere to find, explain or act", command: "Command Search", commandDesc: "Jump directly to work",
+    health: "System Health", healthy: "Healthy", auth: "Authentication", api: "Application API", db: "Database", connected: "Connected",
+    ready: "READY", open: "Open", noResults: "No matching command", noResultsDesc: "Try student, fees, attendance, reports or school profile.",
+    preview: "Preview visualization — live data will replace this baseline when modules connect.",
+    trend: "Operational Trend", trendSub: "Illustrative chart structure", activity: "Operational Activity", activitySub: "Live module activity",
+    risk: "Risk Mix", riskSub: "Exception categories", strong: "System foundation is healthy",
+  },
+  HI: {
+    command: "कमांड सर्च", search: "विद्यार्थी, फीस, उपस्थिति, रिपोर्ट खोजें या कमांड लिखें...", live: "लाइव", today: "आज",
+    schoolOS: "एडुस्फीयर स्कूल ओएस", welcome: "शुभ संध्या", overview: "स्कूल के लोग, प्रक्रियाएँ, जोखिम और निर्णय — एक ही ऑपरेशनल कमांड सेंटर में।",
+    session: "शैक्षणिक सत्र", operations: "स्कूल संचालन", foundation: "फाउंडेशन सक्रिय", students: "विद्यार्थी", teachers: "शिक्षक",
+    attendance: "उपस्थिति", actions: "लंबित कार्य", awaiting: "लाइव वैल्यू के लिए मॉड्यूल कनेक्ट करें", pulse: "स्कूल पल्स", pulseSub: "लाइव ऑपरेशनल ओवरव्यू",
+    pulseText: "मॉड्यूल कनेक्ट होने पर उपस्थिति, फीस, टाइमटेबल, एडमिशन और स्टाफ संकेत एक साथ दिखाई देंगे।", pulsePreview: "विजुअल प्रीव्यू",
+    action: "एक्शन सेंटर", actionSub: "प्राथमिकताएँ, अप्रूवल और अपवाद", actionEmpty: "अभी कोई लाइव कार्य नहीं", actionDesc: "अप्रूवल, फॉलो-अप, अपवाद और महत्वपूर्ण कार्य यहाँ स्वतः आएँगे।",
+    exceptions: "अपवाद", exceptionSub: "संचालन में मिली समस्याएँ", exceptionEmpty: "अभी कोई अपवाद नहीं", exceptionDesc: "उपस्थिति, फीस, टाइमटेबल और डेटा समस्याएँ यहाँ दिखाई देंगी।",
+    schedule: "आज का शेड्यूल", scheduleSub: "आज की अकादमिक गतिविधि", scheduleEmpty: "टाइमटेबल डेटा कनेक्ट नहीं है", scheduleDesc: "वर्तमान पीरियड, कक्षाएँ, सब्स्टीट्यूशन और बदलाव यहाँ आएँगे।",
+    automation: "ऑटोमेशन", automationSub: "स्कूल वर्कफ़्लो", automationTitle: "ऑटोमेशन इंजन तैयार", automationDesc: "WHEN → CONDITION → ACTION वर्कफ़्लो यहाँ से चलेंगे।",
+    upcoming: "आगामी", upcomingSub: "अगली महत्वपूर्ण गतिविधियाँ", upcomingEmpty: "अभी कोई आगामी गतिविधि नहीं",
+    quality: "डेटा क्वालिटी", qualitySub: "स्कूल डेटा स्वास्थ्य", qualityTitle: "लाइव जाँच के लिए तैयार", qualityDesc: "गुम, डुप्लिकेट और असंगत रिकॉर्ड यहाँ पकड़े जाएँगे।",
+    workload: "वर्कलोड", workloadSub: "स्टाफ वर्कलोड इंटेलिजेंस", workloadTitle: "ऑप्टिमाइज़र तैयार", workloadDesc: "स्टाफ लोड, दबाव, बैलेंसिंग और सब्स्टीट्यूट आवश्यकता यहाँ निकलेगी।",
+    saved: "मानव कार्य समय बचत", savedSub: "EduSphere से बचाया गया समय", savedTitle: "ऑटोमेशन से माप शुरू होगा", savedDesc: "पूर्ण हुए वर्कफ़्लो से वास्तविक प्रशासनिक समय बचत निकाली जाएगी।",
+    quick: "क्विक एक्शन", quickSub: "महत्वपूर्ण काम पर जाएँ", school: "स्कूल प्रोफ़ाइल", schoolDesc: "पहचान और सेटिंग्स प्रबंधित करें",
+    sessions: "शैक्षणिक सत्र", sessionsDesc: "वर्तमान और भविष्य के सत्र प्रबंधित करें", assistant: "स्मार्ट असिस्टेंट", assistantDesc: "खोजें, समझें या काम करवाएँ",
+    command: "कमांड सर्च", commandDesc: "सीधे काम पर जाएँ", health: "सिस्टम स्वास्थ्य", healthy: "स्वस्थ", auth: "प्रमाणीकरण", api: "एप्लिकेशन API", db: "डेटाबेस", connected: "कनेक्टेड",
+    ready: "तैयार", open: "खोलें", noResults: "कोई मिलती कमांड नहीं", noResultsDesc: "विद्यार्थी, फीस, उपस्थिति, रिपोर्ट या स्कूल प्रोफ़ाइल आज़माएँ।",
+    preview: "विजुअल प्रीव्यू — मॉड्यूल कनेक्ट होने पर लाइव डेटा इस बेसलाइन को बदल देगा।", trend: "ऑपरेशनल ट्रेंड", trendSub: "चार्ट संरचना",
+    activity: "ऑपरेशनल एक्टिविटी", activitySub: "लाइव मॉड्यूल गतिविधि", risk: "रिस्क मिक्स", riskSub: "अपवाद श्रेणियाँ", strong: "सिस्टम फाउंडेशन स्वस्थ है",
+  },
+};
+
+function Icon({ name, size = 20 }) {
+  const p = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true };
+  const icons = {
+    search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></>, users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8" /></>, teacher: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M7 8h5M7 12h10M7 16h6" /><circle cx="18" cy="8" r="1" /></>, check: <><circle cx="12" cy="12" r="9" /><path d="m8 12 2.5 2.5L16 9" /></>, alert: <><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z" /><path d="M12 8v4M12 16h.01" /></>, pulse: <path d="M3 12h4l2-7 4 14 2-7h6" />, calendar: <><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4M3 10h18" /></>, spark: <path d="M12 3 14 9l6 2-6 2-2 6-2-6-6-2 6-2 2-6Z" />, database: <><ellipse cx="12" cy="5" rx="8" ry="3" /><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7" /></>, arrow: <><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></>, school: <><path d="m3 10 9-6 9 6" /><path d="M5 10v9h14v-9M9 19v-5h6v5M3 21h18" /></>, clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>, shield: <><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z" /><path d="m8.5 12 2.2 2.2L16 9" /></>, chart: <><path d="M4 19V5M4 19h16" /><path d="m7 15 3-4 3 2 5-7" /></>, bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></>, filter: <><path d="M4 5h16M7 12h10M10 19h4" /></>, brain: <><path d="M9 4a3 3 0 0 0-3 3v1a3 3 0 0 0-2 3 3 3 0 0 0 2 3v1a3 3 0 0 0 3 3h1V4H9ZM15 4a3 3 0 0 1 3 3v1a3 3 0 0 1 2 3 3 3 0 0 1-2 3v1a3 3 0 0 1-3 3h-1V4h1Z" /><path d="M6 11h4M14 11h4M9 16h2M13 16h2" /></>, trend: <><path d="M4 17 10 11l4 4 6-8" /><path d="M16 7h4v4" /></>, dot: <circle cx="12" cy="12" r="2" />,
+  };
+  return <svg {...p}>{icons[name]}</svg>;
+}
+
+function Heading({ icon, title, subtitle, badge }) {
+  return <div className="dash-heading"><div className="dash-heading-left"><span className="dash-icon"><Icon name={icon} size={20} /></span><div><h2>{title}</h2><p>{subtitle}</p></div></div>{badge && <span className="dash-badge"><i />{badge}</span>}</div>;
+}
+
+function Stat({ icon, label, value, note, tone }) {
+  return <article className={`dash-stat tone-${tone}`}><div className="dash-stat-icon"><Icon name={icon} size={22} /></div><div className="dash-stat-copy"><span>{label}</span><strong>{value}</strong><small>{note}</small></div><div className="dash-stat-orb" /></article>;
+}
+
+function Empty({ icon, title, text }) {
+  return <div className="dash-empty"><span><Icon name={icon} size={22} /></span><div><strong>{title}</strong><p>{text}</p></div></div>;
+}
+
+function LineChart() {
+  const points = [86, 72, 77, 52, 60, 45, 51, 34, 43, 27, 35, 20];
+  const coords = points.map((y, i) => `${i * 9.09},${y}`).join(" ");
+  return <svg className="line-chart" viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Operational trend preview"><defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopOpacity=".24" /><stop offset="1" stopOpacity="0" /></linearGradient></defs><path d={`M0,100 L0,${points[0]} L${coords.replace(/ /g, " L")} L100,100 Z`} fill="url(#area)" /><polyline points={coords} fill="none" stroke="currentColor" strokeWidth="2.5" vectorEffect="non-scaling-stroke" /></svg>;
+}
+
+function Bars() {
+  const values = [36, 55, 44, 70, 62, 82, 58, 76, 68, 88, 72, 91];
+  return <div className="bar-chart">{values.map((v, i) => <div className="bar-wrap" key={i}><span style={{ height: `${v}%` }} /></div>)}</div>;
+}
+
+function Donut() {
+  return <div className="donut-wrap"><div className="donut"><div><strong>—</strong><span>LIVE</span></div></div><div className="donut-legend"><span><i className="legend-blue" />Attendance</span><span><i className="legend-purple" />Fees</span><span><i className="legend-amber" />Timetable</span></div></div>;
+}
+
+export default function Dashboard() {
+  const { user } = useAuth();
+  const [language, setLanguage] = useState(() => localStorage.getItem("edusphere_language") || "EN");
+  const [currentTime, setCurrentTime] = useState(() => new Date());
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    const onLanguage = (event) => setLanguage(event.detail === "HI" ? "HI" : "EN");
+    window.addEventListener("edusphere-language-change", onLanguage);
+    return () => { clearInterval(timer); window.removeEventListener("edusphere-language-change", onLanguage); };
+  }, []);
+
+  const t = TEXT[language];
+  const firstName = user?.full_name?.trim()?.split(" ")[0] || "Admin";
+  const timeText = useMemo(() => currentTime.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }), [currentTime]);
+  const dateText = useMemo(() => currentTime.toLocaleDateString(language === "HI" ? "hi-IN" : "en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" }), [currentTime, language]);
+  const normalizedQuery = query.trim().toLowerCase();
+  const commandItems = [
+    { name: t.school, desc: t.schoolDesc, path: "/school-profile", icon: "school", keywords: "school profile" },
+    { name: t.sessions, desc: t.sessionsDesc, path: "/school-profile", icon: "calendar", keywords: "academic session sessions" },
+    { name: t.assistant, desc: t.assistantDesc, path: "#", icon: "brain", keywords: "assistant smart" },
+  ];
+  const filtered = normalizedQuery ? commandItems.filter((x) => `${x.name} ${x.desc} ${x.keywords}`.toLowerCase().includes(normalizedQuery)) : commandItems;
+
+  return <AppShell>
+    <div className="dash-page">
+      <section className="dash-commandbar">
+        <div className="dash-command-icon"><Icon name="search" size={22} /></div>
+        <div className="dash-command-copy"><span>{t.command}</span><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t.search} aria-label={t.search} /></div>
+        <div className="dash-command-hint"><span>⌘</span><span>K</span></div>
+      </section>
+
+      {query && <section className="dash-command-results">{filtered.length ? filtered.map((item) => item.path === "#" ? <button type="button" key={item.name} className="dash-result"><span><Icon name={item.icon} size={19} /></span><div><strong>{item.name}</strong><small>{item.desc}</small></div><Icon name="arrow" size={17} /></button> : <Link key={item.name} to={item.path} className="dash-result"><span><Icon name={item.icon} size={19} /></span><div><strong>{item.name}</strong><small>{item.desc}</small></div><Icon name="arrow" size={17} /></Link>) : <div className="dash-no-results"><strong>{t.noResults}</strong><span>{t.noResultsDesc}</span></div>}</section>}
+
+      <section className="dash-hero">
+        <div className="hero-grid-lines" /><div className="hero-glow hero-glow-a" /><div className="hero-glow hero-glow-b" />
+        <div className="hero-content"><span className="hero-kicker"><i />{t.schoolOS}<b>{t.live}</b></span><h1>{t.welcome}, <em>{firstName}</em></h1><p>{t.overview}</p><div className="hero-meta"><span><Icon name="calendar" size={15} />{t.session}<b>2026–27</b></span><span><i />{t.operations}</span><span><i />{t.foundation}</span></div></div>
+        <div className="hero-clock"><div className="hero-clock-ring"><span>{t.today}</span><strong>{timeText}</strong><small>{dateText}</small></div></div>
+      </section>
+
+      <section className="dash-stats">
+        <Stat icon="users" label={t.students} value="—" note={t.awaiting} tone="blue" />
+        <Stat icon="teacher" label={t.teachers} value="—" note={t.awaiting} tone="purple" />
+        <Stat icon="check" label={t.attendance} value="—" note={t.awaiting} tone="green" />
+        <Stat icon="alert" label={t.actions} value="—" note={t.awaiting} tone="amber" />
+      </section>
+
+      <section className="dash-grid-two">
+        <article className="dash-panel dash-pulse"><Heading icon="pulse" title={t.pulse} subtitle={t.pulseSub} badge={t.live} /><div className="pulse-main"><div className="pulse-summary"><span>{t.operations}</span><strong>—</strong><p>{t.pulseText}</p><small>{t.pulsePreview}</small></div><div className="pulse-chart"><div className="chart-labels"><span>HIGH</span><span>LOW</span></div><LineChart /><div className="chart-x"><span>START</span><span>NOW</span></div></div></div></article>
+        <article className="dash-panel"><Heading icon="bell" title={t.action} subtitle={t.actionSub} /><Empty icon="check" title={t.actionEmpty} text={t.actionDesc} /></article>
+      </section>
+
+      <section className="dash-grid-three">
+        <article className="dash-panel"><Heading icon="alert" title={t.exceptions} subtitle={t.exceptionSub} /><Empty icon="shield" title={t.exceptionEmpty} text={t.exceptionDesc} /></article>
+        <article className="dash-panel"><Heading icon="calendar" title={t.schedule} subtitle={t.scheduleSub} /><Empty icon="clock" title={t.scheduleEmpty} text={t.scheduleDesc} /></article>
+        <article className="dash-panel"><Heading icon="spark" title={t.automation} subtitle={t.automationSub} badge={t.ready} /><div className="automation-card"><div className="automation-flow"><span>WHEN</span><b>→</b><span>CONDITION</span><b>→</b><span>ACTION</span></div><strong>{t.automationTitle}</strong><p>{t.automationDesc}</p><div className="automation-track"><i /><i /><i /></div></div></article>
+      </section>
+
+      <section className="dash-intelligence-grid">
+        <article className="dash-panel intelligence-large"><Heading icon="chart" title={t.trend} subtitle={t.trendSub} /><div className="large-chart"><div className="chart-y"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div><div className="chart-field"><div className="grid-lines" /><LineChart /><div className="chart-x"><span>W1</span><span>W2</span><span>W3</span><span>W4</span><span>NOW</span></div></div></div><p className="chart-note">{t.preview}</p></article>
+        <article className="dash-panel"><Heading icon="pulse" title={t.activity} subtitle={t.activitySub} badge={t.live} /><Bars /><div className="activity-foot"><span><i />Module signals</span><strong>—</strong></div></article>
+        <article className="dash-panel"><Heading icon="alert" title={t.risk} subtitle={t.riskSub} /><Donut /><p className="chart-note">{t.preview}</p></article>
+      </section>
+
+      <section className="dash-grid-three">
+        <article className="dash-panel"><Heading icon="calendar" title={t.upcoming} subtitle={t.upcomingSub} /><Empty icon="calendar" title={t.upcomingEmpty} text="Events, exams, fee dates, meetings and approvals will appear here." /></article>
+        <article className="dash-panel"><Heading icon="database" title={t.quality} subtitle={t.qualitySub} badge={t.ready} /><div className="readiness"><span className="readiness-score">—</span><div><strong>{t.qualityTitle}</strong><p>{t.qualityDesc}</p></div></div></article>
+        <article className="dash-panel"><Heading icon="trend" title={t.workload} subtitle={t.workloadSub} badge={t.ready} /><div className="readiness"><span className="readiness-score">—</span><div><strong>{t.workloadTitle}</strong><p>{t.workloadDesc}</p></div></div></article>
+      </section>
+
+      <section className="dash-saved"><div className="saved-visual"><Icon name="clock" size={24} /><span>TIME</span></div><div><span>{t.saved}</span><strong>—</strong><small>{t.savedTitle} · {t.savedDesc}</small></div><div className="saved-chip"><i />{t.live}</div></section>
+
+      <section className="dash-panel dash-quick"><Heading icon="spark" title={t.quick} subtitle={t.quickSub} /><div className="quick-grid"><Link to="/school-profile" className="quick-item"><span><Icon name="school" size={22} /></span><div><strong>{t.school}</strong><small>{t.schoolDesc}</small></div><Icon name="arrow" size={17} /></Link><Link to="/school-profile" className="quick-item"><span><Icon name="calendar" size={22} /></span><div><strong>{t.sessions}</strong><small>{t.sessionsDesc}</small></div><Icon name="arrow" size={17} /></Link><button type="button" className="quick-item"><span><Icon name="brain" size={22} /></span><div><strong>{t.assistant}</strong><small>{t.assistantDesc}</small></div><Icon name="arrow" size={17} /></button><button type="button" className="quick-item" onClick={() => document.querySelector(".dash-commandbar input")?.focus()}><span><Icon name="search" size={22} /></span><div><strong>{t.command}</strong><small>{t.commandDesc}</small></div><Icon name="arrow" size={17} /></button></div></section>
+
+      <section className="dash-panel dash-health"><Heading icon="database" title={t.health} subtitle={t.healthy} badge={t.healthy} /><div className="health-grid"><div><span><Icon name="users" size={18} /></span><div><strong>{t.auth}</strong><small>{t.connected}</small></div><i /></div><div><span><Icon name="pulse" size={18} /></span><div><strong>{t.api}</strong><small>{t.connected}</small></div><i /></div><div><span><Icon name="database" size={18} /></span><div><strong>{t.db}</strong><small>{t.connected}</small></div><i /></div></div><div className="health-message"><span><Icon name="shield" size={17} /></span><strong>{t.strong}</strong><small>Core foundation services are available.</small></div></section>
+    </div>
+  </AppShell>;
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\pages\Login.jsx =====
+import { useState } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+
+import { useAuth } from "../auth/AuthContext";
+
+export default function Login() {
+  const { login, isAuthenticated } = useAuth();
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    setError("");
+    setSubmitting(true);
+
+    try {
+      await login(email.trim(), password);
+
+      const destination =
+        location.state?.from?.pathname || "/dashboard";
+
+      navigate(destination, { replace: true });
+    } catch (err) {
+      const message =
+        err.response?.data?.error?.message ||
+        "Unable to sign in. Please check your email and password.";
+
+      setError(message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <main className="auth-page">
+      <section className="login-card">
+        <div className="brand">
+          <div className="brand-mark">E</div>
+
+          <div>
+            <h1>EduSphere</h1>
+            <p>School Operating System</p>
+          </div>
+        </div>
+
+        <div className="login-heading">
+          <h2>Welcome back</h2>
+          <p>Sign in to continue to EduSphere.</p>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="email">Email</label>
+
+          <input
+            id="email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="Enter your email"
+            required
+          />
+
+          <label htmlFor="password">Password</label>
+
+          <div className="password-field">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              value={password}
+              onChange={(event) =>
+                setPassword(event.target.value)
+              }
+              placeholder="Enter your password"
+              required
+            />
+
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() =>
+                setShowPassword((current) => !current)
+              }
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+
+          {error && (
+            <div className="form-error" role="alert">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="login-button"
+            disabled={submitting}
+          >
+            {submitting ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+      </section>
+    </main>
+  );
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\pages\SchoolProfile.jsx =====
+import { useEffect, useMemo, useState } from "react";
+import {
+  createAcademicSession,
+  getAcademicSessions,
+  getSchools,
+  setCurrentAcademicSession,
+  updateAcademicSession,
+  updateAcademicSessionStatus,
+  updateSchool,
+  updateSchoolStatus,
+} from "../api/school";
+
+const TEXT = {
+  en: {
+    title: "School Profile",
+    subtitle: "Manage school information and academic sessions.",
+    schoolInfo: "School Information",
+    academicSessions: "Academic Sessions",
+    edit: "Edit",
+    save: "Save Changes",
+    cancel: "Cancel",
+    refresh: "Refresh",
+    active: "Active",
+    inactive: "Inactive",
+    schoolName: "School Name",
+    code: "School Code",
+    email: "Email",
+    phone: "Phone",
+    address: "Address",
+    city: "City",
+    state: "State",
+    country: "Country",
+    postalCode: "Postal Code",
+    website: "Website",
+    affiliation: "Affiliation",
+    principal: "Principal",
+    logoUrl: "Logo URL",
+    current: "Current",
+    setCurrent: "Set Current",
+    addSession: "Add Session",
+    editSession: "Edit Session",
+    sessionName: "Session Name",
+    startDate: "Start Date",
+    endDate: "End Date",
+    status: "Status",
+    actions: "Actions",
+    create: "Create",
+    noSessions: "No academic sessions found.",
+    loading: "Loading...",
+    error: "Something went wrong.",
+    saved: "Changes saved successfully.",
+    sessionCreated: "Academic session created successfully.",
+    sessionUpdated: "Academic session updated successfully.",
+    currentUpdated: "Current academic session updated.",
+    statusUpdated: "Status updated.",
+  },
+  hi: {
+    title: "स्कूल प्रोफ़ाइल",
+    subtitle: "स्कूल की जानकारी और शैक्षणिक सत्र प्रबंधित करें।",
+    schoolInfo: "स्कूल की जानकारी",
+    academicSessions: "शैक्षणिक सत्र",
+    edit: "संपादित करें",
+    save: "परिवर्तन सहेजें",
+    cancel: "रद्द करें",
+    refresh: "रिफ्रेश",
+    active: "सक्रिय",
+    inactive: "निष्क्रिय",
+    schoolName: "स्कूल का नाम",
+    code: "स्कूल कोड",
+    email: "ईमेल",
+    phone: "फोन",
+    address: "पता",
+    city: "शहर",
+    state: "राज्य",
+    country: "देश",
+    postalCode: "पिन कोड",
+    website: "वेबसाइट",
+    affiliation: "मान्यता",
+    principal: "प्रधानाचार्य",
+    logoUrl: "लोगो URL",
+    current: "वर्तमान",
+    setCurrent: "वर्तमान करें",
+    addSession: "सत्र जोड़ें",
+    editSession: "सत्र संपादित करें",
+    sessionName: "सत्र का नाम",
+    startDate: "आरंभ तिथि",
+    endDate: "समाप्ति तिथि",
+    status: "स्थिति",
+    actions: "कार्य",
+    create: "बनाएँ",
+    noSessions: "कोई शैक्षणिक सत्र नहीं मिला।",
+    loading: "लोड हो रहा है...",
+    error: "कुछ गलत हो गया।",
+    saved: "परिवर्तन सफलतापूर्वक सहेजे गए।",
+    sessionCreated: "शैक्षणिक सत्र सफलतापूर्वक बनाया गया।",
+    sessionUpdated: "शैक्षणिक सत्र सफलतापूर्वक अपडेट किया गया।",
+    currentUpdated: "वर्तमान शैक्षणिक सत्र अपडेट किया गया।",
+    statusUpdated: "स्थिति अपडेट की गई।",
+  },
+};
+
+const emptySession = {
+  name: "",
+  start_date: "",
+  end_date: "",
+};
+
+function unwrap(response) {
+  return response?.data ?? response;
+}
+
+export default function SchoolProfile({ language = "en" }) {
+  const t = TEXT[language] || TEXT.en;
+
+  const [school, setSchool] = useState(null);
+  const [form, setForm] = useState({});
+  const [sessions, setSessions] = useState([]);
+  const [editing, setEditing] = useState(false);
+  const [sessionModal, setSessionModal] = useState(null);
+  const [sessionForm, setSessionForm] = useState(emptySession);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+
+  const currentSession = useMemo(
+    () => sessions.find((item) => item.is_current),
+    [sessions],
+  );
+
+  async function loadData() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const schoolsResponse = await getSchools({
+        page: 1,
+        page_size: 1,
+        is_active: true,
+      });
+
+      const schools = unwrap(schoolsResponse);
+      const firstSchool = Array.isArray(schools) ? schools[0] : null;
+
+      if (!firstSchool) {
+        setSchool(null);
+        setSessions([]);
+        return;
+      }
+
+      setSchool(firstSchool);
+      setForm(firstSchool);
+
+      const sessionsResponse = await getAcademicSessions(firstSchool.id, {
+        page: 1,
+        page_size: 100,
+      });
+
+      const sessionData = unwrap(sessionsResponse);
+      setSessions(Array.isArray(sessionData) ? sessionData : []);
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.message ||
+          t.error,
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  function updateField(field, value) {
+    setForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
+  async function saveSchool() {
+    if (!school) return;
+
+    setSaving(true);
+    setError("");
+    setMessage("");
+
+    try {
+      const payload = {
+        name: form.name,
+        email: form.email || null,
+        phone: form.phone || null,
+        address: form.address || null,
+        city: form.city || null,
+        state: form.state || null,
+        country: form.country || "India",
+        postal_code: form.postal_code || null,
+        website: form.website || null,
+        affiliation: form.affiliation || null,
+        principal_name: form.principal_name || null,
+        logo_url: form.logo_url || null,
+      };
+
+      const response = await updateSchool(school.id, payload);
+      const updated = unwrap(response);
+
+      setSchool(updated);
+      setForm(updated);
+      setEditing(false);
+      setMessage(t.saved);
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.message ||
+          t.error,
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function toggleSchoolStatus() {
+    if (!school) return;
+
+    try {
+      const response = await updateSchoolStatus(
+        school.id,
+        !school.is_active,
+      );
+      const updated = unwrap(response);
+
+      setSchool(updated);
+      setForm(updated);
+      setMessage(t.statusUpdated);
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.message ||
+          t.error,
+      );
+    }
+  }
+
+  function openCreateSession() {
+    setSessionForm(emptySession);
+    setSessionModal({ mode: "create" });
+  }
+
+  function openEditSession(session) {
+    setSessionForm({
+      name: session.name,
+      start_date: session.start_date,
+      end_date: session.end_date,
+    });
+    setSessionModal({
+      mode: "edit",
+      id: session.id,
+    });
+  }
+
+  async function saveSession() {
+    if (!school) return;
+
+    setSaving(true);
+    setError("");
+    setMessage("");
+
+    try {
+      if (sessionModal.mode === "create") {
+        await createAcademicSession(school.id, {
+          school_id: school.id,
+          ...sessionForm,
+        });
+
+        setMessage(t.sessionCreated);
+      } else {
+        await updateAcademicSession(sessionModal.id, sessionForm);
+        setMessage(t.sessionUpdated);
+      }
+
+      setSessionModal(null);
+
+      const response = await getAcademicSessions(school.id, {
+        page: 1,
+        page_size: 100,
+      });
+
+      const data = unwrap(response);
+      setSessions(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.message ||
+          t.error,
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function makeCurrent(sessionId) {
+    try {
+      await setCurrentAcademicSession(sessionId);
+
+      const response = await getAcademicSessions(school.id, {
+        page: 1,
+        page_size: 100,
+      });
+
+      const data = unwrap(response);
+      setSessions(Array.isArray(data) ? data : []);
+      setMessage(t.currentUpdated);
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.message ||
+          t.error,
+      );
+    }
+  }
+
+  async function toggleSessionStatus(session) {
+    try {
+      await updateAcademicSessionStatus(
+        session.id,
+        !session.is_active,
+      );
+
+      const response = await getAcademicSessions(school.id, {
+        page: 1,
+        page_size: 100,
+      });
+
+      const data = unwrap(response);
+      setSessions(Array.isArray(data) ? data : []);
+      setMessage(t.statusUpdated);
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.message ||
+          t.error,
+      );
+    }
+  }
+
+  if (loading) {
+    return <div className="page-loading">{t.loading}</div>;
+  }
+
+  if (!school) {
+    return (
+      <div className="page-container">
+        <div className="page-header">
+          <div>
+            <h1>{t.title}</h1>
+            <p>{t.subtitle}</p>
+          </div>
+          <button onClick={loadData}>{t.refresh}</button>
+        </div>
+
+        <div className="empty-state">
+          {t.error}: No school profile found.
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-container">
+      <div className="page-header">
+        <div>
+          <h1>{t.title}</h1>
+          <p>{t.subtitle}</p>
+        </div>
+
+        <div className="page-actions">
+          <button
+            className="secondary-button"
+            onClick={loadData}
+          >
+            {t.refresh}
+          </button>
+
+          {!editing && (
+            <button
+              className="primary-button"
+              onClick={() => setEditing(true)}
+            >
+              {t.edit}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {error && <div className="alert error-alert">{error}</div>}
+      {message && <div className="alert success-alert">{message}</div>}
+
+      <section className="content-card">
+        <div className="card-header">
+          <div>
+            <h2>{t.schoolInfo}</h2>
+            <span className={school.is_active ? "status active" : "status inactive"}>
+              {school.is_active ? t.active : t.inactive}
+            </span>
+          </div>
+
+          <button
+            className="secondary-button"
+            onClick={toggleSchoolStatus}
+          >
+            {school.is_active ? t.inactive : t.active}
+          </button>
+        </div>
+
+        <div className="school-profile-grid">
+          <div className="logo-panel">
+            {form.logo_url ? (
+              <img
+                src={form.logo_url}
+                alt={form.name || "School"}
+                className="school-logo"
+              />
+            ) : (
+              <div className="logo-placeholder">
+                {form.name?.charAt(0)?.toUpperCase() || "S"}
+              </div>
+            )}
+          </div>
+
+          <div className="form-grid">
+            <Field
+              label={t.schoolName}
+              value={form.name}
+              disabled={!editing}
+              onChange={(value) => updateField("name", value)}
+            />
+
+            <Field
+              label={t.code}
+              value={form.code}
+              disabled
+              onChange={() => {}}
+            />
+
+            <Field
+              label={t.email}
+              value={form.email}
+              disabled={!editing}
+              onChange={(value) => updateField("email", value)}
+              type="email"
+            />
+
+            <Field
+              label={t.phone}
+              value={form.phone}
+              disabled={!editing}
+              onChange={(value) => updateField("phone", value)}
+            />
+
+            <Field
+              label={t.city}
+              value={form.city}
+              disabled={!editing}
+              onChange={(value) => updateField("city", value)}
+            />
+
+            <Field
+              label={t.state}
+              value={form.state}
+              disabled={!editing}
+              onChange={(value) => updateField("state", value)}
+            />
+
+            <Field
+              label={t.country}
+              value={form.country}
+              disabled={!editing}
+              onChange={(value) => updateField("country", value)}
+            />
+
+            <Field
+              label={t.postalCode}
+              value={form.postal_code}
+              disabled={!editing}
+              onChange={(value) => updateField("postal_code", value)}
+            />
+
+            <Field
+              label={t.website}
+              value={form.website}
+              disabled={!editing}
+              onChange={(value) => updateField("website", value)}
+            />
+
+            <Field
+              label={t.affiliation}
+              value={form.affiliation}
+              disabled={!editing}
+              onChange={(value) => updateField("affiliation", value)}
+            />
+
+            <Field
+              label={t.principal}
+              value={form.principal_name}
+              disabled={!editing}
+              onChange={(value) => updateField("principal_name", value)}
+            />
+
+            <Field
+              label={t.logoUrl}
+              value={form.logo_url}
+              disabled={!editing}
+              onChange={(value) => updateField("logo_url", value)}
+            />
+
+            <div className="field full-width">
+              <label>{t.address}</label>
+              <textarea
+                value={form.address || ""}
+                disabled={!editing}
+                onChange={(event) =>
+                  updateField("address", event.target.value)
+                }
+                rows={3}
+              />
+            </div>
+          </div>
+        </div>
+
+        {editing && (
+          <div className="form-actions">
+            <button
+              className="secondary-button"
+              onClick={() => {
+                setForm(school);
+                setEditing(false);
+              }}
+            >
+              {t.cancel}
+            </button>
+
+            <button
+              className="primary-button"
+              disabled={saving}
+              onClick={saveSchool}
+            >
+              {saving ? t.loading : t.save}
+            </button>
+          </div>
+        )}
+      </section>
+
+      <section className="content-card">
+        <div className="card-header">
+          <div>
+            <h2>{t.academicSessions}</h2>
+
+            {currentSession && (
+              <p className="current-session">
+                {t.current}: <strong>{currentSession.name}</strong>
+              </p>
+            )}
+          </div>
+
+          <button
+            className="primary-button"
+            onClick={openCreateSession}
+          >
+            + {t.addSession}
+          </button>
+        </div>
+
+        {sessions.length === 0 ? (
+          <div className="empty-state">{t.noSessions}</div>
+        ) : (
+          <div className="session-list">
+            {sessions.map((session) => (
+              <div className="session-row" key={session.id}>
+                <div>
+                  <div className="session-title">
+                    {session.name}
+
+                    {session.is_current && (
+                      <span className="current-badge">
+                        {t.current}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="session-dates">
+                    {session.start_date} → {session.end_date}
+                  </div>
+                </div>
+
+                <div className="session-actions">
+                  <span
+                    className={
+                      session.is_active
+                        ? "status active"
+                        : "status inactive"
+                    }
+                  >
+                    {session.is_active ? t.active : t.inactive}
+                  </span>
+
+                  <button
+                    className="secondary-button"
+                    onClick={() => openEditSession(session)}
+                  >
+                    {t.edit}
+                  </button>
+
+                  {!session.is_current && session.is_active && (
+                    <button
+                      className="primary-button"
+                      onClick={() => makeCurrent(session.id)}
+                    >
+                      {t.setCurrent}
+                    </button>
+                  )}
+
+                  {!session.is_current && (
+                    <button
+                      className="secondary-button"
+                      onClick={() => toggleSessionStatus(session)}
+                    >
+                      {session.is_active ? t.inactive : t.active}
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {sessionModal && (
+        <div className="modal-backdrop">
+          <div className="modal-card">
+            <div className="card-header">
+              <h2>
+                {sessionModal.mode === "create"
+                  ? t.addSession
+                  : t.editSession}
+              </h2>
+
+              <button
+                className="icon-button"
+                onClick={() => setSessionModal(null)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="form-grid">
+              <Field
+                label={t.sessionName}
+                value={sessionForm.name}
+                onChange={(value) =>
+                  setSessionForm((current) => ({
+                    ...current,
+                    name: value,
+                  }))
+                }
+              />
+
+              <Field
+                label={t.startDate}
+                type="date"
+                value={sessionForm.start_date}
+                onChange={(value) =>
+                  setSessionForm((current) => ({
+                    ...current,
+                    start_date: value,
+                  }))
+                }
+              />
+
+              <Field
+                label={t.endDate}
+                type="date"
+                value={sessionForm.end_date}
+                onChange={(value) =>
+                  setSessionForm((current) => ({
+                    ...current,
+                    end_date: value,
+                  }))
+                }
+              />
+            </div>
+
+            <div className="form-actions">
+              <button
+                className="secondary-button"
+                onClick={() => setSessionModal(null)}
+              >
+                {t.cancel}
+              </button>
+
+              <button
+                className="primary-button"
+                disabled={saving}
+                onClick={saveSession}
+              >
+                {saving
+                  ? t.loading
+                  : sessionModal.mode === "create"
+                    ? t.create
+                    : t.save}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  disabled = false,
+  type = "text",
+}) {
+  return (
+    <div className="field">
+      <label>{label}</label>
+
+      <input
+        type={type}
+        value={value || ""}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </div>
+  );
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\pages\UserManagement.jsx =====
+import "../users.css";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  createUser,
+  deleteUser,
+  getUser,
+  getUserRoles,
+  getUsers,
+  resetUserPassword,
+  updateUser,
+  updateUserStatus,
+} from "../api/users";
+
+const TEXT = {
+  EN: {
+    title: "User & Identity",
+    subtitle:
+      "Manage EduSphere accounts, access status and identity records.",
+    users: "Users",
+    search: "Search users",
+    all: "All",
+    active: "Active",
+    inactive: "Inactive",
+    refresh: "Refresh",
+    add: "Create User",
+    name: "Full name",
+    email: "Email",
+    password: "Password",
+    role: "Role",
+    selectRole: "Select role",
+    noRoles: "No active roles available.",
+    status: "Status",
+    roles: "Roles",
+    actions: "Actions",
+    edit: "Edit",
+    activate: "Activate",
+    deactivate: "Deactivate",
+    reset: "Reset Password",
+    delete: "Delete",
+    save: "Save User",
+    cancel: "Cancel",
+    createHeading: "Create user",
+    editHeading: "Edit user",
+    resetHeading: "Reset password",
+    noUsers: "No users found.",
+    loading: "Loading users…",
+    loadingRoles: "Loading roles…",
+    saving: "Saving…",
+    deleting: "Deleting…",
+    confirmDelete:
+      "Delete this user? This action cannot be undone.",
+    confirmStatus: "Change this user's active status?",
+    passwordHint: "Minimum 8 characters.",
+    created: "User created successfully.",
+    updated: "User updated successfully.",
+    statusChanged: "User status updated.",
+    passwordChanged: "Password reset successfully.",
+    deleted: "User deleted successfully.",
+    error: "Something went wrong. Please try again.",
+    close: "Close",
+    details: "User details",
+    id: "User ID",
+    createdAt: "Created",
+    updatedAt: "Updated",
+    records: "records",
+    identity: "IDENTITY / RBAC",
+  },
+
+  HI: {
+    title: "यूज़र और पहचान",
+    subtitle:
+      "EduSphere खातों, एक्सेस स्थिति और पहचान रिकॉर्ड प्रबंधित करें।",
+    users: "यूज़र",
+    search: "यूज़र खोजें",
+    all: "सभी",
+    active: "सक्रिय",
+    inactive: "निष्क्रिय",
+    refresh: "रिफ्रेश",
+    add: "यूज़र बनाएँ",
+    name: "पूरा नाम",
+    email: "ईमेल",
+    password: "पासवर्ड",
+    role: "भूमिका",
+    selectRole: "भूमिका चुनें",
+    noRoles: "कोई सक्रिय भूमिका उपलब्ध नहीं है।",
+    status: "स्थिति",
+    roles: "भूमिकाएँ",
+    actions: "कार्रवाई",
+    edit: "संपादित करें",
+    activate: "सक्रिय करें",
+    deactivate: "निष्क्रिय करें",
+    reset: "पासवर्ड रीसेट",
+    delete: "डिलीट",
+    save: "यूज़र सेव करें",
+    cancel: "रद्द करें",
+    createHeading: "यूज़र बनाएँ",
+    editHeading: "यूज़र संपादित करें",
+    resetHeading: "पासवर्ड रीसेट",
+    noUsers: "कोई यूज़र नहीं मिला।",
+    loading: "यूज़र लोड हो रहे हैं…",
+    loadingRoles: "भूमिकाएँ लोड हो रही हैं…",
+    saving: "सेव हो रहा है…",
+    deleting: "डिलीट हो रहा है…",
+    confirmDelete:
+      "क्या इस यूज़र को डिलीट करना है? यह कार्रवाई वापस नहीं होगी।",
+    confirmStatus: "क्या यूज़र की सक्रिय स्थिति बदलनी है?",
+    passwordHint: "कम से कम 8 अक्षर।",
+    created: "यूज़र सफलतापूर्वक बनाया गया।",
+    updated: "यूज़र सफलतापूर्वक अपडेट हुआ।",
+    statusChanged: "यूज़र की स्थिति अपडेट हुई।",
+    passwordChanged: "पासवर्ड सफलतापूर्वक रीसेट हुआ।",
+    deleted: "यूज़र सफलतापूर्वक डिलीट हुआ।",
+    error: "कुछ गलत हुआ। कृपया फिर प्रयास करें।",
+    close: "बंद करें",
+    details: "यूज़र विवरण",
+    id: "यूज़र ID",
+    createdAt: "बनाया गया",
+    updatedAt: "अपडेट किया गया",
+    records: "रिकॉर्ड",
+    identity: "पहचान / RBAC",
+  },
+};
+
+function unwrap(value) {
+  return value?.data ?? value;
+}
+
+function getError(error, fallback) {
+  return (
+    error?.response?.data?.error?.message ||
+    error?.response?.data?.detail ||
+    fallback
+  );
+}
+
+function formatDate(value, language) {
+  if (!value) return "—";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "—";
+  }
+
+  return new Intl.DateTimeFormat(
+    language === "HI" ? "hi-IN" : "en-IN",
+    {
+      dateStyle: "medium",
+      timeStyle: "short",
+    },
+  ).format(date);
+}
+
+export default function UserManagement() {
+  const [language, setLanguage] = useState(
+    localStorage.getItem("edusphere_language") === "HI"
+      ? "HI"
+      : "EN",
+  );
+
+  const t = TEXT[language];
+
+  const [users, setUsers] = useState([]);
+  const [roles, setRoles] = useState([]);
+
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(20);
+
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+
+  const [loading, setLoading] = useState(true);
+  const [rolesLoading, setRolesLoading] = useState(false);
+  const [working, setWorking] = useState(false);
+
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+
+  const [selected, setSelected] = useState(null);
+  const [modal, setModal] = useState(null);
+
+  const [form, setForm] = useState({
+    full_name: "",
+    email: "",
+    password: "",
+    role_id: "",
+  });
+
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    const onLanguageChange = (event) => {
+      setLanguage(event.detail === "HI" ? "HI" : "EN");
+    };
+
+    window.addEventListener(
+      "edusphere-language-change",
+      onLanguageChange,
+    );
+
+    return () =>
+      window.removeEventListener(
+        "edusphere-language-change",
+        onLanguageChange,
+      );
+  }, []);
+
+  const loadRoles = useCallback(async () => {
+    setRolesLoading(true);
+
+    try {
+      const result = unwrap(await getUserRoles());
+
+      const rows = Array.isArray(result)
+        ? result
+        : result?.items ||
+          result?.results ||
+          [];
+
+      setRoles(
+        rows.filter(
+          (role) => role?.is_active !== false,
+        ),
+      );
+    } catch {
+      setRoles([]);
+    } finally {
+      setRolesLoading(false);
+    }
+  }, []);
+
+  const loadUsers = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = unwrap(
+        await getUsers({
+          page,
+          page_size: pageSize,
+          search: search.trim() || undefined,
+          status_filter:
+            statusFilter || undefined,
+        }),
+      );
+
+      const rows = Array.isArray(result)
+        ? result
+        : result?.items ||
+          result?.results ||
+          [];
+
+      setUsers(rows);
+    } catch (err) {
+      setError(getError(err, t.error));
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    page,
+    pageSize,
+    search,
+    statusFilter,
+    t.error,
+  ]);
+
+  useEffect(() => {
+    loadRoles();
+  }, [loadRoles]);
+
+  useEffect(() => {
+    const timer = setTimeout(
+      loadUsers,
+      250,
+    );
+
+    return () => clearTimeout(timer);
+  }, [loadUsers]);
+
+  const stats = useMemo(
+    () => ({
+      total: users.length,
+      active: users.filter(
+        (user) => user.is_active,
+      ).length,
+      inactive: users.filter(
+        (user) => !user.is_active,
+      ).length,
+    }),
+    [users],
+  );
+
+  function openCreate() {
+    setForm({
+      full_name: "",
+      email: "",
+      password: "",
+      role_id: "",
+    });
+
+    setSelected(null);
+    setModal("create");
+    setError("");
+    setNotice("");
+
+    loadRoles();
+  }
+
+  function openEdit(user) {
+    setForm({
+      full_name: user.full_name || "",
+      email: user.email || "",
+      password: "",
+      role_id: user.role_id || "",
+    });
+
+    setSelected(user);
+    setModal("edit");
+    setError("");
+    setNotice("");
+
+    loadRoles();
+  }
+
+  async function openDetails(user) {
+    setError("");
+    setNotice("");
+
+    try {
+      const result = unwrap(
+        await getUser(user.id),
+      );
+
+      setSelected(result);
+      setModal("details");
+    } catch (err) {
+      setError(getError(err, t.error));
+    }
+  }
+
+  async function handleSave(event) {
+    event.preventDefault();
+
+    setWorking(true);
+    setError("");
+    setNotice("");
+
+    try {
+      if (modal === "create") {
+        await createUser({
+          full_name: form.full_name.trim(),
+          email: form.email.trim(),
+          password: form.password,
+          role_id: Number(form.role_id),
+        });
+
+        setNotice(t.created);
+      } else {
+        await updateUser(selected.id, {
+          full_name: form.full_name.trim(),
+          email: form.email.trim(),
+          role_id: form.role_id
+            ? Number(form.role_id)
+            : undefined,
+        });
+
+        setNotice(t.updated);
+      }
+
+      setModal(null);
+      await loadUsers();
+    } catch (err) {
+      setError(getError(err, t.error));
+    } finally {
+      setWorking(false);
+    }
+  }
+
+  async function handleStatus(user) {
+    if (!window.confirm(t.confirmStatus)) {
+      return;
+    }
+
+    setWorking(true);
+    setError("");
+    setNotice("");
+
+    try {
+      await updateUserStatus(
+        user.id,
+        !user.is_active,
+      );
+
+      setNotice(t.statusChanged);
+
+      await loadUsers();
+    } catch (err) {
+      setError(getError(err, t.error));
+    } finally {
+      setWorking(false);
+    }
+  }
+
+  async function handleDelete(user) {
+    if (!window.confirm(t.confirmDelete)) {
+      return;
+    }
+
+    setWorking(true);
+    setError("");
+    setNotice("");
+
+    try {
+      await deleteUser(user.id);
+
+      setNotice(t.deleted);
+
+      if (selected?.id === user.id) {
+        setSelected(null);
+      }
+
+      await loadUsers();
+    } catch (err) {
+      setError(getError(err, t.error));
+    } finally {
+      setWorking(false);
+    }
+  }
+
+  async function handlePassword(event) {
+    event.preventDefault();
+
+    setWorking(true);
+    setError("");
+    setNotice("");
+
+    try {
+      await resetUserPassword(
+        selected.id,
+        password,
+      );
+
+      setPassword("");
+      setModal(null);
+      setNotice(t.passwordChanged);
+    } catch (err) {
+      setError(getError(err, t.error));
+    } finally {
+      setWorking(false);
+    }
+  }
+
+  return (
+    <section className="users-page">
+      <div className="page-header">
+        <div>
+          <div className="eyebrow">
+            {t.identity}
+          </div>
+
+          <h1>{t.title}</h1>
+
+          <p>{t.subtitle}</p>
+        </div>
+
+        <button
+          className="primary-button"
+          onClick={openCreate}
+          disabled={working}
+        >
+          + {t.add}
+        </button>
+      </div>
+
+      <div className="users-stat-grid">
+        <Stat
+          label={t.users}
+          value={stats.total}
+        />
+
+        <Stat
+          label={t.active}
+          value={stats.active}
+        />
+
+        <Stat
+          label={t.inactive}
+          value={stats.inactive}
+        />
+      </div>
+
+      <div className="users-toolbar">
+        <div className="users-search">
+          <span>⌕</span>
+
+          <input
+            value={search}
+            onChange={(event) => {
+              setPage(1);
+              setSearch(event.target.value);
+            }}
+            placeholder={t.search}
+          />
+        </div>
+
+        <div className="filter-group">
+          {[
+            ["", t.all],
+            ["active", t.active],
+            ["inactive", t.inactive],
+          ].map(([value, label]) => (
+            <button
+              key={value || "all"}
+              className={
+                statusFilter === value
+                  ? "filter-active"
+                  : ""
+              }
+              onClick={() => {
+                setPage(1);
+                setStatusFilter(value);
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <button
+          className="secondary-button"
+          onClick={loadUsers}
+          disabled={loading}
+        >
+          ↻ {t.refresh}
+        </button>
+      </div>
+
+      {(error || notice) && (
+        <div
+          className={
+            error
+              ? "users-alert error"
+              : "users-alert success"
+          }
+        >
+          {error || notice}
+        </div>
+      )}
+
+      <div className="users-card">
+        <div className="users-card-heading">
+          <div>
+            <h2>{t.users}</h2>
+
+            <span>
+              {users.length} {t.records}
+            </span>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="users-empty">
+            {t.loading}
+          </div>
+        ) : users.length === 0 ? (
+          <div className="users-empty">
+            {t.noUsers}
+          </div>
+        ) : (
+          <div className="users-table-wrap">
+            <table className="users-table">
+              <thead>
+                <tr>
+                  <th>{t.name}</th>
+                  <th>{t.email}</th>
+                  <th>{t.roles}</th>
+                  <th>{t.status}</th>
+                  <th>{t.actions}</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id}>
+                    <td>
+                      <button
+                        className="user-name-button"
+                        onClick={() =>
+                          openDetails(user)
+                        }
+                      >
+                        <span className="user-avatar">
+                          {(
+                            user.full_name || "?"
+                          )
+                            .charAt(0)
+                            .toUpperCase()}
+                        </span>
+
+                        <span>
+                          <strong>
+                            {user.full_name}
+                          </strong>
+
+                          <small>
+                            {t.id} #{user.id}
+                          </small>
+                        </span>
+                      </button>
+                    </td>
+
+                    <td>{user.email}</td>
+
+                    <td>
+                      <div className="role-list">
+                        {(user.roles || [])
+                          .length ? (
+                          user.roles.map(
+                            (role) => (
+                              <span
+                                className="role-chip"
+                                key={role}
+                              >
+                                {role}
+                              </span>
+                            ),
+                          )
+                        ) : (
+                          "—"
+                        )}
+                      </div>
+                    </td>
+
+                    <td>
+                      <span
+                        className={`status-chip ${
+                          user.is_active
+                            ? "active"
+                            : "inactive"
+                        }`}
+                      >
+                        {user.is_active
+                          ? t.active
+                          : t.inactive}
+                      </span>
+                    </td>
+
+                    <td>
+                      <div className="row-actions">
+                        <button
+                          onClick={() =>
+                            openEdit(user)
+                          }
+                        >
+                          {t.edit}
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            handleStatus(user)
+                          }
+                        >
+                          {user.is_active
+                            ? t.deactivate
+                            : t.activate}
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setSelected(user);
+                            setPassword("");
+                            setModal("password");
+                            setError("");
+                            setNotice("");
+                          }}
+                        >
+                          {t.reset}
+                        </button>
+
+                        <button
+                          className="danger-text"
+                          onClick={() =>
+                            handleDelete(user)
+                          }
+                        >
+                          {t.delete}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {modal && (
+        <div
+          className="modal-backdrop"
+          onMouseDown={() =>
+            !working && setModal(null)
+          }
+        >
+          <div
+            className="users-modal"
+            onMouseDown={(event) =>
+              event.stopPropagation()
+            }
+          >
+            <div className="modal-heading">
+              <div>
+                <span className="eyebrow">
+                  {t.identity}
+                </span>
+
+                <h2>
+                  {modal === "create"
+                    ? t.createHeading
+                    : modal === "edit"
+                      ? t.editHeading
+                      : modal === "password"
+                        ? t.resetHeading
+                        : t.details}
+                </h2>
+              </div>
+
+              <button
+                onClick={() =>
+                  !working && setModal(null)
+                }
+              >
+                ×
+              </button>
+            </div>
+
+            {modal === "details" ? (
+              <div className="user-details">
+                <Detail
+                  label={t.id}
+                  value={`#${selected?.id}`}
+                />
+
+                <Detail
+                  label={t.name}
+                  value={selected?.full_name}
+                />
+
+                <Detail
+                  label={t.email}
+                  value={selected?.email}
+                />
+
+                <Detail
+                  label={t.roles}
+                  value={
+                    selected?.roles?.length
+                      ? selected.roles.join(", ")
+                      : "—"
+                  }
+                />
+
+                <Detail
+                  label={t.status}
+                  value={
+                    selected?.is_active
+                      ? t.active
+                      : t.inactive
+                  }
+                />
+
+                <Detail
+                  label={t.createdAt}
+                  value={formatDate(
+                    selected?.created_at,
+                    language,
+                  )}
+                />
+
+                <Detail
+                  label={t.updatedAt}
+                  value={formatDate(
+                    selected?.updated_at,
+                    language,
+                  )}
+                />
+
+                <button
+                  className="secondary-button full-width"
+                  onClick={() =>
+                    setModal(null)
+                  }
+                >
+                  {t.close}
+                </button>
+              </div>
+            ) : modal === "password" ? (
+              <form
+                onSubmit={handlePassword}
+                className="user-form"
+              >
+                <label>
+                  {t.password}
+
+                  <input
+                    type="password"
+                    minLength={8}
+                    value={password}
+                    onChange={(event) =>
+                      setPassword(
+                        event.target.value,
+                      )
+                    }
+                    placeholder={t.passwordHint}
+                    required
+                  />
+                </label>
+
+                <div className="form-hint">
+                  {t.passwordHint}
+                </div>
+
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={() =>
+                      setModal(null)
+                    }
+                    disabled={working}
+                  >
+                    {t.cancel}
+                  </button>
+
+                  <button
+                    className="primary-button"
+                    disabled={working}
+                  >
+                    {working
+                      ? t.saving
+                      : t.reset}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form
+                onSubmit={handleSave}
+                className="user-form"
+              >
+                <label>
+                  {t.name}
+
+                  <input
+                    value={form.full_name}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        full_name:
+                          event.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </label>
+
+                <label>
+                  {t.email}
+
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        email:
+                          event.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </label>
+
+                <label>
+                  {t.role}
+
+                  <select
+                    value={form.role_id}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        role_id:
+                          event.target.value,
+                      }))
+                    }
+                    required={modal === "create"}
+                    disabled={
+                      rolesLoading || working
+                    }
+                  >
+                    <option value="">
+                      {rolesLoading
+                        ? t.loadingRoles
+                        : t.selectRole}
+                    </option>
+
+                    {roles.map((role) => (
+                      <option
+                        key={role.id}
+                        value={role.id}
+                      >
+                        {role.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  {!rolesLoading &&
+                    !roles.length && (
+                      <div className="form-hint">
+                        {t.noRoles}
+                      </div>
+                    )}
+                </label>
+
+                {modal === "create" && (
+                  <label>
+                    {t.password}
+
+                    <input
+                      type="password"
+                      minLength={8}
+                      value={form.password}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          password:
+                            event.target.value,
+                        }))
+                      }
+                      placeholder={
+                        t.passwordHint
+                      }
+                      required
+                    />
+                  </label>
+                )}
+
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={() =>
+                      setModal(null)
+                    }
+                    disabled={working}
+                  >
+                    {t.cancel}
+                  </button>
+
+                  <button
+                    className="primary-button"
+                    disabled={
+                      working ||
+                      (modal === "create" &&
+                        !form.role_id)
+                    }
+                  >
+                    {working
+                      ? t.saving
+                      : t.save}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {working && (
+        <div className="working-indicator">
+          {t.saving}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function Stat({ label, value }) {
+  return (
+    <div className="users-stat">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function Detail({ label, value }) {
+  return (
+    <div className="detail-row">
+      <span>{label}</span>
+      <strong>{value || "—"}</strong>
+    </div>
+  );
+}

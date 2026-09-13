@@ -1,0 +1,5081 @@
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\App.css =====
+
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\App.jsx =====
+import { Navigate, Route, Routes } from "react-router-dom";
+
+import ProtectedRoute from "./auth/ProtectedRoute";
+import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import SchoolProfile from "./pages/SchoolProfile";
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/school-profile" element={<SchoolProfile />} />
+      </Route>
+
+      <Route
+        path="*"
+        element={<Navigate to="/dashboard" replace />}
+      />
+    </Routes>
+  );
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\index.css =====
+:root {
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  color: #10213f;
+  background: #f4f7fb;
+
+  --navy-950: #07152f;
+  --navy-900: #0b1d3a;
+  --navy-800: #102b55;
+  --navy-700: #173d73;
+
+  --blue: #315fba;
+
+  --text: #10213f;
+  --muted: #68778d;
+  --muted-light: #8c98aa;
+
+  --border: #e1e7ef;
+  --border-light: #edf1f6;
+
+  --surface: #ffffff;
+  --background: #f4f7fb;
+
+  --green: #139b68;
+  --amber: #b77a18;
+  --red: #d34a4a;
+
+  --shadow-sm: 0 4px 16px rgba(8, 25, 53, 0.045);
+  --shadow-md: 0 12px 30px rgba(8, 25, 53, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* =========================================================
+   APP SHELL
+========================================================= */
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--background);
+}
+
+.app-main {
+  min-width: 0;
+  min-height: 100vh;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content {
+  flex: 1;
+  padding: 24px;
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+  position: sticky;
+  top: 0;
+
+  z-index: 100;
+
+  width: 250px;
+  height: 100vh;
+
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 22px 13px;
+
+  background:
+    radial-gradient(
+      circle at 10% 0%,
+      rgba(62, 103, 165, 0.2),
+      transparent 30%
+    ),
+    linear-gradient(
+      180deg,
+      #081733 0%,
+      #07132c 100%
+    );
+
+  color: #fff;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  padding: 2px 9px 26px;
+}
+
+.sidebar-logo {
+  width: 43px;
+  height: 43px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 12px;
+
+  background: #fff;
+  color: var(--navy-900);
+
+  font-size: 18px;
+  font-weight: 900;
+
+  box-shadow:
+    0 9px 22px rgba(0, 0, 0, 0.18);
+}
+
+.sidebar-brand-text strong {
+  display: block;
+
+  color: #fff;
+
+  font-size: 15px;
+  line-height: 1.2;
+  font-weight: 850;
+}
+
+.sidebar-brand-text span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #91a5c4;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.sidebar-workspace {
+  padding: 0 10px 8px;
+}
+
+.sidebar-workspace span {
+  color: #6f86aa;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.15em;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  flex: 1;
+
+  overflow-y: auto;
+}
+
+.nav-item {
+  min-height: 45px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding: 0 10px;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  color: #afbed5;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.055);
+  color: #fff;
+}
+
+.nav-item.active {
+  background: #fff;
+  border-color: rgba(255, 255, 255, 0.9);
+
+  color: #0b2751;
+
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.nav-icon {
+  width: 32px;
+  height: 32px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 8px;
+
+  color: #8fa6c9;
+}
+
+.nav-item.active .nav-icon {
+  color: #315fba;
+  background: #f0f4fb;
+}
+
+.nav-label {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.nav-label strong {
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.nav-label small {
+  font-size: 9px;
+  line-height: 1.2;
+
+  color: #7287a7;
+}
+
+.nav-item.active .nav-label small {
+  color: #71819a;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+}
+
+.sidebar-system {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+
+  margin: 15px 4px 12px;
+  padding: 12px 9px;
+
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.sidebar-system strong,
+.sidebar-system small {
+  display: block;
+}
+
+.sidebar-system strong {
+  color: #d8e2f0;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.sidebar-system small {
+  margin-top: 3px;
+
+  color: #7186a5;
+  font-size: 8px;
+}
+
+.system-live-dot {
+  width: 7px;
+  height: 7px;
+
+  margin-top: 4px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #20b77b;
+  box-shadow: 0 0 0 4px rgba(32, 183, 123, 0.1);
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 11px 9px 1px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+
+  color: #7388a8;
+
+  font-size: 8px;
+  font-weight: 650;
+}
+
+.sidebar-footer small {
+  color: #536986;
+}
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+  position: sticky;
+  top: 0;
+
+  z-index: 80;
+
+  min-height: 74px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 11px 25px;
+
+  border-bottom: 1px solid var(--border);
+
+  background: rgba(255, 255, 255, 0.97);
+
+  backdrop-filter: blur(15px);
+}
+
+.topbar-left {
+  min-width: 0;
+}
+
+.topbar-title {
+  color: #0b2144;
+
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: -0.25px;
+}
+
+.session-pill {
+  min-height: 27px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-top: 4px;
+  padding: 0 9px;
+
+  border: 1px solid #dfe6ef;
+  border-radius: 999px;
+
+  background: #f8fafd;
+
+  color: #617087;
+
+  font-size: 9px;
+  font-weight: 650;
+
+  white-space: nowrap;
+}
+
+.session-pill strong {
+  color: #183967;
+  font-weight: 850;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+}
+
+.live-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  white-space: nowrap;
+}
+
+.live-time strong {
+  color: #162b4d;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.live-time span {
+  margin-top: 1px;
+
+  color: #8894a5;
+
+  font-size: 8px;
+}
+
+.topbar-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  color: var(--green);
+
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: var(--green);
+
+  box-shadow:
+    0 0 0 4px rgba(19, 155, 104, 0.1);
+}
+
+.language-switch {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  padding: 3px;
+
+  border: 1px solid #e0e6ef;
+  border-radius: 9px;
+
+  background: #f6f8fb;
+}
+
+.language-switch button {
+  width: 35px;
+  height: 29px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #7c899c;
+
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.language-switch button:hover {
+  color: #193762;
+}
+
+.language-switch button.active {
+  background: var(--navy-900);
+  color: #fff;
+
+  box-shadow:
+    0 4px 10px rgba(7, 21, 47, 0.16);
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-avatar {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #edf2fb;
+  color: #234b83;
+
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.user-details {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.user-details strong {
+  max-width: 145px;
+
+  overflow: hidden;
+
+  color: #122846;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-details span {
+  margin-top: 1px;
+
+  color: #8995a6;
+
+  font-size: 8px;
+}
+
+.logout-button {
+  border: 0;
+
+  background: transparent;
+
+  color: #69778b;
+
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.logout-button:hover {
+  color: var(--red);
+}
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+.dashboard-page {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+/* COMMAND SEARCH */
+
+.command-search {
+  min-height: 48px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  margin-bottom: 15px;
+  padding: 7px 9px;
+
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  background: #fff;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.command-search-icon {
+  width: 32px;
+  height: 32px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 8px;
+
+  background: #f0f4fa;
+  color: #31598e;
+}
+
+.command-search-content {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.command-search-content span {
+  color: #718097;
+
+  font-size: 8px;
+  font-weight: 750;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.command-search-content strong {
+  margin-top: 1px;
+
+  color: #637188;
+
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.command-search kbd {
+  padding: 4px 7px;
+
+  border: 1px solid #dce3ec;
+  border-radius: 5px;
+
+  background: #f7f9fc;
+  color: #8994a5;
+
+  font-size: 8px;
+}
+
+/* HERO */
+
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+
+  min-height: 218px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  margin-bottom: 16px;
+  padding: 31px 34px;
+
+  border-radius: 19px;
+
+  background:
+    radial-gradient(
+      circle at 90% 20%,
+      rgba(74, 112, 181, 0.38),
+      transparent 31%
+    ),
+    linear-gradient(
+      135deg,
+      #07152f 0%,
+      #0c2350 58%,
+      #183e75 100%
+    );
+
+  color: #fff;
+
+  box-shadow:
+    0 17px 38px rgba(7, 21, 47, 0.14);
+}
+
+.dashboard-hero::after {
+  content: "";
+
+  position: absolute;
+
+  right: -80px;
+  bottom: -170px;
+
+  width: 350px;
+  height: 350px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 0 35px rgba(255, 255, 255, 0.025),
+    0 0 0 70px rgba(255, 255, 255, 0.018);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-bottom: 11px;
+
+  color: #a6b9d5;
+
+  font-size: 9px;
+  font-weight: 850;
+
+  letter-spacing: 0.15em;
+}
+
+.hero-live-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #20bd82;
+
+  box-shadow:
+    0 0 0 4px rgba(32, 189, 130, 0.12);
+}
+
+.dashboard-hero h1 {
+  margin: 0;
+
+  color: #fff;
+
+  font-size: clamp(27px, 3vw, 38px);
+  line-height: 1.12;
+  font-weight: 850;
+
+  letter-spacing: -1.2px;
+}
+
+.dashboard-hero p {
+  max-width: 650px;
+
+  margin: 9px 0 0;
+
+  color: #bac9df;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  margin-top: 19px;
+}
+
+.hero-meta > span {
+  min-height: 31px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 0 10px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+
+  background: rgba(255, 255, 255, 0.065);
+
+  color: #bdcbe0;
+
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.hero-meta strong {
+  color: #fff;
+}
+
+.hero-small-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #21b97d;
+}
+
+.hero-date {
+  position: relative;
+  z-index: 2;
+
+  min-width: 185px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  padding: 17px 18px;
+
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 13px;
+
+  background: rgba(255, 255, 255, 0.075);
+
+  backdrop-filter: blur(8px);
+}
+
+.hero-date span {
+  color: #9fb3d2;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero-date strong {
+  margin-top: 5px;
+
+  color: #fff;
+
+  font-size: 25px;
+  line-height: 1;
+  font-weight: 850;
+}
+
+.hero-date small {
+  margin-top: 8px;
+
+  color: #b8c8de;
+
+  font-size: 8px;
+}
+
+/* =========================================================
+   KPI
+========================================================= */
+
+.stats-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 13px;
+
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  min-height: 120px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 12px;
+
+  padding: 17px;
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+
+  background: #fff;
+
+  box-shadow: var(--shadow-sm);
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 10px;
+}
+
+.stat-blue {
+  background: #edf3ff;
+  color: #315fba;
+}
+
+.stat-navy {
+  background: #eef1f7;
+  color: #173d73;
+}
+
+.stat-green {
+  background: #eaf8f2;
+  color: #159b68;
+}
+
+.stat-amber {
+  background: #fff6e6;
+  color: #b7791f;
+}
+
+.stat-body {
+  min-width: 0;
+}
+
+.stat-label {
+  display: block;
+
+  color: #647289;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.stat-value {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #0b1f42;
+
+  font-size: 26px;
+  line-height: 1;
+
+  font-weight: 850;
+  letter-spacing: -0.7px;
+}
+
+.stat-description {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #929dad;
+
+  font-size: 8px;
+}
+
+/* =========================================================
+   MAIN GRID
+========================================================= */
+
+.dashboard-main-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.4fr)
+    minmax(320px, 0.82fr);
+
+  gap: 16px;
+
+  margin-bottom: 16px;
+}
+
+.content-card {
+  padding: 20px;
+
+  border: 1px solid var(--border);
+  border-radius: 15px;
+
+  background: #fff;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 18px;
+}
+
+.section-title-group {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+}
+
+.section-icon {
+  width: 37px;
+  height: 37px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 10px;
+
+  background: #eff3f9;
+  color: #234b83;
+}
+
+.section-heading h2 {
+  margin: 0;
+
+  color: #0b1f42;
+
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.section-heading p {
+  margin: 3px 0 0;
+
+  color: #8995a6;
+
+  font-size: 8px;
+}
+
+.live-badge,
+.healthy-badge,
+.ready-badge {
+  min-height: 25px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 0 8px;
+
+  border-radius: 999px;
+
+  font-size: 8px;
+  font-weight: 850;
+}
+
+.live-badge,
+.healthy-badge {
+  background: #eaf8f2;
+  color: #139b68;
+}
+
+.ready-badge {
+  background: #eef3fb;
+  color: #315fba;
+}
+
+/* =========================================================
+   PULSE
+========================================================= */
+
+.pulse-panel {
+  min-height: 128px;
+
+  display: grid;
+
+  grid-template-columns:
+    170px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 18px;
+
+  border: 1px solid #edf1f6;
+  border-radius: 12px;
+
+  background: #f9fbfd;
+}
+
+.pulse-summary > span {
+  display: block;
+
+  color: #68778d;
+
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.pulse-summary strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #0b1f42;
+
+  font-size: 29px;
+  line-height: 1;
+  font-weight: 850;
+}
+
+.pulse-summary small {
+  display: block;
+
+  max-width: 155px;
+
+  margin-top: 7px;
+
+  color: #8c98aa;
+
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.pulse-visual {
+  height: 85px;
+
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.pulse-visual span {
+  flex: 1;
+
+  min-width: 5px;
+
+  border-radius: 5px 5px 2px 2px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #bfd2f1,
+      #e9eef7
+    );
+}
+
+/* =========================================================
+   EMPTY STATES
+========================================================= */
+
+.empty-state {
+  min-height: 115px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 15px;
+
+  border: 1px dashed #dfe6ef;
+  border-radius: 11px;
+
+  background: #fafbfd;
+}
+
+.empty-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 9px;
+
+  background: #f0f4f9;
+  color: #61748f;
+}
+
+.empty-state strong {
+  display: block;
+
+  color: #273a58;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.empty-state p {
+  margin: 4px 0 0;
+
+  color: #8a96a7;
+
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+/* =========================================================
+   THREE COLUMN
+========================================================= */
+
+.three-column-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 16px;
+
+  margin-bottom: 16px;
+}
+
+.three-column-grid .content-card {
+  min-width: 0;
+}
+
+.feature-status {
+  min-height: 115px;
+
+  padding: 16px;
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f6f9fd,
+      #eef4fb
+    );
+
+  border: 1px solid #e5ebf3;
+}
+
+.feature-status strong {
+  color: #173b6e;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.feature-status p {
+  margin: 7px 0 0;
+
+  color: #7c8a9e;
+
+  font-size: 8px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   INTELLIGENCE
+========================================================= */
+
+.intelligence-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 13px;
+
+  margin-bottom: 16px;
+}
+
+.intelligence-card {
+  min-height: 112px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 11px;
+
+  padding: 16px;
+
+  border: 1px solid var(--border);
+  border-radius: 13px;
+
+  background: #fff;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.intelligence-icon {
+  width: 37px;
+  height: 37px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 10px;
+
+  background: #eff3fa;
+  color: #31598e;
+}
+
+.intelligence-card > div:last-child {
+  min-width: 0;
+}
+
+.intelligence-card span {
+  display: block;
+
+  color: #748197;
+
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.intelligence-card strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #172e50;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.intelligence-card small {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #929dac;
+
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
+
+.quick-card {
+  margin-bottom: 16px;
+}
+
+.quick-actions {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+.quick-action {
+  min-height: 72px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 12px;
+
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  background: #fbfcfe;
+
+  color: inherit;
+
+  text-align: left;
+
+  transition:
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+button.quick-action {
+  font-family: inherit;
+}
+
+.quick-action:hover {
+  transform: translateY(-1px);
+
+  border-color: #cbd8e8;
+
+  background: #fff;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.quick-action-icon {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 9px;
+
+  background: #edf3fb;
+  color: #234b83;
+}
+
+.quick-action-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.quick-action-content strong {
+  display: block;
+
+  color: #142c4e;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.quick-action-content small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #8c98a9;
+
+  font-size: 8px;
+}
+
+.quick-action-arrow {
+  width: 26px;
+  height: 26px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 7px;
+
+  background: #f0f3f7;
+  color: #718096;
+}
+
+/* =========================================================
+   SYSTEM
+========================================================= */
+
+.system-card {
+  margin-bottom: 2px;
+}
+
+.system-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  border: 1px solid #edf1f6;
+  border-radius: 11px;
+
+  overflow: hidden;
+}
+
+.system-item {
+  min-height: 58px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 10px 13px;
+
+  border-right: 1px solid #edf1f6;
+}
+
+.system-item:last-child {
+  border-right: 0;
+}
+
+.system-item-icon {
+  width: 29px;
+  height: 29px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 8px;
+
+  background: #f1f4f8;
+  color: #5d718f;
+}
+
+.system-item-label {
+  flex: 1;
+
+  color: #5e6d83;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.system-connected {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  color: #139b68;
+
+  font-size: 8px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+.auth-page {
+  min-height: 100vh;
+
+  display: grid;
+  place-items: center;
+
+  padding: 24px;
+
+  background:
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(44, 83, 143, 0.14),
+      transparent 30%
+    ),
+    #f1f5fa;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+
+  padding: 33px;
+
+  border: 1px solid var(--border);
+  border-radius: 19px;
+
+  background: #fff;
+
+  box-shadow:
+    0 25px 60px rgba(7, 21, 47, 0.1);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  margin-bottom: 28px;
+}
+
+.brand-mark {
+  width: 45px;
+  height: 45px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 11px;
+
+  background: var(--navy-900);
+  color: #fff;
+
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.brand h1 {
+  margin: 0;
+
+  color: #0b1f42;
+
+  font-size: 19px;
+  font-weight: 850;
+}
+
+.brand p {
+  margin: 2px 0 0;
+
+  color: #8490a2;
+
+  font-size: 9px;
+}
+
+.login-heading h2 {
+  margin: 0;
+
+  color: #0b1f42;
+
+  font-size: 24px;
+  font-weight: 850;
+}
+
+.login-heading p {
+  margin: 6px 0 22px;
+
+  color: #7e8b9d;
+
+  font-size: 11px;
+}
+
+.login-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-card label {
+  margin-bottom: 6px;
+
+  color: #34445d;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.login-card input {
+  width: 100%;
+  height: 43px;
+
+  margin-bottom: 14px;
+  padding: 0 11px;
+
+  border: 1px solid #dce3ec;
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #fbfcfe;
+  color: #142747;
+
+  font-size: 11px;
+}
+
+.login-card input:focus {
+  border-color: #7897c0;
+
+  background: #fff;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 65px;
+}
+
+.password-toggle {
+  position: absolute;
+
+  right: 6px;
+  top: 3px;
+
+  height: 37px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+  color: #4c6382;
+
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.form-error {
+  margin: 0 0 12px;
+  padding: 9px 10px;
+
+  border: 1px solid #efcaca;
+  border-radius: 8px;
+
+  background: #fff4f4;
+  color: #b73535;
+
+  font-size: 9px;
+}
+
+.login-button {
+  width: 100%;
+  height: 44px;
+
+  margin-top: 4px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: var(--navy-900);
+  color: #fff;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  box-shadow:
+    0 7px 16px rgba(7, 21, 47, 0.15);
+}
+
+.login-button:hover {
+  background: #12376b;
+}
+
+.login-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* =========================================================
+   SCHOOL PROFILE
+========================================================= */
+
+.school-profile-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 18px;
+}
+
+.page-heading h1 {
+  margin: 0;
+
+  color: #0b1f42;
+
+  font-size: 25px;
+  font-weight: 850;
+}
+
+.page-heading p {
+  margin: 5px 0 0;
+
+  color: #78869a;
+
+  font-size: 11px;
+}
+
+.panel,
+.school-card,
+.form-card {
+  padding: 21px;
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+
+  background: #fff;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.form-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 15px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field.full {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  color: #34445d;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+
+  min-height: 41px;
+
+  padding: 8px 10px;
+
+  border: 1px solid #dce3ec;
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #fbfcfe;
+  color: #142747;
+
+  font-size: 11px;
+}
+
+.form-field textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: #7897c0;
+
+  background: #fff;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.primary-button,
+.secondary-button,
+.danger-button {
+  min-height: 39px;
+
+  padding: 0 14px;
+
+  border-radius: 8px;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.primary-button {
+  border: 0;
+
+  background: var(--navy-900);
+  color: #fff;
+}
+
+.secondary-button {
+  border: 1px solid #dce3ec;
+
+  background: #fff;
+  color: #34445d;
+}
+
+.danger-button {
+  border: 1px solid #efcaca;
+
+  background: #fff5f5;
+  color: #b73535;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 225px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .intelligence-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 950px) {
+  .sidebar {
+    width: 76px;
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .sidebar-brand {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .sidebar-brand-text,
+  .sidebar-workspace,
+  .nav-label,
+  .sidebar-system,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .nav-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .topbar {
+    padding-left: 17px;
+    padding-right: 17px;
+  }
+
+  .user-details {
+    display: none;
+  }
+
+  .logout-button {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-content {
+    padding: 15px;
+  }
+
+  .topbar {
+    min-height: 66px;
+  }
+
+  .live-time {
+    display: none;
+  }
+
+  .dashboard-hero {
+    min-height: auto;
+
+    flex-direction: column;
+    align-items: flex-start;
+
+    padding: 25px 21px;
+  }
+
+  .hero-date {
+    width: 100%;
+    min-width: 0;
+
+    align-items: flex-start;
+  }
+
+  .dashboard-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .three-column-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .system-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .system-item {
+    border-right: 0;
+    border-bottom: 1px solid #edf1f6;
+  }
+
+  .system-item:last-child {
+    border-bottom: 0;
+  }
+
+  .pulse-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .pulse-visual {
+    height: 70px;
+  }
+}
+
+@media (max-width: 560px) {
+  .app-content {
+    padding: 11px;
+  }
+
+  .sidebar {
+    width: 62px;
+  }
+
+  .topbar {
+    padding: 8px 11px;
+  }
+
+  .topbar-title {
+    font-size: 12px;
+  }
+
+  .session-pill {
+    max-width: 150px;
+    overflow: hidden;
+
+    font-size: 8px;
+    text-overflow: ellipsis;
+  }
+
+  .topbar-live {
+    display: none;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .intelligence-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .command-search kbd {
+    display: none;
+  }
+
+  .dashboard-hero h1 {
+    font-size: 25px;
+  }
+
+  .dashboard-hero p {
+    font-size: 10px;
+  }
+
+  .hero-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .content-card {
+    padding: 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-field.full {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 390px) {
+  .sidebar {
+    width: 56px;
+  }
+
+  .sidebar-logo {
+    width: 38px;
+    height: 38px;
+  }
+
+  .topbar {
+    gap: 8px;
+  }
+
+  .session-pill {
+    max-width: 125px;
+  }
+
+  .user-avatar {
+    width: 31px;
+    height: 31px;
+  }
+
+  .language-switch button {
+    width: 31px;
+  }
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\main.jsx =====
+import { createRoot } from "react-dom/client";
+
+const root = document.getElementById("root");
+
+createRoot(root).render(
+  <div
+    style={{
+      padding: "40px",
+      fontFamily: "Arial, sans-serif",
+    }}
+  >
+    <h1>EduSphere</h1>
+    <p>React is running successfully.</p>
+  </div>,
+);
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\api\auth.js =====
+import apiClient from "./client";
+
+function unwrap(response) {
+  return response?.data ?? response;
+}
+
+export async function login(email, password) {
+  const response = await apiClient.post("/auth/login", {
+    email,
+    password,
+  });
+
+  const payload = unwrap(response);
+
+  const token =
+    payload?.access_token ||
+    payload?.data?.access_token;
+
+  if (!token) {
+    throw new Error("Login succeeded but no access token was returned.");
+  }
+
+  return {
+    ...payload,
+    access_token: token,
+  };
+}
+
+export async function getCurrentUser() {
+  const response = await apiClient.get("/auth/me");
+
+  return unwrap(response);
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\api\client.js =====
+import axios from "axios";
+
+const apiClient = axios.create({
+  baseURL: "http://127.0.0.1:8000/api/v1",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("edusphere_access_token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+export default apiClient;
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\api\school.js =====
+import apiClient from "./client";
+
+export async function getSchools(params = {}) {
+  const response = await apiClient.get("/schools", { params });
+  return response.data;
+}
+
+export async function getSchool(schoolId) {
+  const response = await apiClient.get(`/schools/${schoolId}`);
+  return response.data;
+}
+
+export async function createSchool(data) {
+  const response = await apiClient.post("/schools", data);
+  return response.data;
+}
+
+export async function updateSchool(schoolId, data) {
+  const response = await apiClient.patch(`/schools/${schoolId}`, data);
+  return response.data;
+}
+
+export async function updateSchoolStatus(schoolId, isActive) {
+  const response = await apiClient.patch(`/schools/${schoolId}/status`, {
+    is_active: isActive,
+  });
+  return response.data;
+}
+
+export async function getAcademicSessions(schoolId, params = {}) {
+  const response = await apiClient.get(
+    `/schools/${schoolId}/academic-sessions`,
+    { params },
+  );
+  return response.data;
+}
+
+export async function getCurrentAcademicSession(schoolId) {
+  const response = await apiClient.get(
+    `/schools/${schoolId}/academic-sessions/current`,
+  );
+  return response.data;
+}
+
+export async function getAcademicSession(sessionId) {
+  const response = await apiClient.get(
+    `/schools/academic-sessions/${sessionId}`,
+  );
+  return response.data;
+}
+
+export async function createAcademicSession(schoolId, data) {
+  const response = await apiClient.post(
+    `/schools/${schoolId}/academic-sessions`,
+    data,
+  );
+  return response.data;
+}
+
+export async function updateAcademicSession(sessionId, data) {
+  const response = await apiClient.patch(
+    `/schools/academic-sessions/${sessionId}`,
+    data,
+  );
+  return response.data;
+}
+
+export async function setCurrentAcademicSession(sessionId) {
+  const response = await apiClient.post(
+    `/schools/academic-sessions/${sessionId}/set-current`,
+  );
+  return response.data;
+}
+
+export async function updateAcademicSessionStatus(sessionId, isActive) {
+  const response = await apiClient.patch(
+    `/schools/academic-sessions/${sessionId}/status`,
+    {
+      is_active: isActive,
+    },
+  );
+  return response.data;
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\auth\AuthContext.jsx =====
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
+import {
+  getCurrentUser,
+  login as loginRequest,
+} from "../api/auth";
+
+const AuthContext = createContext(null);
+
+const TOKEN_KEY = "edusphere_access_token";
+
+function extractUser(response) {
+  return response?.data ?? response;
+}
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const loadUser = useCallback(async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+
+    if (!token) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await getCurrentUser();
+      const currentUser = extractUser(response);
+
+      if (!currentUser) {
+        throw new Error("Unable to load current user.");
+      }
+
+      setUser(currentUser);
+    } catch {
+      localStorage.removeItem(TOKEN_KEY);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function initializeAuth() {
+      const token = localStorage.getItem(TOKEN_KEY);
+
+      if (!token) {
+        if (mounted) {
+          setUser(null);
+          setLoading(false);
+        }
+        return;
+      }
+
+      try {
+        const response = await getCurrentUser();
+        const currentUser = extractUser(response);
+
+        if (mounted) {
+          setUser(currentUser || null);
+        }
+      } catch {
+        localStorage.removeItem(TOKEN_KEY);
+
+        if (mounted) {
+          setUser(null);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    initializeAuth();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const login = useCallback(async (email, password) => {
+    const response = await loginRequest(email, password);
+
+    const token =
+      response?.access_token ||
+      response?.data?.access_token;
+
+    if (!token) {
+      throw new Error(
+        "Login failed: server did not return an access token.",
+      );
+    }
+
+    localStorage.setItem(TOKEN_KEY, token);
+
+    try {
+      const currentUserResponse = await getCurrentUser();
+      const currentUser = extractUser(currentUserResponse);
+
+      if (!currentUser) {
+        throw new Error("Unable to load logged-in user.");
+      }
+
+      setUser(currentUser);
+
+      return currentUser;
+    } catch (error) {
+      localStorage.removeItem(TOKEN_KEY);
+      setUser(null);
+      throw error;
+    }
+  }, []);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem(TOKEN_KEY);
+    setUser(null);
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+      isAuthenticated: Boolean(user),
+      login,
+      logout,
+      loadUser,
+    }),
+    [user, loading, login, logout, loadUser],
+  );
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error(
+      "useAuth must be used inside AuthProvider.",
+    );
+  }
+
+  return context;
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\auth\ProtectedRoute.jsx =====
+import { Navigate, Outlet } from "react-router-dom";
+
+import { useAuth } from "./AuthContext";
+
+export default function ProtectedRoute() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="page-loading">
+        Loading EduSphere...
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />;
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\components\AppShell.jsx =====
+import Sidebar from "./Sidebar";
+import Topbar from "./Topbar";
+
+export default function AppShell({ children }) {
+  return (
+    <div className="app-shell">
+      <Sidebar />
+
+      <div className="app-main">
+        <Topbar />
+
+        <main className="app-content">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\components\Sidebar.jsx =====
+import { NavLink } from "react-router-dom";
+
+const navigation = [
+  {
+    label: "Dashboard",
+    hindi: "डैशबोर्ड",
+    path: "/dashboard",
+    icon: "grid",
+  },
+  {
+    label: "School Profile",
+    hindi: "स्कूल प्रोफ़ाइल",
+    path: "/school-profile",
+    icon: "school",
+  },
+];
+
+const Icon = ({ name }) => {
+  const common = {
+    width: 18,
+    height: 18,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true,
+  };
+
+  const icons = {
+    grid: (
+      <>
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </>
+    ),
+
+    school: (
+      <>
+        <path d="m3 10 9-6 9 6" />
+        <path d="M5 10v9h14v-9" />
+        <path d="M9 19v-5h6v5" />
+        <path d="M3 21h18" />
+      </>
+    ),
+
+    search: (
+      <>
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-4-4" />
+      </>
+    ),
+
+    action: (
+      <>
+        <path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z" />
+        <path d="M12 8v4" />
+        <path d="M12 16h.01" />
+      </>
+    ),
+  };
+
+  return <svg {...common}>{icons[name]}</svg>;
+};
+
+export default function Sidebar() {
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-brand">
+        <div className="sidebar-logo">E</div>
+
+        <div className="sidebar-brand-text">
+          <strong>EduSphere</strong>
+          <span>School Operating System</span>
+        </div>
+      </div>
+
+      <div className="sidebar-workspace">
+        <span>WORKSPACE</span>
+      </div>
+
+      <nav className="sidebar-nav">
+        {navigation.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `nav-item ${isActive ? "active" : ""}`
+            }
+          >
+            <span className="nav-icon">
+              <Icon name={item.icon} />
+            </span>
+
+            <span className="nav-label">
+              <strong>{item.label}</strong>
+              <small>{item.hindi}</small>
+            </span>
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className="sidebar-bottom">
+        <div className="sidebar-system">
+          <span className="system-live-dot" />
+
+          <div>
+            <strong>System Online</strong>
+            <small>Core services operational</small>
+          </div>
+        </div>
+
+        <div className="sidebar-footer">
+          <span>EduSphere</span>
+          <small>v0.1.0</small>
+        </div>
+      </div>
+    </aside>
+  );
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\components\Topbar.jsx =====
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+
+import AppShell from "../components/AppShell";
+import { useAuth } from "../auth/AuthContext";
+
+const TEXT = {
+  EN: {
+    evening: "Good evening",
+    overview:
+      "Your school's operational command center — everything important in one place.",
+    search: "Search anything or type a command...",
+    session: "Academic Session",
+    today: "Today",
+    students: "Students",
+    teachers: "Teachers",
+    attendance: "Attendance",
+    actions: "Pending Actions",
+    enrolled: "Total enrolled",
+    teaching: "Teaching staff",
+    todayAttendance: "Today's attendance",
+    attention: "Needs attention",
+
+    pulse: "School Pulse",
+    liveOverview: "Live operational overview",
+    operational: "School operations",
+    noLiveData: "Live metrics will appear here as modules are connected.",
+
+    actionCenter: "Action Center",
+    actionSubtitle: "Things that need your attention",
+    noActions: "No live actions yet",
+    actionDescription:
+      "Action Center will surface approvals, exceptions, follow-ups and important tasks.",
+
+    exceptions: "Exceptions",
+    exceptionSubtitle: "Problems detected across operations",
+    noExceptions: "No exceptions available",
+    exceptionDescription:
+      "Attendance gaps, fee risks, timetable conflicts and data issues will appear here.",
+
+    schedule: "Today's Schedule",
+    scheduleSubtitle: "Current academic activity",
+    noSchedule: "Timetable data not connected",
+    scheduleDescription:
+      "Today's classes, periods, substitutions and timetable changes will appear here.",
+
+    automation: "Automation",
+    automationSubtitle: "School workflows",
+    automationReady: "Automation Engine ready",
+    automationDescription:
+      "WHEN → CONDITION → ACTION workflows will run from this control center.",
+
+    upcoming: "Upcoming",
+    upcomingSubtitle: "Next important events",
+    upcomingEmpty: "No upcoming events yet",
+
+    quality: "Data Quality",
+    qualitySubtitle: "School data health",
+    qualityReady: "Ready for live checks",
+    qualityDescription:
+      "Missing, duplicate and inconsistent records will be surfaced here.",
+
+    workload: "Workload",
+    workloadSubtitle: "Staff workload intelligence",
+    workloadReady: "Optimizer ready",
+    workloadDescription:
+      "Workload balancing, substitute requirements and operational pressure will appear here.",
+
+    saved: "Human Work Saved",
+    savedSubtitle: "Time saved through EduSphere",
+    savedValue: "—",
+    savedDescription:
+      "Automation and intelligent workflows will calculate actual time saved.",
+
+    quickActions: "Quick Actions",
+    schoolProfile: "School Profile",
+    academicSessions: "Academic Sessions",
+    assistant: "Smart Assistant",
+    command: "Command Search",
+
+    system: "System Health",
+    healthy: "Healthy",
+    authentication: "Authentication",
+    api: "Application API",
+    database: "Database",
+    connected: "Connected",
+
+    ready: "Ready",
+    live: "LIVE",
+    setup: "Setup",
+  },
+
+  HI: {
+    evening: "शुभ संध्या",
+    overview:
+      "आपके स्कूल का ऑपरेशनल कमांड सेंटर — सभी महत्वपूर्ण जानकारी एक जगह।",
+    search: "कुछ भी खोजें या कमांड लिखें...",
+    session: "शैक्षणिक सत्र",
+    today: "आज",
+    students: "विद्यार्थी",
+    teachers: "शिक्षक",
+    attendance: "उपस्थिति",
+    actions: "लंबित कार्य",
+    enrolled: "कुल नामांकित",
+    teaching: "शिक्षण स्टाफ",
+    todayAttendance: "आज की उपस्थिति",
+    attention: "ध्यान आवश्यक",
+
+    pulse: "स्कूल पल्स",
+    liveOverview: "स्कूल की लाइव स्थिति",
+    operational: "स्कूल संचालन",
+    noLiveData:
+      "मॉड्यूल कनेक्ट होने के साथ लाइव मेट्रिक्स यहाँ दिखाई देंगे।",
+
+    actionCenter: "एक्शन सेंटर",
+    actionSubtitle: "ध्यान देने योग्य कार्य",
+    noActions: "अभी कोई लाइव कार्य नहीं",
+    actionDescription:
+      "अप्रूवल, अपवाद, फॉलो-अप और महत्वपूर्ण कार्य यहाँ दिखाई देंगे।",
+
+    exceptions: "अपवाद",
+    exceptionSubtitle: "संचालन में मिली समस्याएँ",
+    noExceptions: "अभी कोई अपवाद नहीं",
+    exceptionDescription:
+      "उपस्थिति, फीस, टाइमटेबल और डेटा संबंधी समस्याएँ यहाँ दिखाई देंगी।",
+
+    schedule: "आज का शेड्यूल",
+    scheduleSubtitle: "आज की अकादमिक गतिविधि",
+    noSchedule: "टाइमटेबल डेटा कनेक्ट नहीं है",
+    scheduleDescription:
+      "कक्षाएँ, पीरियड, सब्स्टीट्यूशन और बदलाव यहाँ दिखाई देंगे।",
+
+    automation: "ऑटोमेशन",
+    automationSubtitle: "स्कूल वर्कफ़्लो",
+    automationReady: "ऑटोमेशन इंजन तैयार",
+    automationDescription:
+      "WHEN → CONDITION → ACTION वर्कफ़्लो यहाँ से चलेंगे।",
+
+    upcoming: "आगामी",
+    upcomingSubtitle: "अगली महत्वपूर्ण गतिविधियाँ",
+    upcomingEmpty: "अभी कोई आगामी गतिविधि नहीं",
+
+    quality: "डेटा क्वालिटी",
+    qualitySubtitle: "स्कूल डेटा स्वास्थ्य",
+    qualityReady: "लाइव जाँच के लिए तैयार",
+    qualityDescription:
+      "गुम, डुप्लिकेट और असंगत रिकॉर्ड यहाँ दिखाई देंगे।",
+
+    workload: "वर्कलोड",
+    workloadSubtitle: "स्टाफ वर्कलोड इंटेलिजेंस",
+    workloadReady: "ऑप्टिमाइज़र तैयार",
+    workloadDescription:
+      "वर्कलोड बैलेंसिंग, सब्स्टीट्यूट और स्टाफ दबाव यहाँ दिखाई देगा।",
+
+    saved: "मानव कार्य समय बचत",
+    savedSubtitle: "EduSphere से बचाया गया समय",
+    savedValue: "—",
+    savedDescription:
+      "ऑटोमेशन के आधार पर वास्तविक समय बचत यहाँ दिखाई जाएगी।",
+
+    quickActions: "त्वरित कार्य",
+    schoolProfile: "स्कूल प्रोफ़ाइल",
+    academicSessions: "शैक्षणिक सत्र",
+    assistant: "स्मार्ट असिस्टेंट",
+    command: "कमांड सर्च",
+
+    system: "सिस्टम स्वास्थ्य",
+    healthy: "स्वस्थ",
+    authentication: "प्रमाणीकरण",
+    api: "एप्लिकेशन API",
+    database: "डेटाबेस",
+    connected: "कनेक्टेड",
+
+    ready: "तैयार",
+    live: "लाइव",
+    setup: "सेटअप",
+  },
+};
+
+function Icon({ name, size = 19 }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true,
+  };
+
+  const icons = {
+    search: (
+      <>
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-4-4" />
+      </>
+    ),
+    users: (
+      <>
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.9" />
+        <path d="M16 3.1a4 4 0 0 1 0 7.8" />
+      </>
+    ),
+    teacher: (
+      <>
+        <rect x="3" y="4" width="18" height="16" rx="2" />
+        <path d="M7 8h5M7 12h10M7 16h6" />
+        <circle cx="18" cy="8" r="1" />
+      </>
+    ),
+    check: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="m8 12 2.5 2.5L16 9" />
+      </>
+    ),
+    alert: (
+      <>
+        <path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z" />
+        <path d="M12 8v4M12 16h.01" />
+      </>
+    ),
+    pulse: (
+      <path d="M3 12h4l2-7 4 14 2-7h6" />
+    ),
+    calendar: (
+      <>
+        <rect x="3" y="4" width="18" height="17" rx="2" />
+        <path d="M8 2v4M16 2v4M3 10h18" />
+      </>
+    ),
+    automation: (
+      <>
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-2.6v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6v-2.6h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V5h2.6v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2v2.6h-.2a1.7 1.7 0 0 0-1.5 1Z" />
+      </>
+    ),
+    quality: (
+      <>
+        <path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z" />
+        <path d="m8.5 12 2.2 2.2L16 9" />
+      </>
+    ),
+    workload: (
+      <>
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <path d="M7 15v-3M12 15V9M17 15v-5" />
+      </>
+    ),
+    clock: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 2" />
+      </>
+    ),
+    assistant: (
+      <>
+        <path d="M12 3 14 9l6 2-6 2-2 6-2-6-6-2 6-2 2-6Z" />
+      </>
+    ),
+    arrow: (
+      <>
+        <path d="M5 12h14" />
+        <path d="m13 6 6 6-6 6" />
+      </>
+    ),
+    server: (
+      <>
+        <rect x="3" y="4" width="18" height="6" rx="2" />
+        <rect x="3" y="14" width="18" height="6" rx="2" />
+        <path d="M7 7h.01M7 17h.01M11 7h6M11 17h6" />
+      </>
+    ),
+  };
+
+  return <svg {...common}>{icons[name]}</svg>;
+}
+
+function StatCard({
+  icon,
+  label,
+  value,
+  description,
+  variant,
+}) {
+  return (
+    <article className="stat-card">
+      <div className={`stat-icon stat-${variant}`}>
+        <Icon name={icon} size={19} />
+      </div>
+
+      <div className="stat-body">
+        <span className="stat-label">{label}</span>
+        <strong className="stat-value">{value}</strong>
+        <span className="stat-description">{description}</span>
+      </div>
+    </article>
+  );
+}
+
+function EmptyState({ icon, title, description }) {
+  return (
+    <div className="empty-state">
+      <div className="empty-icon">
+        <Icon name={icon} size={18} />
+      </div>
+
+      <div>
+        <strong>{title}</strong>
+        <p>{description}</p>
+      </div>
+    </div>
+  );
+}
+
+export default function Dashboard() {
+  const { user } = useAuth();
+
+  const [language, setLanguage] = useState(
+    localStorage.getItem("edusphere_language") || "EN",
+  );
+
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    const handleLanguageChange = (event) => {
+      setLanguage(event.detail);
+    };
+
+    window.addEventListener(
+      "edusphere-language-change",
+      handleLanguageChange,
+    );
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener(
+        "edusphere-language-change",
+        handleLanguageChange,
+      );
+    };
+  }, []);
+
+  const t = TEXT[language];
+
+  const firstName =
+    user?.full_name?.trim()?.split(" ")[0] || "Admin";
+
+  const timeText = useMemo(
+    () =>
+      currentTime.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
+    [currentTime],
+  );
+
+  const dateText = useMemo(
+    () =>
+      currentTime.toLocaleDateString(
+        language === "HI" ? "hi-IN" : "en-IN",
+        {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        },
+      ),
+    [currentTime, language],
+  );
+
+  return (
+    <AppShell>
+      <div className="dashboard-page">
+
+        {/* COMMAND SEARCH */}
+        <section className="command-search">
+          <div className="command-search-icon">
+            <Icon name="search" size={18} />
+          </div>
+
+          <div className="command-search-content">
+            <span>{t.command}</span>
+            <strong>{t.search}</strong>
+          </div>
+
+          <kbd>⌘ K</kbd>
+        </section>
+
+        {/* HERO */}
+        <section className="dashboard-hero">
+          <div className="hero-content">
+            <span className="hero-kicker">
+              <span className="hero-live-dot" />
+              EDUSPHERE SCHOOL OS
+            </span>
+
+            <h1>
+              {t.evening}, {firstName}
+            </h1>
+
+            <p>{t.overview}</p>
+
+            <div className="hero-meta">
+              <span>
+                <Icon name="calendar" size={14} />
+                {t.session}: <strong>2026–27</strong>
+              </span>
+
+              <span>
+                <span className="hero-small-dot" />
+                {t.operational}
+              </span>
+            </div>
+          </div>
+
+          <div className="hero-date">
+            <span>{t.today}</span>
+            <strong>{timeText}</strong>
+            <small>{dateText}</small>
+          </div>
+        </section>
+
+        {/* KPI */}
+        <section className="stats-grid">
+          <StatCard
+            icon="users"
+            label={t.students}
+            value="—"
+            description={t.enrolled}
+            variant="blue"
+          />
+
+          <StatCard
+            icon="teacher"
+            label={t.teachers}
+            value="—"
+            description={t.teaching}
+            variant="navy"
+          />
+
+          <StatCard
+            icon="check"
+            label={t.attendance}
+            value="—"
+            description={t.todayAttendance}
+            variant="green"
+          />
+
+          <StatCard
+            icon="alert"
+            label={t.actions}
+            value="—"
+            description={t.attention}
+            variant="amber"
+          />
+        </section>
+
+        {/* PULSE + ACTION CENTER */}
+        <div className="dashboard-main-grid">
+
+          <section className="content-card pulse-card">
+            <div className="section-heading">
+              <div className="section-title-group">
+                <span className="section-icon">
+                  <Icon name="pulse" size={18} />
+                </span>
+
+                <div>
+                  <h2>{t.pulse}</h2>
+                  <p>{t.liveOverview}</p>
+                </div>
+              </div>
+
+              <span className="live-badge">
+                <span className="status-dot" />
+                {t.live}
+              </span>
+            </div>
+
+            <div className="pulse-panel">
+              <div className="pulse-summary">
+                <span>{t.operational}</span>
+                <strong>—</strong>
+                <small>{t.noLiveData}</small>
+              </div>
+
+              <div className="pulse-visual">
+                {Array.from({ length: 12 }).map(
+                  (_, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        height: `${30 + ((index * 17) % 60)}%`,
+                      }}
+                    />
+                  ),
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section className="content-card">
+            <div className="section-heading">
+              <div className="section-title-group">
+                <span className="section-icon">
+                  <Icon name="alert" size={18} />
+                </span>
+
+                <div>
+                  <h2>{t.actionCenter}</h2>
+                  <p>{t.actionSubtitle}</p>
+                </div>
+              </div>
+            </div>
+
+            <EmptyState
+              icon="action"
+              title={t.noActions}
+              description={t.actionDescription}
+            />
+          </section>
+        </div>
+
+        {/* EXCEPTIONS + SCHEDULE + AUTOMATION */}
+        <section className="three-column-grid">
+
+          <article className="content-card">
+            <div className="section-heading">
+              <div className="section-title-group">
+                <span className="section-icon">
+                  <Icon name="alert" size={18} />
+                </span>
+
+                <div>
+                  <h2>{t.exceptions}</h2>
+                  <p>{t.exceptionSubtitle}</p>
+                </div>
+              </div>
+            </div>
+
+            <EmptyState
+              icon="alert"
+              title={t.noExceptions}
+              description={t.exceptionDescription}
+            />
+          </article>
+
+          <article className="content-card">
+            <div className="section-heading">
+              <div className="section-title-group">
+                <span className="section-icon">
+                  <Icon name="calendar" size={18} />
+                </span>
+
+                <div>
+                  <h2>{t.schedule}</h2>
+                  <p>{t.scheduleSubtitle}</p>
+                </div>
+              </div>
+            </div>
+
+            <EmptyState
+              icon="calendar"
+              title={t.noSchedule}
+              description={t.scheduleDescription}
+            />
+          </article>
+
+          <article className="content-card">
+            <div className="section-heading">
+              <div className="section-title-group">
+                <span className="section-icon">
+                  <Icon name="automation" size={18} />
+                </span>
+
+                <div>
+                  <h2>{t.automation}</h2>
+                  <p>{t.automationSubtitle}</p>
+                </div>
+              </div>
+
+              <span className="ready-badge">{t.ready}</span>
+            </div>
+
+            <div className="feature-status">
+              <strong>{t.automationReady}</strong>
+              <p>{t.automationDescription}</p>
+            </div>
+          </article>
+        </section>
+
+        {/* INTELLIGENCE ROW */}
+        <section className="intelligence-grid">
+
+          <article className="intelligence-card">
+            <div className="intelligence-icon">
+              <Icon name="calendar" size={18} />
+            </div>
+
+            <div>
+              <span>{t.upcoming}</span>
+              <strong>—</strong>
+              <small>{t.upcomingEmpty}</small>
+            </div>
+          </article>
+
+          <article className="intelligence-card">
+            <div className="intelligence-icon">
+              <Icon name="quality" size={18} />
+            </div>
+
+            <div>
+              <span>{t.quality}</span>
+              <strong>{t.qualityReady}</strong>
+              <small>{t.qualityDescription}</small>
+            </div>
+          </article>
+
+          <article className="intelligence-card">
+            <div className="intelligence-icon">
+              <Icon name="workload" size={18} />
+            </div>
+
+            <div>
+              <span>{t.workload}</span>
+              <strong>{t.workloadReady}</strong>
+              <small>{t.workloadDescription}</small>
+            </div>
+          </article>
+
+          <article className="intelligence-card saved-card">
+            <div className="intelligence-icon">
+              <Icon name="clock" size={18} />
+            </div>
+
+            <div>
+              <span>{t.saved}</span>
+              <strong>{t.savedValue}</strong>
+              <small>{t.savedDescription}</small>
+            </div>
+          </article>
+        </section>
+
+        {/* QUICK ACTIONS */}
+        <section className="content-card quick-card">
+          <div className="section-heading">
+            <div>
+              <h2>{t.quickActions}</h2>
+            </div>
+          </div>
+
+          <div className="quick-actions">
+
+            <Link
+              to="/school-profile"
+              className="quick-action"
+            >
+              <span className="quick-action-icon">
+                <Icon name="school" size={20} />
+              </span>
+
+              <span className="quick-action-content">
+                <strong>{t.schoolProfile}</strong>
+                <small>{t.setup}</small>
+              </span>
+
+              <span className="quick-action-arrow">
+                <Icon name="arrow" size={16} />
+              </span>
+            </Link>
+
+            <Link
+              to="/school-profile"
+              className="quick-action"
+            >
+              <span className="quick-action-icon">
+                <Icon name="calendar" size={20} />
+              </span>
+
+              <span className="quick-action-content">
+                <strong>{t.academicSessions}</strong>
+                <small>{t.setup}</small>
+              </span>
+
+              <span className="quick-action-arrow">
+                <Icon name="arrow" size={16} />
+              </span>
+            </Link>
+
+            <button className="quick-action" type="button">
+              <span className="quick-action-icon">
+                <Icon name="assistant" size={20} />
+              </span>
+
+              <span className="quick-action-content">
+                <strong>{t.assistant}</strong>
+                <small>{t.ready}</small>
+              </span>
+
+              <span className="quick-action-arrow">
+                <Icon name="arrow" size={16} />
+              </span>
+            </button>
+
+            <button className="quick-action" type="button">
+              <span className="quick-action-icon">
+                <Icon name="search" size={20} />
+              </span>
+
+              <span className="quick-action-content">
+                <strong>{t.command}</strong>
+                <small>{t.ready}</small>
+              </span>
+
+              <span className="quick-action-arrow">
+                <Icon name="arrow" size={16} />
+              </span>
+            </button>
+
+          </div>
+        </section>
+
+        {/* SYSTEM */}
+        <section className="content-card system-card">
+          <div className="section-heading">
+            <div className="section-title-group">
+              <span className="section-icon">
+                <Icon name="server" size={18} />
+              </span>
+
+              <div>
+                <h2>{t.system}</h2>
+                <p>{t.healthy}</p>
+              </div>
+            </div>
+
+            <span className="healthy-badge">
+              <span className="status-dot" />
+              {t.healthy}
+            </span>
+          </div>
+
+          <div className="system-grid">
+            <SystemItem
+              icon="users"
+              label={t.authentication}
+              value={t.connected}
+            />
+
+            <SystemItem
+              icon="pulse"
+              label={t.api}
+              value={t.connected}
+            />
+
+            <SystemItem
+              icon="server"
+              label={t.database}
+              value={t.connected}
+            />
+          </div>
+        </section>
+      </div>
+    </AppShell>
+  );
+}
+
+function SystemItem({ icon, label, value }) {
+  return (
+    <div className="system-item">
+      <span className="system-item-icon">
+        <Icon name={icon} size={16} />
+      </span>
+
+      <span className="system-item-label">{label}</span>
+
+      <span className="system-connected">
+        <span className="status-dot" />
+        {value}
+      </span>
+    </div>
+  );
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\pages\Dashboard.jsx =====
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+
+import AppShell from "../components/AppShell";
+import { useAuth } from "../auth/AuthContext";
+
+const TEXT = {
+  EN: {
+    evening: "Good evening",
+    overview:
+      "Your school's operational command center — everything important in one place.",
+    search: "Search anything or type a command...",
+    session: "Academic Session",
+    today: "Today",
+    students: "Students",
+    teachers: "Teachers",
+    attendance: "Attendance",
+    actions: "Pending Actions",
+    enrolled: "Total enrolled",
+    teaching: "Teaching staff",
+    todayAttendance: "Today's attendance",
+    attention: "Needs attention",
+
+    pulse: "School Pulse",
+    liveOverview: "Live operational overview",
+    operational: "School operations",
+    noLiveData: "Live metrics will appear here as modules are connected.",
+
+    actionCenter: "Action Center",
+    actionSubtitle: "Things that need your attention",
+    noActions: "No live actions yet",
+    actionDescription:
+      "Action Center will surface approvals, exceptions, follow-ups and important tasks.",
+
+    exceptions: "Exceptions",
+    exceptionSubtitle: "Problems detected across operations",
+    noExceptions: "No exceptions available",
+    exceptionDescription:
+      "Attendance gaps, fee risks, timetable conflicts and data issues will appear here.",
+
+    schedule: "Today's Schedule",
+    scheduleSubtitle: "Current academic activity",
+    noSchedule: "Timetable data not connected",
+    scheduleDescription:
+      "Today's classes, periods, substitutions and timetable changes will appear here.",
+
+    automation: "Automation",
+    automationSubtitle: "School workflows",
+    automationReady: "Automation Engine ready",
+    automationDescription:
+      "WHEN → CONDITION → ACTION workflows will run from this control center.",
+
+    upcoming: "Upcoming",
+    upcomingSubtitle: "Next important events",
+    upcomingEmpty: "No upcoming events yet",
+
+    quality: "Data Quality",
+    qualitySubtitle: "School data health",
+    qualityReady: "Ready for live checks",
+    qualityDescription:
+      "Missing, duplicate and inconsistent records will be surfaced here.",
+
+    workload: "Workload",
+    workloadSubtitle: "Staff workload intelligence",
+    workloadReady: "Optimizer ready",
+    workloadDescription:
+      "Workload balancing, substitute requirements and operational pressure will appear here.",
+
+    saved: "Human Work Saved",
+    savedSubtitle: "Time saved through EduSphere",
+    savedValue: "—",
+    savedDescription:
+      "Automation and intelligent workflows will calculate actual time saved.",
+
+    quickActions: "Quick Actions",
+    schoolProfile: "School Profile",
+    academicSessions: "Academic Sessions",
+    assistant: "Smart Assistant",
+    command: "Command Search",
+
+    system: "System Health",
+    healthy: "Healthy",
+    authentication: "Authentication",
+    api: "Application API",
+    database: "Database",
+    connected: "Connected",
+
+    ready: "Ready",
+    live: "LIVE",
+    setup: "Setup",
+  },
+
+  HI: {
+    evening: "शुभ संध्या",
+    overview:
+      "आपके स्कूल का ऑपरेशनल कमांड सेंटर — सभी महत्वपूर्ण जानकारी एक जगह।",
+    search: "कुछ भी खोजें या कमांड लिखें...",
+    session: "शैक्षणिक सत्र",
+    today: "आज",
+    students: "विद्यार्थी",
+    teachers: "शिक्षक",
+    attendance: "उपस्थिति",
+    actions: "लंबित कार्य",
+    enrolled: "कुल नामांकित",
+    teaching: "शिक्षण स्टाफ",
+    todayAttendance: "आज की उपस्थिति",
+    attention: "ध्यान आवश्यक",
+
+    pulse: "स्कूल पल्स",
+    liveOverview: "स्कूल की लाइव स्थिति",
+    operational: "स्कूल संचालन",
+    noLiveData:
+      "मॉड्यूल कनेक्ट होने के साथ लाइव मेट्रिक्स यहाँ दिखाई देंगे।",
+
+    actionCenter: "एक्शन सेंटर",
+    actionSubtitle: "ध्यान देने योग्य कार्य",
+    noActions: "अभी कोई लाइव कार्य नहीं",
+    actionDescription:
+      "अप्रूवल, अपवाद, फॉलो-अप और महत्वपूर्ण कार्य यहाँ दिखाई देंगे।",
+
+    exceptions: "अपवाद",
+    exceptionSubtitle: "संचालन में मिली समस्याएँ",
+    noExceptions: "अभी कोई अपवाद नहीं",
+    exceptionDescription:
+      "उपस्थिति, फीस, टाइमटेबल और डेटा संबंधी समस्याएँ यहाँ दिखाई देंगी।",
+
+    schedule: "आज का शेड्यूल",
+    scheduleSubtitle: "आज की अकादमिक गतिविधि",
+    noSchedule: "टाइमटेबल डेटा कनेक्ट नहीं है",
+    scheduleDescription:
+      "कक्षाएँ, पीरियड, सब्स्टीट्यूशन और बदलाव यहाँ दिखाई देंगे।",
+
+    automation: "ऑटोमेशन",
+    automationSubtitle: "स्कूल वर्कफ़्लो",
+    automationReady: "ऑटोमेशन इंजन तैयार",
+    automationDescription:
+      "WHEN → CONDITION → ACTION वर्कफ़्लो यहाँ से चलेंगे।",
+
+    upcoming: "आगामी",
+    upcomingSubtitle: "अगली महत्वपूर्ण गतिविधियाँ",
+    upcomingEmpty: "अभी कोई आगामी गतिविधि नहीं",
+
+    quality: "डेटा क्वालिटी",
+    qualitySubtitle: "स्कूल डेटा स्वास्थ्य",
+    qualityReady: "लाइव जाँच के लिए तैयार",
+    qualityDescription:
+      "गुम, डुप्लिकेट और असंगत रिकॉर्ड यहाँ दिखाई देंगे।",
+
+    workload: "वर्कलोड",
+    workloadSubtitle: "स्टाफ वर्कलोड इंटेलिजेंस",
+    workloadReady: "ऑप्टिमाइज़र तैयार",
+    workloadDescription:
+      "वर्कलोड बैलेंसिंग, सब्स्टीट्यूट और स्टाफ दबाव यहाँ दिखाई देगा।",
+
+    saved: "मानव कार्य समय बचत",
+    savedSubtitle: "EduSphere से बचाया गया समय",
+    savedValue: "—",
+    savedDescription:
+      "ऑटोमेशन के आधार पर वास्तविक समय बचत यहाँ दिखाई जाएगी।",
+
+    quickActions: "त्वरित कार्य",
+    schoolProfile: "स्कूल प्रोफ़ाइल",
+    academicSessions: "शैक्षणिक सत्र",
+    assistant: "स्मार्ट असिस्टेंट",
+    command: "कमांड सर्च",
+
+    system: "सिस्टम स्वास्थ्य",
+    healthy: "स्वस्थ",
+    authentication: "प्रमाणीकरण",
+    api: "एप्लिकेशन API",
+    database: "डेटाबेस",
+    connected: "कनेक्टेड",
+
+    ready: "तैयार",
+    live: "लाइव",
+    setup: "सेटअप",
+  },
+};
+
+function Icon({ name, size = 19 }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true,
+  };
+
+  const icons = {
+    search: (
+      <>
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-4-4" />
+      </>
+    ),
+    users: (
+      <>
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.9" />
+        <path d="M16 3.1a4 4 0 0 1 0 7.8" />
+      </>
+    ),
+    teacher: (
+      <>
+        <rect x="3" y="4" width="18" height="16" rx="2" />
+        <path d="M7 8h5M7 12h10M7 16h6" />
+        <circle cx="18" cy="8" r="1" />
+      </>
+    ),
+    check: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="m8 12 2.5 2.5L16 9" />
+      </>
+    ),
+    alert: (
+      <>
+        <path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z" />
+        <path d="M12 8v4M12 16h.01" />
+      </>
+    ),
+    pulse: (
+      <path d="M3 12h4l2-7 4 14 2-7h6" />
+    ),
+    calendar: (
+      <>
+        <rect x="3" y="4" width="18" height="17" rx="2" />
+        <path d="M8 2v4M16 2v4M3 10h18" />
+      </>
+    ),
+    automation: (
+      <>
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-2.6v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6v-2.6h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V5h2.6v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2v2.6h-.2a1.7 1.7 0 0 0-1.5 1Z" />
+      </>
+    ),
+    quality: (
+      <>
+        <path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z" />
+        <path d="m8.5 12 2.2 2.2L16 9" />
+      </>
+    ),
+    workload: (
+      <>
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <path d="M7 15v-3M12 15V9M17 15v-5" />
+      </>
+    ),
+    clock: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 2" />
+      </>
+    ),
+    assistant: (
+      <>
+        <path d="M12 3 14 9l6 2-6 2-2 6-2-6-6-2 6-2 2-6Z" />
+      </>
+    ),
+    arrow: (
+      <>
+        <path d="M5 12h14" />
+        <path d="m13 6 6 6-6 6" />
+      </>
+    ),
+    server: (
+      <>
+        <rect x="3" y="4" width="18" height="6" rx="2" />
+        <rect x="3" y="14" width="18" height="6" rx="2" />
+        <path d="M7 7h.01M7 17h.01M11 7h6M11 17h6" />
+      </>
+    ),
+  };
+
+  return <svg {...common}>{icons[name]}</svg>;
+}
+
+function StatCard({
+  icon,
+  label,
+  value,
+  description,
+  variant,
+}) {
+  return (
+    <article className="stat-card">
+      <div className={`stat-icon stat-${variant}`}>
+        <Icon name={icon} size={19} />
+      </div>
+
+      <div className="stat-body">
+        <span className="stat-label">{label}</span>
+        <strong className="stat-value">{value}</strong>
+        <span className="stat-description">{description}</span>
+      </div>
+    </article>
+  );
+}
+
+function EmptyState({ icon, title, description }) {
+  return (
+    <div className="empty-state">
+      <div className="empty-icon">
+        <Icon name={icon} size={18} />
+      </div>
+
+      <div>
+        <strong>{title}</strong>
+        <p>{description}</p>
+      </div>
+    </div>
+  );
+}
+
+export default function Dashboard() {
+  const { user } = useAuth();
+
+  const [language, setLanguage] = useState(
+    localStorage.getItem("edusphere_language") || "EN",
+  );
+
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    const handleLanguageChange = (event) => {
+      setLanguage(event.detail);
+    };
+
+    window.addEventListener(
+      "edusphere-language-change",
+      handleLanguageChange,
+    );
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener(
+        "edusphere-language-change",
+        handleLanguageChange,
+      );
+    };
+  }, []);
+
+  const t = TEXT[language];
+
+  const firstName =
+    user?.full_name?.trim()?.split(" ")[0] || "Admin";
+
+  const timeText = useMemo(
+    () =>
+      currentTime.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
+    [currentTime],
+  );
+
+  const dateText = useMemo(
+    () =>
+      currentTime.toLocaleDateString(
+        language === "HI" ? "hi-IN" : "en-IN",
+        {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        },
+      ),
+    [currentTime, language],
+  );
+
+  return (
+    <AppShell>
+      <div className="dashboard-page">
+
+        {/* COMMAND SEARCH */}
+        <section className="command-search">
+          <div className="command-search-icon">
+            <Icon name="search" size={18} />
+          </div>
+
+          <div className="command-search-content">
+            <span>{t.command}</span>
+            <strong>{t.search}</strong>
+          </div>
+
+          <kbd>⌘ K</kbd>
+        </section>
+
+        {/* HERO */}
+        <section className="dashboard-hero">
+          <div className="hero-content">
+            <span className="hero-kicker">
+              <span className="hero-live-dot" />
+              EDUSPHERE SCHOOL OS
+            </span>
+
+            <h1>
+              {t.evening}, {firstName}
+            </h1>
+
+            <p>{t.overview}</p>
+
+            <div className="hero-meta">
+              <span>
+                <Icon name="calendar" size={14} />
+                {t.session}: <strong>2026–27</strong>
+              </span>
+
+              <span>
+                <span className="hero-small-dot" />
+                {t.operational}
+              </span>
+            </div>
+          </div>
+
+          <div className="hero-date">
+            <span>{t.today}</span>
+            <strong>{timeText}</strong>
+            <small>{dateText}</small>
+          </div>
+        </section>
+
+        {/* KPI */}
+        <section className="stats-grid">
+          <StatCard
+            icon="users"
+            label={t.students}
+            value="—"
+            description={t.enrolled}
+            variant="blue"
+          />
+
+          <StatCard
+            icon="teacher"
+            label={t.teachers}
+            value="—"
+            description={t.teaching}
+            variant="navy"
+          />
+
+          <StatCard
+            icon="check"
+            label={t.attendance}
+            value="—"
+            description={t.todayAttendance}
+            variant="green"
+          />
+
+          <StatCard
+            icon="alert"
+            label={t.actions}
+            value="—"
+            description={t.attention}
+            variant="amber"
+          />
+        </section>
+
+        {/* PULSE + ACTION CENTER */}
+        <div className="dashboard-main-grid">
+
+          <section className="content-card pulse-card">
+            <div className="section-heading">
+              <div className="section-title-group">
+                <span className="section-icon">
+                  <Icon name="pulse" size={18} />
+                </span>
+
+                <div>
+                  <h2>{t.pulse}</h2>
+                  <p>{t.liveOverview}</p>
+                </div>
+              </div>
+
+              <span className="live-badge">
+                <span className="status-dot" />
+                {t.live}
+              </span>
+            </div>
+
+            <div className="pulse-panel">
+              <div className="pulse-summary">
+                <span>{t.operational}</span>
+                <strong>—</strong>
+                <small>{t.noLiveData}</small>
+              </div>
+
+              <div className="pulse-visual">
+                {Array.from({ length: 12 }).map(
+                  (_, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        height: `${30 + ((index * 17) % 60)}%`,
+                      }}
+                    />
+                  ),
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section className="content-card">
+            <div className="section-heading">
+              <div className="section-title-group">
+                <span className="section-icon">
+                  <Icon name="alert" size={18} />
+                </span>
+
+                <div>
+                  <h2>{t.actionCenter}</h2>
+                  <p>{t.actionSubtitle}</p>
+                </div>
+              </div>
+            </div>
+
+            <EmptyState
+              icon="action"
+              title={t.noActions}
+              description={t.actionDescription}
+            />
+          </section>
+        </div>
+
+        {/* EXCEPTIONS + SCHEDULE + AUTOMATION */}
+        <section className="three-column-grid">
+
+          <article className="content-card">
+            <div className="section-heading">
+              <div className="section-title-group">
+                <span className="section-icon">
+                  <Icon name="alert" size={18} />
+                </span>
+
+                <div>
+                  <h2>{t.exceptions}</h2>
+                  <p>{t.exceptionSubtitle}</p>
+                </div>
+              </div>
+            </div>
+
+            <EmptyState
+              icon="alert"
+              title={t.noExceptions}
+              description={t.exceptionDescription}
+            />
+          </article>
+
+          <article className="content-card">
+            <div className="section-heading">
+              <div className="section-title-group">
+                <span className="section-icon">
+                  <Icon name="calendar" size={18} />
+                </span>
+
+                <div>
+                  <h2>{t.schedule}</h2>
+                  <p>{t.scheduleSubtitle}</p>
+                </div>
+              </div>
+            </div>
+
+            <EmptyState
+              icon="calendar"
+              title={t.noSchedule}
+              description={t.scheduleDescription}
+            />
+          </article>
+
+          <article className="content-card">
+            <div className="section-heading">
+              <div className="section-title-group">
+                <span className="section-icon">
+                  <Icon name="automation" size={18} />
+                </span>
+
+                <div>
+                  <h2>{t.automation}</h2>
+                  <p>{t.automationSubtitle}</p>
+                </div>
+              </div>
+
+              <span className="ready-badge">{t.ready}</span>
+            </div>
+
+            <div className="feature-status">
+              <strong>{t.automationReady}</strong>
+              <p>{t.automationDescription}</p>
+            </div>
+          </article>
+        </section>
+
+        {/* INTELLIGENCE ROW */}
+        <section className="intelligence-grid">
+
+          <article className="intelligence-card">
+            <div className="intelligence-icon">
+              <Icon name="calendar" size={18} />
+            </div>
+
+            <div>
+              <span>{t.upcoming}</span>
+              <strong>—</strong>
+              <small>{t.upcomingEmpty}</small>
+            </div>
+          </article>
+
+          <article className="intelligence-card">
+            <div className="intelligence-icon">
+              <Icon name="quality" size={18} />
+            </div>
+
+            <div>
+              <span>{t.quality}</span>
+              <strong>{t.qualityReady}</strong>
+              <small>{t.qualityDescription}</small>
+            </div>
+          </article>
+
+          <article className="intelligence-card">
+            <div className="intelligence-icon">
+              <Icon name="workload" size={18} />
+            </div>
+
+            <div>
+              <span>{t.workload}</span>
+              <strong>{t.workloadReady}</strong>
+              <small>{t.workloadDescription}</small>
+            </div>
+          </article>
+
+          <article className="intelligence-card saved-card">
+            <div className="intelligence-icon">
+              <Icon name="clock" size={18} />
+            </div>
+
+            <div>
+              <span>{t.saved}</span>
+              <strong>{t.savedValue}</strong>
+              <small>{t.savedDescription}</small>
+            </div>
+          </article>
+        </section>
+
+        {/* QUICK ACTIONS */}
+        <section className="content-card quick-card">
+          <div className="section-heading">
+            <div>
+              <h2>{t.quickActions}</h2>
+            </div>
+          </div>
+
+          <div className="quick-actions">
+
+            <Link
+              to="/school-profile"
+              className="quick-action"
+            >
+              <span className="quick-action-icon">
+                <Icon name="school" size={20} />
+              </span>
+
+              <span className="quick-action-content">
+                <strong>{t.schoolProfile}</strong>
+                <small>{t.setup}</small>
+              </span>
+
+              <span className="quick-action-arrow">
+                <Icon name="arrow" size={16} />
+              </span>
+            </Link>
+
+            <Link
+              to="/school-profile"
+              className="quick-action"
+            >
+              <span className="quick-action-icon">
+                <Icon name="calendar" size={20} />
+              </span>
+
+              <span className="quick-action-content">
+                <strong>{t.academicSessions}</strong>
+                <small>{t.setup}</small>
+              </span>
+
+              <span className="quick-action-arrow">
+                <Icon name="arrow" size={16} />
+              </span>
+            </Link>
+
+            <button className="quick-action" type="button">
+              <span className="quick-action-icon">
+                <Icon name="assistant" size={20} />
+              </span>
+
+              <span className="quick-action-content">
+                <strong>{t.assistant}</strong>
+                <small>{t.ready}</small>
+              </span>
+
+              <span className="quick-action-arrow">
+                <Icon name="arrow" size={16} />
+              </span>
+            </button>
+
+            <button className="quick-action" type="button">
+              <span className="quick-action-icon">
+                <Icon name="search" size={20} />
+              </span>
+
+              <span className="quick-action-content">
+                <strong>{t.command}</strong>
+                <small>{t.ready}</small>
+              </span>
+
+              <span className="quick-action-arrow">
+                <Icon name="arrow" size={16} />
+              </span>
+            </button>
+
+          </div>
+        </section>
+
+        {/* SYSTEM */}
+        <section className="content-card system-card">
+          <div className="section-heading">
+            <div className="section-title-group">
+              <span className="section-icon">
+                <Icon name="server" size={18} />
+              </span>
+
+              <div>
+                <h2>{t.system}</h2>
+                <p>{t.healthy}</p>
+              </div>
+            </div>
+
+            <span className="healthy-badge">
+              <span className="status-dot" />
+              {t.healthy}
+            </span>
+          </div>
+
+          <div className="system-grid">
+            <SystemItem
+              icon="users"
+              label={t.authentication}
+              value={t.connected}
+            />
+
+            <SystemItem
+              icon="pulse"
+              label={t.api}
+              value={t.connected}
+            />
+
+            <SystemItem
+              icon="server"
+              label={t.database}
+              value={t.connected}
+            />
+          </div>
+        </section>
+      </div>
+    </AppShell>
+  );
+}
+
+function SystemItem({ icon, label, value }) {
+  return (
+    <div className="system-item">
+      <span className="system-item-icon">
+        <Icon name={icon} size={16} />
+      </span>
+
+      <span className="system-item-label">{label}</span>
+
+      <span className="system-connected">
+        <span className="status-dot" />
+        {value}
+      </span>
+    </div>
+  );
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\pages\Login.jsx =====
+import { useState } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+
+import { useAuth } from "../auth/AuthContext";
+
+export default function Login() {
+  const { login, isAuthenticated } = useAuth();
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    setError("");
+    setSubmitting(true);
+
+    try {
+      await login(email.trim(), password);
+
+      const destination =
+        location.state?.from?.pathname || "/dashboard";
+
+      navigate(destination, { replace: true });
+    } catch (err) {
+      const message =
+        err.response?.data?.error?.message ||
+        "Unable to sign in. Please check your email and password.";
+
+      setError(message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <main className="auth-page">
+      <section className="login-card">
+        <div className="brand">
+          <div className="brand-mark">E</div>
+
+          <div>
+            <h1>EduSphere</h1>
+            <p>School Operating System</p>
+          </div>
+        </div>
+
+        <div className="login-heading">
+          <h2>Welcome back</h2>
+          <p>Sign in to continue to EduSphere.</p>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="email">Email</label>
+
+          <input
+            id="email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="Enter your email"
+            required
+          />
+
+          <label htmlFor="password">Password</label>
+
+          <div className="password-field">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              value={password}
+              onChange={(event) =>
+                setPassword(event.target.value)
+              }
+              placeholder="Enter your password"
+              required
+            />
+
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() =>
+                setShowPassword((current) => !current)
+              }
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+
+          {error && (
+            <div className="form-error" role="alert">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="login-button"
+            disabled={submitting}
+          >
+            {submitting ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+      </section>
+    </main>
+  );
+}
+===== C:\Users\jangi\OneDrive\Desktop\EduSphere\frontend\src\pages\SchoolProfile.jsx =====
+import { useEffect, useMemo, useState } from "react";
+import {
+  createAcademicSession,
+  getAcademicSessions,
+  getSchools,
+  setCurrentAcademicSession,
+  updateAcademicSession,
+  updateAcademicSessionStatus,
+  updateSchool,
+  updateSchoolStatus,
+} from "../api/school";
+
+const TEXT = {
+  en: {
+    title: "School Profile",
+    subtitle: "Manage school information and academic sessions.",
+    schoolInfo: "School Information",
+    academicSessions: "Academic Sessions",
+    edit: "Edit",
+    save: "Save Changes",
+    cancel: "Cancel",
+    refresh: "Refresh",
+    active: "Active",
+    inactive: "Inactive",
+    schoolName: "School Name",
+    code: "School Code",
+    email: "Email",
+    phone: "Phone",
+    address: "Address",
+    city: "City",
+    state: "State",
+    country: "Country",
+    postalCode: "Postal Code",
+    website: "Website",
+    affiliation: "Affiliation",
+    principal: "Principal",
+    logoUrl: "Logo URL",
+    current: "Current",
+    setCurrent: "Set Current",
+    addSession: "Add Session",
+    editSession: "Edit Session",
+    sessionName: "Session Name",
+    startDate: "Start Date",
+    endDate: "End Date",
+    status: "Status",
+    actions: "Actions",
+    create: "Create",
+    noSessions: "No academic sessions found.",
+    loading: "Loading...",
+    error: "Something went wrong.",
+    saved: "Changes saved successfully.",
+    sessionCreated: "Academic session created successfully.",
+    sessionUpdated: "Academic session updated successfully.",
+    currentUpdated: "Current academic session updated.",
+    statusUpdated: "Status updated.",
+  },
+  hi: {
+    title: "स्कूल प्रोफ़ाइल",
+    subtitle: "स्कूल की जानकारी और शैक्षणिक सत्र प्रबंधित करें।",
+    schoolInfo: "स्कूल की जानकारी",
+    academicSessions: "शैक्षणिक सत्र",
+    edit: "संपादित करें",
+    save: "परिवर्तन सहेजें",
+    cancel: "रद्द करें",
+    refresh: "रिफ्रेश",
+    active: "सक्रिय",
+    inactive: "निष्क्रिय",
+    schoolName: "स्कूल का नाम",
+    code: "स्कूल कोड",
+    email: "ईमेल",
+    phone: "फोन",
+    address: "पता",
+    city: "शहर",
+    state: "राज्य",
+    country: "देश",
+    postalCode: "पिन कोड",
+    website: "वेबसाइट",
+    affiliation: "मान्यता",
+    principal: "प्रधानाचार्य",
+    logoUrl: "लोगो URL",
+    current: "वर्तमान",
+    setCurrent: "वर्तमान करें",
+    addSession: "सत्र जोड़ें",
+    editSession: "सत्र संपादित करें",
+    sessionName: "सत्र का नाम",
+    startDate: "आरंभ तिथि",
+    endDate: "समाप्ति तिथि",
+    status: "स्थिति",
+    actions: "कार्य",
+    create: "बनाएँ",
+    noSessions: "कोई शैक्षणिक सत्र नहीं मिला।",
+    loading: "लोड हो रहा है...",
+    error: "कुछ गलत हो गया।",
+    saved: "परिवर्तन सफलतापूर्वक सहेजे गए।",
+    sessionCreated: "शैक्षणिक सत्र सफलतापूर्वक बनाया गया।",
+    sessionUpdated: "शैक्षणिक सत्र सफलतापूर्वक अपडेट किया गया।",
+    currentUpdated: "वर्तमान शैक्षणिक सत्र अपडेट किया गया।",
+    statusUpdated: "स्थिति अपडेट की गई।",
+  },
+};
+
+const emptySession = {
+  name: "",
+  start_date: "",
+  end_date: "",
+};
+
+function unwrap(response) {
+  return response?.data ?? response;
+}
+
+export default function SchoolProfile({ language = "en" }) {
+  const t = TEXT[language] || TEXT.en;
+
+  const [school, setSchool] = useState(null);
+  const [form, setForm] = useState({});
+  const [sessions, setSessions] = useState([]);
+  const [editing, setEditing] = useState(false);
+  const [sessionModal, setSessionModal] = useState(null);
+  const [sessionForm, setSessionForm] = useState(emptySession);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+
+  const currentSession = useMemo(
+    () => sessions.find((item) => item.is_current),
+    [sessions],
+  );
+
+  async function loadData() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const schoolsResponse = await getSchools({
+        page: 1,
+        page_size: 1,
+        is_active: true,
+      });
+
+      const schools = unwrap(schoolsResponse);
+      const firstSchool = Array.isArray(schools) ? schools[0] : null;
+
+      if (!firstSchool) {
+        setSchool(null);
+        setSessions([]);
+        return;
+      }
+
+      setSchool(firstSchool);
+      setForm(firstSchool);
+
+      const sessionsResponse = await getAcademicSessions(firstSchool.id, {
+        page: 1,
+        page_size: 100,
+      });
+
+      const sessionData = unwrap(sessionsResponse);
+      setSessions(Array.isArray(sessionData) ? sessionData : []);
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.message ||
+          t.error,
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  function updateField(field, value) {
+    setForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
+  async function saveSchool() {
+    if (!school) return;
+
+    setSaving(true);
+    setError("");
+    setMessage("");
+
+    try {
+      const payload = {
+        name: form.name,
+        email: form.email || null,
+        phone: form.phone || null,
+        address: form.address || null,
+        city: form.city || null,
+        state: form.state || null,
+        country: form.country || "India",
+        postal_code: form.postal_code || null,
+        website: form.website || null,
+        affiliation: form.affiliation || null,
+        principal_name: form.principal_name || null,
+        logo_url: form.logo_url || null,
+      };
+
+      const response = await updateSchool(school.id, payload);
+      const updated = unwrap(response);
+
+      setSchool(updated);
+      setForm(updated);
+      setEditing(false);
+      setMessage(t.saved);
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.message ||
+          t.error,
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function toggleSchoolStatus() {
+    if (!school) return;
+
+    try {
+      const response = await updateSchoolStatus(
+        school.id,
+        !school.is_active,
+      );
+      const updated = unwrap(response);
+
+      setSchool(updated);
+      setForm(updated);
+      setMessage(t.statusUpdated);
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.message ||
+          t.error,
+      );
+    }
+  }
+
+  function openCreateSession() {
+    setSessionForm(emptySession);
+    setSessionModal({ mode: "create" });
+  }
+
+  function openEditSession(session) {
+    setSessionForm({
+      name: session.name,
+      start_date: session.start_date,
+      end_date: session.end_date,
+    });
+    setSessionModal({
+      mode: "edit",
+      id: session.id,
+    });
+  }
+
+  async function saveSession() {
+    if (!school) return;
+
+    setSaving(true);
+    setError("");
+    setMessage("");
+
+    try {
+      if (sessionModal.mode === "create") {
+        await createAcademicSession(school.id, {
+          school_id: school.id,
+          ...sessionForm,
+        });
+
+        setMessage(t.sessionCreated);
+      } else {
+        await updateAcademicSession(sessionModal.id, sessionForm);
+        setMessage(t.sessionUpdated);
+      }
+
+      setSessionModal(null);
+
+      const response = await getAcademicSessions(school.id, {
+        page: 1,
+        page_size: 100,
+      });
+
+      const data = unwrap(response);
+      setSessions(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.message ||
+          t.error,
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function makeCurrent(sessionId) {
+    try {
+      await setCurrentAcademicSession(sessionId);
+
+      const response = await getAcademicSessions(school.id, {
+        page: 1,
+        page_size: 100,
+      });
+
+      const data = unwrap(response);
+      setSessions(Array.isArray(data) ? data : []);
+      setMessage(t.currentUpdated);
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.message ||
+          t.error,
+      );
+    }
+  }
+
+  async function toggleSessionStatus(session) {
+    try {
+      await updateAcademicSessionStatus(
+        session.id,
+        !session.is_active,
+      );
+
+      const response = await getAcademicSessions(school.id, {
+        page: 1,
+        page_size: 100,
+      });
+
+      const data = unwrap(response);
+      setSessions(Array.isArray(data) ? data : []);
+      setMessage(t.statusUpdated);
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.message ||
+          t.error,
+      );
+    }
+  }
+
+  if (loading) {
+    return <div className="page-loading">{t.loading}</div>;
+  }
+
+  if (!school) {
+    return (
+      <div className="page-container">
+        <div className="page-header">
+          <div>
+            <h1>{t.title}</h1>
+            <p>{t.subtitle}</p>
+          </div>
+          <button onClick={loadData}>{t.refresh}</button>
+        </div>
+
+        <div className="empty-state">
+          {t.error}: No school profile found.
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-container">
+      <div className="page-header">
+        <div>
+          <h1>{t.title}</h1>
+          <p>{t.subtitle}</p>
+        </div>
+
+        <div className="page-actions">
+          <button
+            className="secondary-button"
+            onClick={loadData}
+          >
+            {t.refresh}
+          </button>
+
+          {!editing && (
+            <button
+              className="primary-button"
+              onClick={() => setEditing(true)}
+            >
+              {t.edit}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {error && <div className="alert error-alert">{error}</div>}
+      {message && <div className="alert success-alert">{message}</div>}
+
+      <section className="content-card">
+        <div className="card-header">
+          <div>
+            <h2>{t.schoolInfo}</h2>
+            <span className={school.is_active ? "status active" : "status inactive"}>
+              {school.is_active ? t.active : t.inactive}
+            </span>
+          </div>
+
+          <button
+            className="secondary-button"
+            onClick={toggleSchoolStatus}
+          >
+            {school.is_active ? t.inactive : t.active}
+          </button>
+        </div>
+
+        <div className="school-profile-grid">
+          <div className="logo-panel">
+            {form.logo_url ? (
+              <img
+                src={form.logo_url}
+                alt={form.name || "School"}
+                className="school-logo"
+              />
+            ) : (
+              <div className="logo-placeholder">
+                {form.name?.charAt(0)?.toUpperCase() || "S"}
+              </div>
+            )}
+          </div>
+
+          <div className="form-grid">
+            <Field
+              label={t.schoolName}
+              value={form.name}
+              disabled={!editing}
+              onChange={(value) => updateField("name", value)}
+            />
+
+            <Field
+              label={t.code}
+              value={form.code}
+              disabled
+              onChange={() => {}}
+            />
+
+            <Field
+              label={t.email}
+              value={form.email}
+              disabled={!editing}
+              onChange={(value) => updateField("email", value)}
+              type="email"
+            />
+
+            <Field
+              label={t.phone}
+              value={form.phone}
+              disabled={!editing}
+              onChange={(value) => updateField("phone", value)}
+            />
+
+            <Field
+              label={t.city}
+              value={form.city}
+              disabled={!editing}
+              onChange={(value) => updateField("city", value)}
+            />
+
+            <Field
+              label={t.state}
+              value={form.state}
+              disabled={!editing}
+              onChange={(value) => updateField("state", value)}
+            />
+
+            <Field
+              label={t.country}
+              value={form.country}
+              disabled={!editing}
+              onChange={(value) => updateField("country", value)}
+            />
+
+            <Field
+              label={t.postalCode}
+              value={form.postal_code}
+              disabled={!editing}
+              onChange={(value) => updateField("postal_code", value)}
+            />
+
+            <Field
+              label={t.website}
+              value={form.website}
+              disabled={!editing}
+              onChange={(value) => updateField("website", value)}
+            />
+
+            <Field
+              label={t.affiliation}
+              value={form.affiliation}
+              disabled={!editing}
+              onChange={(value) => updateField("affiliation", value)}
+            />
+
+            <Field
+              label={t.principal}
+              value={form.principal_name}
+              disabled={!editing}
+              onChange={(value) => updateField("principal_name", value)}
+            />
+
+            <Field
+              label={t.logoUrl}
+              value={form.logo_url}
+              disabled={!editing}
+              onChange={(value) => updateField("logo_url", value)}
+            />
+
+            <div className="field full-width">
+              <label>{t.address}</label>
+              <textarea
+                value={form.address || ""}
+                disabled={!editing}
+                onChange={(event) =>
+                  updateField("address", event.target.value)
+                }
+                rows={3}
+              />
+            </div>
+          </div>
+        </div>
+
+        {editing && (
+          <div className="form-actions">
+            <button
+              className="secondary-button"
+              onClick={() => {
+                setForm(school);
+                setEditing(false);
+              }}
+            >
+              {t.cancel}
+            </button>
+
+            <button
+              className="primary-button"
+              disabled={saving}
+              onClick={saveSchool}
+            >
+              {saving ? t.loading : t.save}
+            </button>
+          </div>
+        )}
+      </section>
+
+      <section className="content-card">
+        <div className="card-header">
+          <div>
+            <h2>{t.academicSessions}</h2>
+
+            {currentSession && (
+              <p className="current-session">
+                {t.current}: <strong>{currentSession.name}</strong>
+              </p>
+            )}
+          </div>
+
+          <button
+            className="primary-button"
+            onClick={openCreateSession}
+          >
+            + {t.addSession}
+          </button>
+        </div>
+
+        {sessions.length === 0 ? (
+          <div className="empty-state">{t.noSessions}</div>
+        ) : (
+          <div className="session-list">
+            {sessions.map((session) => (
+              <div className="session-row" key={session.id}>
+                <div>
+                  <div className="session-title">
+                    {session.name}
+
+                    {session.is_current && (
+                      <span className="current-badge">
+                        {t.current}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="session-dates">
+                    {session.start_date} → {session.end_date}
+                  </div>
+                </div>
+
+                <div className="session-actions">
+                  <span
+                    className={
+                      session.is_active
+                        ? "status active"
+                        : "status inactive"
+                    }
+                  >
+                    {session.is_active ? t.active : t.inactive}
+                  </span>
+
+                  <button
+                    className="secondary-button"
+                    onClick={() => openEditSession(session)}
+                  >
+                    {t.edit}
+                  </button>
+
+                  {!session.is_current && session.is_active && (
+                    <button
+                      className="primary-button"
+                      onClick={() => makeCurrent(session.id)}
+                    >
+                      {t.setCurrent}
+                    </button>
+                  )}
+
+                  {!session.is_current && (
+                    <button
+                      className="secondary-button"
+                      onClick={() => toggleSessionStatus(session)}
+                    >
+                      {session.is_active ? t.inactive : t.active}
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {sessionModal && (
+        <div className="modal-backdrop">
+          <div className="modal-card">
+            <div className="card-header">
+              <h2>
+                {sessionModal.mode === "create"
+                  ? t.addSession
+                  : t.editSession}
+              </h2>
+
+              <button
+                className="icon-button"
+                onClick={() => setSessionModal(null)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="form-grid">
+              <Field
+                label={t.sessionName}
+                value={sessionForm.name}
+                onChange={(value) =>
+                  setSessionForm((current) => ({
+                    ...current,
+                    name: value,
+                  }))
+                }
+              />
+
+              <Field
+                label={t.startDate}
+                type="date"
+                value={sessionForm.start_date}
+                onChange={(value) =>
+                  setSessionForm((current) => ({
+                    ...current,
+                    start_date: value,
+                  }))
+                }
+              />
+
+              <Field
+                label={t.endDate}
+                type="date"
+                value={sessionForm.end_date}
+                onChange={(value) =>
+                  setSessionForm((current) => ({
+                    ...current,
+                    end_date: value,
+                  }))
+                }
+              />
+            </div>
+
+            <div className="form-actions">
+              <button
+                className="secondary-button"
+                onClick={() => setSessionModal(null)}
+              >
+                {t.cancel}
+              </button>
+
+              <button
+                className="primary-button"
+                disabled={saving}
+                onClick={saveSession}
+              >
+                {saving
+                  ? t.loading
+                  : sessionModal.mode === "create"
+                    ? t.create
+                    : t.save}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  disabled = false,
+  type = "text",
+}) {
+  return (
+    <div className="field">
+      <label>{label}</label>
+
+      <input
+        type={type}
+        value={value || ""}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </div>
+  );
+}

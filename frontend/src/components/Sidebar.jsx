@@ -15,10 +15,22 @@ const navigation = [
     icon: "school",
   },
   {
+    en: "Students",
+    hi: "विद्यार्थी",
+    path: "/students",
+    icon: "users",
+  },
+  {
+    en: "Fee Management",
+    hi: "फीस प्रबंधन",
+    path: "/fees",
+    icon: "wallet",
+  },
+  {
     en: "Users & Identity",
     hi: "यूज़र और पहचान",
     path: "/users",
-    icon: "users",
+    icon: "identity",
   },
 ];
 
@@ -37,10 +49,10 @@ const TEXT = {
   },
 };
 
-function Icon({ name, size = 20 }) {
+function Icon({ name }) {
   const common = {
-    width: size,
-    height: size,
+    width: 20,
+    height: 20,
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -71,42 +83,62 @@ function Icon({ name, size = 20 }) {
 
     users: (
       <>
-        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        <circle cx="9" cy="8" r="3" />
+        <path d="M3 20c0-3.2 2.7-5.5 6-5.5s6 2.3 6 5.5" />
+        <path d="M16 5.5a3 3 0 0 1 0 5.8" />
+        <path d="M18 14.8c1.8.8 3 2.6 3 4.7" />
+      </>
+    ),
+
+    wallet: (
+      <>
+        <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H19a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 17.5Z" />
+        <path d="M4 7h14.5A2.5 2.5 0 0 1 21 9.5v5H17a2.5 2.5 0 0 1 0-5h4" />
+        <path d="M17 12h.01" />
+      </>
+    ),
+
+    identity: (
+      <>
+        <rect x="4" y="3" width="16" height="18" rx="2" />
+        <circle cx="12" cy="9" r="2.5" />
+        <path d="M8 17c.8-2 2.1-3 4-3s3.2 1 4 3" />
       </>
     ),
   };
 
-  return <svg {...common}>{icons[name]}</svg>;
+  return <svg {...common}>{icons[name] || icons.grid}</svg>;
 }
 
 export default function Sidebar() {
-  const [language, setLanguage] = useState(() =>
-    localStorage.getItem("edusphere_language") === "HI"
-      ? "HI"
-      : "EN",
+  const [language, setLanguage] = useState(
+    () => localStorage.getItem("edusphere-language") || "EN",
   );
 
+  const t = TEXT[language] || TEXT.EN;
+
   useEffect(() => {
-    const onLanguageChange = (event) => {
-      setLanguage(event.detail === "HI" ? "HI" : "EN");
+    const handleLanguageChange = (event) => {
+      const nextLanguage =
+        event.detail === "HI" || event.detail === "EN"
+          ? event.detail
+          : localStorage.getItem("edusphere-language") || "EN";
+
+      setLanguage(nextLanguage);
     };
 
     window.addEventListener(
       "edusphere-language-change",
-      onLanguageChange,
+      handleLanguageChange,
     );
 
-    return () =>
+    return () => {
       window.removeEventListener(
         "edusphere-language-change",
-        onLanguageChange,
+        handleLanguageChange,
       );
+    };
   }, []);
-
-  const t = TEXT[language];
 
   return (
     <aside className="sidebar">
@@ -132,15 +164,25 @@ export default function Sidebar() {
               `nav-item ${isActive ? "active" : ""}`
             }
           >
-            <span className="nav-icon">
-              <Icon name={item.icon} />
-            </span>
+            {({ isActive }) => (
+              <>
+                <span className="nav-icon">
+                  <Icon name={item.icon} />
+                </span>
 
-            <span className="nav-label">
-              <strong>
-                {language === "HI" ? item.hi : item.en}
-              </strong>
-            </span>
+                <span className="nav-label">
+                  <strong>
+                    {language === "HI" ? item.hi : item.en}
+                  </strong>
+
+                  <small>
+                    {language === "HI" ? item.en : item.hi}
+                  </small>
+                </span>
+
+                {isActive && <span className="nav-active-indicator" />}
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
