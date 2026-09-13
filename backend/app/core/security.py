@@ -3,7 +3,11 @@ from datetime import datetime, timedelta, timezone
 import bcrypt
 from jose import JWTError, jwt
 
-SECRET_KEY = "edusphere-development-secret-change-before-production"
+from app.core.config import get_settings
+
+
+settings = get_settings()
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
@@ -50,7 +54,7 @@ def create_access_token(
 
     return jwt.encode(
         payload,
-        SECRET_KEY,
+        settings.secret_key,
         algorithm=ALGORITHM,
     )
 
@@ -59,7 +63,7 @@ def decode_access_token(token: str) -> str | None:
     try:
         payload = jwt.decode(
             token,
-            SECRET_KEY,
+            settings.secret_key,
             algorithms=[ALGORITHM],
         )
 

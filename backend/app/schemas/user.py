@@ -7,6 +7,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     full_name: str = Field(min_length=1, max_length=200)
     password: str = Field(min_length=8, max_length=128)
+    role_id: int = Field(gt=0)
 
 
 class UserUpdate(BaseModel):
@@ -16,6 +17,11 @@ class UserUpdate(BaseModel):
         min_length=1,
         max_length=200,
     )
+    role_id: int | None = Field(default=None, gt=0)
+
+
+class UserPasswordReset(BaseModel):
+    password: str = Field(min_length=8, max_length=128)
 
 
 class UserResponse(BaseModel):
@@ -25,6 +31,8 @@ class UserResponse(BaseModel):
     email: EmailStr
     full_name: str
     is_active: bool
+    role_id: int | None = None
+    roles: list[str] = []
     created_at: datetime
     updated_at: datetime
 
@@ -34,3 +42,5 @@ class UserListResponse(BaseModel):
     email: EmailStr
     full_name: str
     is_active: bool
+    role_id: int | None = None
+    roles: list[str] = []

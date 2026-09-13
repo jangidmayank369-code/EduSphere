@@ -1,5 +1,5 @@
 from sqlalchemy import func, or_, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.models.user import User
 
@@ -9,12 +9,20 @@ class UserRepository:
         self.db = db
 
     def get_by_id(self, user_id: int) -> User | None:
-        return self.db.get(User, user_id)
+        statement = (
+            select(User)
+            .options(selectinload(User.roles))
+            .where(User.id == user_id)
+        )
+        return self.db.scalar(statement)
 
     def get_by_email(self, email: str) -> User | None:
-        return self.db.scalar(
-            select(User).where(User.email == email)
+        statement = (
+            select(User)
+            .options(selectinload(User.roles))
+            .where(User.email == email)
         )
+        return self.db.scalar(statement)
 
     def list(
         self,
@@ -27,7 +35,7 @@ class UserRepository:
         query = select(User)
 
         if search:
-            search_term = f"%{search}%"
+            search_term = f"%{search.strip()}%"
             query = query.where(
                 or_(
                     User.full_name.ilike(search_term),
@@ -45,6 +53,7 @@ class UserRepository:
 
         query = (
             query
+            .options(selectinload(User.roles))
             .order_by(User.id.desc())
             .offset((page - 1) * page_size)
             .limit(page_size)

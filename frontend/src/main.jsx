@@ -1,15 +1,17 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 
-const root = document.getElementById("root");
+import App from "./App";
+import { AuthProvider } from "./auth/AuthContext";
+import "./index.css";
 
-createRoot(root).render(
-  <div
-    style={{
-      padding: "40px",
-      fontFamily: "Arial, sans-serif",
-    }}
-  >
-    <h1>EduSphere</h1>
-    <p>React is running successfully.</p>
-  </div>,
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
+  </StrictMode>,
 );

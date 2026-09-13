@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     api_prefix: str = "/api/v1"
 
     database_url: str
+    secret_key: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

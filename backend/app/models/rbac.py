@@ -9,12 +9,12 @@ user_roles = Table(
     Base.metadata,
     Column(
         "user_id",
-        ForeignKey("users.id", ondelete="CASCADE"),
+        ForeignKey("users.id"),
         primary_key=True,
     ),
     Column(
         "role_id",
-        ForeignKey("roles.id", ondelete="CASCADE"),
+        ForeignKey("roles.id"),
         primary_key=True,
     ),
 )
@@ -25,12 +25,12 @@ role_permissions = Table(
     Base.metadata,
     Column(
         "role_id",
-        ForeignKey("roles.id", ondelete="CASCADE"),
+        ForeignKey("roles.id"),
         primary_key=True,
     ),
     Column(
         "permission_id",
-        ForeignKey("permissions.id", ondelete="CASCADE"),
+        ForeignKey("permissions.id"),
         primary_key=True,
     ),
 )
@@ -39,7 +39,9 @@ role_permissions = Table(
 class Role(Base):
     __tablename__ = "roles"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+    )
 
     name: Mapped[str] = mapped_column(
         String(100),
@@ -69,7 +71,9 @@ class Role(Base):
 class Permission(Base):
     __tablename__ = "permissions"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+    )
 
     code: Mapped[str] = mapped_column(
         String(150),
