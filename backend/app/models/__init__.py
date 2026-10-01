@@ -13,6 +13,12 @@ from app.models.student_fee_plan import (
     StudentFeePlanItem,
     StudentFeePlanInstallment,
 )
+from app.models.session import UserSession
+from app.models.mfa import UserMFA
+from app.models.mfa_challenge import MFAChallenge
+from app.models.email_otp import EmailOTP
+
+
 __all__ = [
     "Admission",
     "AuditLog",
@@ -26,4 +32,8 @@ __all__ = [
     "Parent",
     "StudentParent",
     "User",
+    "UserSession",
+    "UserMFA",
+    "MFAChallenge",
+    "EmailOTP",
 ]

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
+import { useAuth } from "../auth/AuthContext";
+
 const navigation = [
   {
     en: "Dashboard",
@@ -31,6 +33,20 @@ const navigation = [
     hi: "यूज़र और पहचान",
     path: "/users",
     icon: "identity",
+    permission: "USER_VIEW",
+  },
+  {
+    en: "Roles & Permissions",
+    hi: "भूमिकाएँ और अनुमतियाँ",
+    path: "/roles",
+    icon: "roles",
+    permission: "RBAC_ROLE_VIEW",
+  },
+  {
+    en: "Security & Sessions",
+    hi: "सुरक्षा और सेशन",
+    path: "/security/sessions",
+    icon: "security",
   },
 ];
 
@@ -105,12 +121,33 @@ function Icon({ name }) {
         <path d="M8 17c.8-2 2.1-3 4-3s3.2 1 4 3" />
       </>
     ),
+
+    roles: (
+      <>
+        <path d="M12 3 19 6v5c0 4.6-3 8.2-7 10-4-1.8-7-5.4-7-10V6Z" />
+        <path d="m9 12 2 2 4-4" />
+      </>
+    ),
+
+    security: (
+      <>
+        <path d="M12 3 20 6v5c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6Z" />
+        <rect x="9" y="10" width="6" height="5" rx="1" />
+        <path d="M10.5 10V8.5a1.5 1.5 0 0 1 3 0V10" />
+      </>
+    ),
   };
 
-  return <svg {...common}>{icons[name] || icons.grid}</svg>;
+  return (
+    <svg {...common}>
+      {icons[name] || icons.grid}
+    </svg>
+  );
 }
 
 export default function Sidebar() {
+  const { user, hasPermission } = useAuth();
+
   const [language, setLanguage] = useState(
     () => localStorage.getItem("edusphere-language") || "EN",
   );
@@ -140,6 +177,14 @@ export default function Sidebar() {
     };
   }, []);
 
+  const visibleNavigation = navigation.filter((item) => {
+    if (!item.permission) {
+      return true;
+    }
+
+    return hasPermission(item.permission);
+  });
+
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
@@ -156,7 +201,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        {navigation.map((item) => (
+        {visibleNavigation.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
@@ -180,7 +225,9 @@ export default function Sidebar() {
                   </small>
                 </span>
 
-                {isActive && <span className="nav-active-indicator" />}
+                {isActive && (
+                  <span className="nav-active-indicator" />
+                )}
               </>
             )}
           </NavLink>
@@ -200,7 +247,10 @@ export default function Sidebar() {
         </div>
 
         <div className="sidebar-footer">
-          <span>EduSphere</span>
+          <span>
+            {user?.full_name || "EduSphere"}
+          </span>
+
           <small>v0.1.0</small>
         </div>
       </div>

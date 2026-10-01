@@ -4,6 +4,7 @@ import {
   getStudent,
   getStudentParents,
   updateStudentStatus,
+  bulkUpdateStudentStatus,
 } from "../api/students";
 import StudentForm from "../components/students/StudentForm";
 import "../student-dashboard.css";
@@ -78,6 +79,14 @@ const TEXT = {
     inactiveStudent: "Inactive student",
     records: "Records",
     cancel: "Cancel",
+    selectAll: "Select all",
+    selected: "selected",
+    activateSelected: "Activate selected",
+    deactivateSelected: "Deactivate selected",
+    confirmBulkActivate: "Activate selected students?",
+    confirmBulkDeactivate: "Deactivate selected students?",
+    bulkUpdateFailed: "Unable to update selected students.",
+    bulkUpdating: "Updating...",
   },
 
   hi: {
@@ -149,6 +158,14 @@ const TEXT = {
     inactiveStudent: "निष्क्रिय विद्यार्थी",
     records: "रिकॉर्ड",
     cancel: "रद्द करें",
+    selectAll: "सभी चुनें",
+    selected: "चयनित",
+    activateSelected: "चयनित सक्रिय करें",
+    deactivateSelected: "चयनित निष्क्रिय करें",
+    confirmBulkActivate: "क्या चयनित विद्यार्थियों को सक्रिय करना है?",
+    confirmBulkDeactivate: "क्या चयनित विद्यार्थियों को निष्क्रिय करना है?",
+    bulkUpdateFailed: "चयनित विद्यार्थियों की स्थिति अपडेट नहीं हो सकी।",
+    bulkUpdating: "अपडेट हो रहा है...",
   },
 };
 
@@ -257,6 +274,8 @@ export default function StudentDashboard() {
   const [parentError, setParentError] = useState("");
 
   const [statusUpdating, setStatusUpdating] = useState(false);
+  const [selectedStudentIds, setSelectedStudentIds] = useState([]);
+  const [bulkUpdating, setBulkUpdating] = useState(false);
   const [showStudentForm, setShowStudentForm] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
 
@@ -398,6 +417,93 @@ export default function StudentDashboard() {
   function openCreateForm() {
     setEditingStudent(null);
     setShowStudentForm(true);
+  }
+
+  function toggleStudentSelection(studentId) {
+    setSelectedStudentIds((current) =>
+      current.includes(studentId)
+        ? current.filter((id) => id !== studentId)
+        : [...current, studentId]
+    );
+  }
+
+  function toggleSelectAllVisible() {
+    const visibleIds = filteredStudents.map((student) => student.id);
+
+    setSelectedStudentIds((current) => {
+      const allVisibleSelected =
+        visibleIds.length > 0 &&
+        visibleIds.every((id) => current.includes(id));
+
+      if (allVisibleSelected) {
+        return current.filter((id) => !visibleIds.includes(id));
+      }
+
+      return Array.from(new Set([...current, ...visibleIds]));
+    });
+  }
+
+  function clearStudentSelection() {
+    setSelectedStudentIds([]);
+  }
+
+  async function handleBulkStatusChange(nextStatus) {
+    if (bulkUpdating || selectedStudentIds.length === 0) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      nextStatus
+        ? text.confirmBulkActivate
+        : text.confirmBulkDeactivate
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setBulkUpdating(true);
+
+    try {
+      await bulkUpdateStudentStatus({
+        student_ids: selectedStudentIds,
+        is_active: nextStatus,
+      });
+
+      setStudents((current) =>
+        current.map((student) =>
+          selectedStudentIds.includes(student.id)
+            ? {
+                ...student,
+                is_active: nextStatus,
+                status: nextStatus ? "active" : "inactive",
+              }
+            : student
+        )
+      );
+
+      if (
+        selectedStudent &&
+        selectedStudentIds.includes(selectedStudent.id)
+      ) {
+        setSelectedStudent((current) =>
+          current
+            ? {
+                ...current,
+                is_active: nextStatus,
+                status: nextStatus ? "active" : "inactive",
+              }
+            : current
+        );
+      }
+
+      clearStudentSelection();
+    } catch (error) {
+      console.error("Bulk student status update error:", error);
+      window.alert(text.bulkUpdateFailed);
+    } finally {
+      setBulkUpdating(false);
+    }
   }
 
   function openEditForm() {
@@ -563,6 +669,54 @@ export default function StudentDashboard() {
             />
           </div>
 
+          <div className="student-bulk-toolbar">
+            <button
+              type="button"
+              className="student-filter"
+              onClick={toggleSelectAllVisible}
+              disabled={
+                bulkUpdating || filteredStudents.length === 0
+              }
+            >
+              {text.selectAll}
+            </button>
+
+            {selectedStudentIds.length > 0 && (
+              <>
+                <span className="student-bulk-count">
+                  {selectedStudentIds.length} {text.selected}
+                </span>
+
+                <button
+                  type="button"
+                  className="student-filter"
+                  onClick={() => handleBulkStatusChange(true)}
+                  disabled={bulkUpdating}
+                >
+                  {bulkUpdating ? text.bulkUpdating : text.activateSelected}
+                </button>
+
+                <button
+                  type="button"
+                  className="student-filter danger"
+                  onClick={() => handleBulkStatusChange(false)}
+                  disabled={bulkUpdating}
+                >
+                  {bulkUpdating ? text.bulkUpdating : text.deactivateSelected}
+                </button>
+
+                <button
+                  type="button"
+                  className="student-filter"
+                  onClick={clearStudentSelection}
+                  disabled={bulkUpdating}
+                >
+                  {text.cancel}
+                </button>
+              </>
+            )}
+          </div>
+
           <div className="student-status-filter">
             <button
               type="button"
@@ -641,18 +795,32 @@ export default function StudentDashboard() {
                 const name = getFullName(student);
 
                 return (
-                  <button
-                    type="button"
+                  <div
                     key={student.id}
                     className={
                       selected
                         ? "student-list-item selected"
                         : "student-list-item"
                     }
-                    onClick={() =>
-                      selectStudent(student.id)
-                    }
                   >
+                    <input
+                      type="checkbox"
+                      className="student-select-checkbox"
+                      checked={selectedStudentIds.includes(student.id)}
+                      onChange={() =>
+                        toggleStudentSelection(student.id)
+                      }
+                      onClick={(event) => event.stopPropagation()}
+                      aria-label={`${text.selectAll}: ${name || text.noValue}`}
+                    />
+
+                    <button
+                      type="button"
+                      className="student-list-item-main"
+                      onClick={() =>
+                        selectStudent(student.id)
+                      }
+                    >
                     {student.photo_url ? (
                       <img
                         src={student.photo_url}
@@ -689,7 +857,8 @@ export default function StudentDashboard() {
                           : "student-status-dot inactive"
                       }
                     />
-                  </button>
+                    </button>
+                  </div>
                 );
               })}
           </div>

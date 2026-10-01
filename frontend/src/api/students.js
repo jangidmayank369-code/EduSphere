@@ -9,49 +9,37 @@ function unwrap(response) {
 function unwrapList(response) {
   const data = unwrap(response);
 
-  if (Array.isArray(data)) {
-    return data;
-  }
-
-  if (Array.isArray(data?.items)) {
-    return data.items;
-  }
-
-  if (Array.isArray(data?.data)) {
-    return data.data;
-  }
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.items)) return data.items;
+  if (Array.isArray(data?.data)) return data.data;
 
   return [];
 }
 
-/* =========================================================
-   STUDENTS
-========================================================= */
-
+/**
+ * Student list
+ */
 export async function getStudents(params = {}) {
   const response = await apiClient.get(BASE_URL, {
     params: {
       ...(params.schoolId !== undefined
         ? { school_id: params.schoolId }
         : {}),
+
       ...(params.academicSessionId !== undefined
-        ? {
-            academic_session_id:
-              params.academicSessionId,
-          }
+        ? { academic_session_id: params.academicSessionId }
         : {}),
-      ...(params.search
-        ? { search: params.search }
-        : {}),
+
+      ...(params.search ? { search: params.search } : {}),
+
       ...(params.isActive !== undefined
         ? { is_active: params.isActive }
         : {}),
-      ...(params.status
-        ? { status: params.status }
-        : {}),
-      ...(params.page !== undefined
-        ? { page: params.page }
-        : {}),
+
+      ...(params.status ? { status: params.status } : {}),
+
+      ...(params.page !== undefined ? { page: params.page } : {}),
+
       ...(params.pageSize !== undefined
         ? { page_size: params.pageSize }
         : {}),
@@ -61,43 +49,40 @@ export async function getStudents(params = {}) {
   return unwrapList(response);
 }
 
+/**
+ * Student detail
+ */
 export async function getStudent(studentId) {
-  const response = await apiClient.get(
-    `${BASE_URL}/${studentId}`,
-  );
+  const response = await apiClient.get(`${BASE_URL}/${studentId}`);
 
   return unwrap(response);
 }
 
+/**
+ * Create student
+ */
 export async function createStudent(payload) {
-  const response = await apiClient.post(
-    BASE_URL,
-    payload,
-  );
+  const response = await apiClient.post(BASE_URL, payload);
 
   return unwrap(response);
 }
 
-export async function updateStudent(
-  studentId,
-  payload,
-) {
+/**
+ * Update student
+ */
+export async function updateStudent(studentId, payload) {
   const response = await apiClient.patch(
     `${BASE_URL}/${studentId}`,
-    payload,
+    payload
   );
 
   return unwrap(response);
 }
 
-/* =========================================================
-   STUDENT STATUS
-========================================================= */
-
-export async function updateStudentStatus(
-  studentId,
-  isActive,
-) {
+/**
+ * Activate / deactivate single student
+ */
+export async function updateStudentStatus(studentId, isActive) {
   const response = await apiClient.patch(
     `${BASE_URL}/${studentId}/status`,
     {
@@ -105,59 +90,65 @@ export async function updateStudentStatus(
         typeof isActive === "object"
           ? isActive?.is_active
           : isActive,
-    },
+    }
   );
 
   return unwrap(response);
 }
 
-/* =========================================================
-   STUDENT PARENTS
-========================================================= */
+/**
+ * Activate / deactivate multiple students
+ *
+ * Expected payload:
+ * {
+ *   student_ids: [1, 2, 3],
+ *   is_active: true
+ * }
+ */
+export async function bulkUpdateStudentStatus(payload) {
+  const response = await apiClient.post(
+    `${BASE_URL}/bulk-status`,
+    {
+      student_ids: Array.isArray(payload?.student_ids)
+        ? payload.student_ids
+        : [],
 
-export async function getStudentParents(
-  studentId,
-) {
+      is_active: Boolean(payload?.is_active),
+    }
+  );
+
+  return unwrap(response);
+}
+
+/**
+ * Student parents
+ */
+export async function getStudentParents(studentId) {
   const response = await apiClient.get(
-    `${BASE_URL}/${studentId}/parents`,
+    `${BASE_URL}/${studentId}/parents`
   );
 
   return unwrapList(response);
 }
 
-export async function linkStudentParent(
-  studentId,
-  payload,
-) {
+/**
+ * Link parent with student
+ */
+export async function linkStudentParent(studentId, payload) {
   const response = await apiClient.post(
     `${BASE_URL}/${studentId}/parents`,
-    payload,
+    payload
   );
 
   return unwrap(response);
 }
 
-export async function unlinkStudentParent(
-  studentId,
-  parentId,
-) {
+/**
+ * Unlink parent from student
+ */
+export async function unlinkStudentParent(studentId, parentId) {
   const response = await apiClient.delete(
-    `${BASE_URL}/${studentId}/parents/${parentId}`,
-  );
-
-  return unwrap(response);
-}
-
-/* =========================================================
-   BULK STATUS
-========================================================= */
-
-export async function bulkUpdateStudentStatus(
-  payload,
-) {
-  const response = await apiClient.post(
-    `${BASE_URL}/bulk-status`,
-    payload,
+    `${BASE_URL}/${studentId}/parents/${parentId}`
   );
 
   return unwrap(response);

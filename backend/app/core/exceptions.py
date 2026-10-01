@@ -1,74 +1,64 @@
+from __future__ import annotations
+
 from typing import Any
 
 
 class EduSphereException(Exception):
-    """Base exception for all expected EduSphere application errors."""
+    """
+    Base exception for the EduSphere application.
+    """
+
+    status_code: int = 500
+    code: str = "APPLICATION_ERROR"
 
     def __init__(
         self,
-        message: str,
+        message: str = "An unexpected application error occurred.",
         *,
-        code: str = "APPLICATION_ERROR",
-        status_code: int = 400,
-        details: Any | None = None,
-    ) -> None:
-        self.message = message
-        self.code = code
-        self.status_code = status_code
-        self.details = details
-
+        code: str | None = None,
+        details: Any = None,
+    ):
         super().__init__(message)
 
-
-class NotFoundError(EduSphereException):
-    """Raised when a requested resource does not exist."""
-
-    def __init__(
-        self,
-        message: str = "Resource not found.",
-        *,
-        code: str = "NOT_FOUND",
-        details: Any | None = None,
-    ) -> None:
-        super().__init__(
-            message,
-            code=code,
-            status_code=404,
-            details=details,
-        )
+        self.message = message
+        self.code = code or self.code
+        self.details = details
 
 
-class ConflictError(EduSphereException):
-    """Raised when an operation conflicts with existing data/state."""
+# Backward-compatible base name used by newer modules.
+AppError = EduSphereException
 
-    def __init__(
-        self,
-        message: str = "Resource conflict.",
-        *,
-        code: str = "CONFLICT",
-        details: Any | None = None,
-    ) -> None:
-        super().__init__(
-            message,
-            code=code,
-            status_code=409,
-            details=details,
-        )
+
+class BadRequestError(EduSphereException):
+    status_code = 400
+    code = "BAD_REQUEST"
+
+
+class UnauthorizedError(EduSphereException):
+    status_code = 401
+    code = "UNAUTHORIZED"
 
 
 class ForbiddenError(EduSphereException):
-    """Raised when an authenticated user lacks permission."""
+    status_code = 403
+    code = "FORBIDDEN"
 
-    def __init__(
-        self,
-        message: str = "You do not have permission to perform this action.",
-        *,
-        code: str = "FORBIDDEN",
-        details: Any | None = None,
-    ) -> None:
-        super().__init__(
-            message,
-            code=code,
-            status_code=403,
-            details=details,
-        )
+
+class NotFoundError(EduSphereException):
+    status_code = 404
+    code = "NOT_FOUND"
+
+
+class ConflictError(EduSphereException):
+    status_code = 409
+    code = "CONFLICT"
+
+
+class ValidationError(EduSphereException):
+    status_code = 422
+    code = "VALIDATION_ERROR"
+
+
+class RateLimitError(EduSphereException):
+    status_code = 429
+    code = "RATE_LIMIT_EXCEEDED"

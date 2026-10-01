@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import AppShell from "../components/AppShell";
+
 import { useAuth } from "../auth/AuthContext";
 
 const TEXT = {
@@ -120,7 +120,7 @@ export default function Dashboard() {
   ];
   const filtered = normalizedQuery ? commandItems.filter((x) => `${x.name} ${x.desc} ${x.keywords}`.toLowerCase().includes(normalizedQuery)) : commandItems;
 
-  return <AppShell>
+  return (
     <div className="dash-page">
       <section className="dash-commandbar">
         <div className="dash-command-icon"><Icon name="search" size={22} /></div>
@@ -172,5 +172,5 @@ export default function Dashboard() {
 
       <section className="dash-panel dash-health"><Heading icon="database" title={t.health} subtitle={t.healthy} badge={t.healthy} /><div className="health-grid"><div><span><Icon name="users" size={18} /></span><div><strong>{t.auth}</strong><small>{t.connected}</small></div><i /></div><div><span><Icon name="pulse" size={18} /></span><div><strong>{t.api}</strong><small>{t.connected}</small></div><i /></div><div><span><Icon name="database" size={18} /></span><div><strong>{t.db}</strong><small>{t.connected}</small></div><i /></div></div><div className="health-message"><span><Icon name="shield" size={17} /></span><strong>{t.strong}</strong><small>Core foundation services are available.</small></div></section>
     </div>
-  </AppShell>;
+  );
 }

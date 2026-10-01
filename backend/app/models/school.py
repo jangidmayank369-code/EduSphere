@@ -5,6 +5,7 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
+    Integer,
     String,
     Text,
     func,
@@ -21,6 +22,10 @@ class School(Base):
         primary_key=True,
     )
 
+    # ------------------------------------------------------------------
+    # School Identity
+    # ------------------------------------------------------------------
+
     name: Mapped[str] = mapped_column(
         String(255),
         nullable=False,
@@ -33,13 +38,17 @@ class School(Base):
         index=True,
     )
 
+    # ------------------------------------------------------------------
+    # Contact Information
+    # ------------------------------------------------------------------
+
     email: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,
     )
 
     phone: Mapped[str | None] = mapped_column(
-        String(20),
+        String(30),
         nullable=True,
     )
 
@@ -74,20 +83,152 @@ class School(Base):
         nullable=True,
     )
 
+    # ------------------------------------------------------------------
+    # Affiliation / Registration
+    # ------------------------------------------------------------------
+
     affiliation: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,
     )
+
+    affiliation_number: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
+
+    registration_number: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
+
+    recognition_number: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
+
+    udise_code: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+        index=True,
+    )
+
+    school_type: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
+    management_type: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
+
+    established_year: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+
+    # ------------------------------------------------------------------
+    # Tax / Financial Identity
+    # ------------------------------------------------------------------
+
+    pan_number: Mapped[str | None] = mapped_column(
+        String(20),
+        nullable=True,
+    )
+
+    tan_number: Mapped[str | None] = mapped_column(
+        String(20),
+        nullable=True,
+    )
+
+    gst_number: Mapped[str | None] = mapped_column(
+        String(30),
+        nullable=True,
+    )
+
+    # ------------------------------------------------------------------
+    # School Leadership
+    # ------------------------------------------------------------------
 
     principal_name: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,
     )
 
+    principal_email: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+
+    principal_phone: Mapped[str | None] = mapped_column(
+        String(30),
+        nullable=True,
+    )
+
+    # ------------------------------------------------------------------
+    # Branding
+    # ------------------------------------------------------------------
+
     logo_url: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
     )
+
+    favicon_url: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+    )
+
+    primary_color: Mapped[str | None] = mapped_column(
+        String(20),
+        nullable=True,
+    )
+
+    secondary_color: Mapped[str | None] = mapped_column(
+        String(20),
+        nullable=True,
+    )
+
+    tagline: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+
+    # ------------------------------------------------------------------
+    # Academic Configuration
+    # ------------------------------------------------------------------
+
+    academic_year_start_month: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=4,
+    )
+
+    academic_year_end_month: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=3,
+    )
+
+    grading_system: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
+
+    attendance_type: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
+    working_days_per_week: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+
+    # ------------------------------------------------------------------
+    # School Status
+    # ------------------------------------------------------------------
 
     is_active: Mapped[bool] = mapped_column(
         Boolean,
@@ -95,6 +236,10 @@ class School(Base):
         default=True,
         index=True,
     )
+
+    # ------------------------------------------------------------------
+    # Timestamps
+    # ------------------------------------------------------------------
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -108,6 +253,10 @@ class School(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
+
+    # ------------------------------------------------------------------
+    # Relationships
+    # ------------------------------------------------------------------
 
     academic_sessions: Mapped[
         list["AcademicSession"]
@@ -148,6 +297,10 @@ class AcademicSession(Base):
         index=True,
     )
 
+    # ------------------------------------------------------------------
+    # Session Identity
+    # ------------------------------------------------------------------
+
     name: Mapped[str] = mapped_column(
         String(100),
         nullable=False,
@@ -163,6 +316,10 @@ class AcademicSession(Base):
         nullable=False,
     )
 
+    # ------------------------------------------------------------------
+    # Session Lifecycle
+    # ------------------------------------------------------------------
+
     is_current: Mapped[bool] = mapped_column(
         Boolean,
         nullable=False,
@@ -177,6 +334,56 @@ class AcademicSession(Base):
         index=True,
     )
 
+    is_closed: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+        index=True,
+    )
+
+    is_archived: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+        index=True,
+    )
+
+    closed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    archived_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    # ------------------------------------------------------------------
+    # Carry-forward / Clone Tracking
+    # ------------------------------------------------------------------
+
+    cloned_from_session_id: Mapped[int | None] = mapped_column(
+        ForeignKey(
+            "academic_sessions.id",
+            ondelete="SET NULL",
+        ),
+        nullable=True,
+        index=True,
+    )
+
+    carried_forward_from_session_id: Mapped[int | None] = mapped_column(
+        ForeignKey(
+            "academic_sessions.id",
+            ondelete="SET NULL",
+        ),
+        nullable=True,
+        index=True,
+    )
+
+    # ------------------------------------------------------------------
+    # Timestamps
+    # ------------------------------------------------------------------
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
@@ -189,6 +396,10 @@ class AcademicSession(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
+
+    # ------------------------------------------------------------------
+    # Relationships
+    # ------------------------------------------------------------------
 
     school: Mapped[School] = relationship(
         back_populates="academic_sessions",
@@ -205,4 +416,38 @@ class AcademicSession(Base):
     ] = relationship(
         back_populates="academic_session",
         cascade="all, delete-orphan",
+    )
+
+    cloned_from_session: Mapped[
+        "AcademicSession | None"
+    ] = relationship(
+        "AcademicSession",
+        foreign_keys=[cloned_from_session_id],
+        remote_side=[id],
+        back_populates="cloned_sessions",
+    )
+
+    cloned_sessions: Mapped[
+        list["AcademicSession"]
+    ] = relationship(
+        "AcademicSession",
+        foreign_keys=[cloned_from_session_id],
+        back_populates="cloned_from_session",
+    )
+
+    carried_forward_from_session: Mapped[
+        "AcademicSession | None"
+    ] = relationship(
+        "AcademicSession",
+        foreign_keys=[carried_forward_from_session_id],
+        remote_side=[id],
+        back_populates="carried_forward_sessions",
+    )
+
+    carried_forward_sessions: Mapped[
+        list["AcademicSession"]
+    ] = relationship(
+        "AcademicSession",
+        foreign_keys=[carried_forward_from_session_id],
+        back_populates="carried_forward_from_session",
     )

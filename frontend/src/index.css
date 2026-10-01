@@ -2698,4 +2698,943 @@ body {
     right: 5px;
   }
 }
+/* =========================================================
+   GLOBAL SESSION TIMEOUT
+========================================================= */
 
+.session-timeout {
+  min-width: 92px;
+  height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 6px 11px;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: var(--navy-800);
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.session-timeout > svg {
+  flex: 0 0 auto;
+  color: var(--blue);
+}
+
+.session-timeout-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.05;
+}
+
+.session-timeout-copy span {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.session-timeout-copy strong {
+  margin-top: 3px;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  font-variant-numeric: tabular-nums;
+  color: var(--navy-950);
+}
+
+.session-timeout.warning {
+  border-color: #f0c36a;
+  background: #fff9ea;
+  color: #9b6511;
+  box-shadow: 0 0 0 3px rgba(240, 195, 106, 0.12);
+}
+
+.session-timeout.warning > svg {
+  color: #c17a0b;
+}
+
+.session-timeout.warning
+  .session-timeout-copy
+  span {
+  color: #a36a12;
+}
+
+.session-timeout.warning
+  .session-timeout-copy
+  strong {
+  color: #8a5607;
+}
+
+/* =========================================================
+   SECURITY & SESSIONS PAGE
+========================================================= */
+
+.security-page {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.security-eyebrow {
+  margin-bottom: 7px;
+
+  color: var(--blue);
+
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.security-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-bottom: 24px;
+}
+
+.security-header h1 {
+  margin: 0;
+
+  color: var(--navy-950);
+
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 900;
+}
+
+.security-header p {
+  margin: 8px 0 0;
+
+  color: var(--muted);
+
+  font-size: 14px;
+}
+
+.security-refresh {
+  height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 0 15px;
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  background: #fff;
+  color: var(--navy-800);
+
+  font-weight: 800;
+}
+
+.security-refresh:hover {
+  border-color: #c9d4e4;
+  background: #f8faff;
+}
+
+.security-alert {
+  margin-bottom: 18px;
+  padding: 13px 15px;
+
+  border: 1px solid #f0c8c8;
+  border-radius: 12px;
+
+  background: #fff6f6;
+  color: #a53838;
+
+  font-weight: 700;
+}
+
+.security-overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+
+  margin-bottom: 20px;
+}
+
+.security-stat {
+  padding: 18px;
+
+  border: 1px solid var(--border);
+  border-radius: 16px;
+
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.security-stat-label {
+  display: block;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.security-stat-value {
+  display: block;
+
+  margin-top: 7px;
+
+  color: var(--navy-950);
+
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.security-stat-note {
+  display: block;
+
+  margin-top: 4px;
+
+  color: var(--muted-light);
+
+  font-size: 12px;
+}
+
+.security-panel {
+  overflow: hidden;
+
+  border: 1px solid var(--border);
+  border-radius: 18px;
+
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.security-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+
+  padding: 18px 20px;
+
+  border-bottom: 1px solid var(--border-light);
+}
+
+.security-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.security-panel-icon {
+  width: 38px;
+  height: 38px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 11px;
+
+  background: #f0edff;
+  color: #6337d6;
+}
+
+.security-panel-title h2 {
+  margin: 0;
+
+  color: var(--navy-950);
+
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.security-panel-title p {
+  margin: 2px 0 0;
+
+  color: var(--muted);
+
+  font-size: 12px;
+}
+
+.security-count {
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  background: #f3f5fa;
+  color: var(--navy-800);
+
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.security-session-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.security-session {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+
+  padding: 17px 20px;
+
+  border-bottom: 1px solid var(--border-light);
+}
+
+.security-session:last-child {
+  border-bottom: 0;
+}
+
+.security-device {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 12px;
+
+  background: #f1f5ff;
+  color: #315fba;
+}
+
+.security-session-main {
+  min-width: 0;
+}
+
+.security-session-main strong {
+  display: block;
+
+  color: var(--navy-950);
+
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.security-session-main span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--muted);
+
+  font-size: 12px;
+}
+
+.security-session-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+
+  margin-top: 7px;
+}
+
+.security-session-meta span {
+  display: inline-flex;
+
+  margin: 0;
+  padding: 4px 7px;
+
+  border-radius: 7px;
+
+  background: #f7f8fb;
+
+  color: var(--muted);
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.security-current {
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  background: #eafaf4;
+  color: #11825a;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.security-revoke {
+  height: 34px;
+
+  padding: 0 10px;
+
+  border: 1px solid #ead3d3;
+  border-radius: 9px;
+
+  background: #fff;
+  color: #b34848;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.security-revoke:hover {
+  background: #fff6f6;
+}
+
+.security-empty {
+  padding: 40px 20px;
+
+  text-align: center;
+  color: var(--muted);
+}
+
+.security-empty strong {
+  display: block;
+
+  color: var(--navy-800);
+
+  font-size: 14px;
+}
+
+.security-empty p {
+  margin: 5px 0 0;
+
+  font-size: 12px;
+}
+
+.security-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  padding: 16px 20px;
+
+  border-top: 1px solid var(--border-light);
+}
+
+.security-danger-button {
+  height: 40px;
+
+  padding: 0 15px;
+
+  border: 1px solid #e3bcbc;
+  border-radius: 10px;
+
+  background: #fff7f7;
+  color: #a83d3d;
+
+  font-weight: 800;
+}
+
+.security-danger-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1000px) {
+  .security-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .security-header {
+    flex-direction: column;
+  }
+
+  .session-timeout {
+    min-width: 82px;
+  }
+}
+
+@media (max-width: 760px) {
+  .security-session {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .security-session > :last-child {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .user-details {
+    display: none;
+  }
+
+  .topbar-right {
+    gap: 7px;
+  }
+}
+
+@media (max-width: 560px) {
+  .session-timeout-copy span {
+    display: none;
+  }
+
+  .session-timeout {
+    min-width: auto;
+    padding: 7px 9px;
+  }
+
+  .security-header h1 {
+    font-size: 27px;
+  }
+}
+/* =========================================================
+   EDUSPHERE MFA — ADDITIVE STYLES ONLY
+   Added for Login_easy_mfa.jsx.
+   Existing Dashboard / App Shell / Security styles above
+   are intentionally preserved.
+========================================================= */
+
+.mfa-login-card {
+  max-width: 620px;
+}
+
+.mfa-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -2px 0 24px;
+}
+
+.mfa-progress-step {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d9e2ef;
+  border-radius: 50%;
+  background: #f7f9fc;
+  color: #7a899e;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.mfa-progress-step.done {
+  border-color: #c8d7f5;
+  background: #eef3ff;
+  color: #315fba;
+}
+
+.mfa-progress-step.active {
+  border-color: #182454;
+  background: #182454;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(24, 36, 84, .16);
+}
+
+.mfa-progress-line {
+  height: 1px;
+  flex: 1;
+  background: #dce4ef;
+}
+
+.mfa-email-hint {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 13px 15px;
+  border: 1px solid #e0e6f0;
+  border-radius: 12px;
+  background: #f7f9fd;
+}
+
+.mfa-email-hint > span:first-child {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #f0eaff;
+  font-size: 16px;
+}
+
+.mfa-email-hint strong,
+.mfa-email-hint small {
+  display: block;
+}
+
+.mfa-email-hint strong {
+  color: #172b4d;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mfa-email-hint small {
+  margin-top: 2px;
+  color: #7c899d;
+  font-size: 9px;
+}
+
+.mfa-methods {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin-bottom: 12px;
+}
+
+.mfa-method-card {
+  position: relative;
+  min-height: 92px;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 12px;
+  border: 1px solid #dce4ef;
+  border-radius: 12px;
+  background: #fff;
+  color: #172b4d;
+  text-align: left;
+  transition: border-color .18s ease, background .18s ease,
+              box-shadow .18s ease, transform .18s ease;
+}
+
+.mfa-method-card:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: #bdcbe0;
+  box-shadow: 0 7px 18px rgba(10, 32, 67, .07);
+}
+
+.mfa-method-card.active {
+  border-color: #8169e8;
+  background: #f8f5ff;
+  box-shadow: 0 0 0 2px rgba(99, 55, 214, .08);
+}
+
+.mfa-method-card:disabled {
+  cursor: not-allowed;
+  opacity: .62;
+}
+
+.mfa-method-icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #f0edff;
+  color: #6337d6;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.mfa-method-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.mfa-method-copy strong,
+.mfa-method-copy small {
+  display: block;
+}
+
+.mfa-method-copy strong {
+  color: #182b4d;
+  font-size: 10px;
+  line-height: 1.25;
+  font-weight: 900;
+}
+
+.mfa-method-copy small {
+  margin-top: 4px;
+  color: #7e8da3;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.mfa-method-check {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  color: #6337d6;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.mfa-panel {
+  margin-bottom: 12px;
+  padding: 16px;
+  border: 1px solid #dfe6f0;
+  border-radius: 14px;
+  background: #f9fbfd;
+}
+
+.mfa-panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.mfa-panel-title > span {
+  color: #182b4d;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.mfa-panel-title > small {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: #f0eaff;
+  color: #6337d6;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.mfa-help {
+  margin: 0 0 13px;
+  color: #718097;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.mfa-panel label {
+  display: block;
+  margin-bottom: 6px;
+  color: #34445d;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.mfa-panel input {
+  width: 100%;
+  height: 46px;
+  margin-bottom: 5px;
+  padding: 0 12px;
+  border: 1px solid #d6dfeb;
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: #162b4d;
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: .28em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.mfa-panel input:focus {
+  border-color: #7897c0;
+  box-shadow: 0 0 0 3px rgba(49, 95, 186, .08);
+}
+
+.mfa-panel input::placeholder {
+  color: #b4bdc9;
+  letter-spacing: .28em;
+}
+
+.mfa-field-hint {
+  display: block;
+  color: #8b98aa;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.mfa-sent-banner {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 13px;
+  padding: 10px 11px;
+  border: 1px solid #bfe8d5;
+  border-radius: 10px;
+  background: #effbf5;
+  color: #14815a;
+}
+
+.mfa-sent-banner > span:first-child {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #d4f4e4;
+  color: #14815a;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mfa-sent-banner strong,
+.mfa-sent-banner small {
+  display: block;
+}
+
+.mfa-sent-banner strong {
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.mfa-sent-banner small {
+  margin-top: 2px;
+  font-size: 8px;
+}
+
+.mfa-resend-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-height: 32px;
+  margin-top: 5px;
+  padding: 0 9px;
+  border: 1px solid #d7e0eb;
+  border-radius: 7px;
+  background: #fff;
+  color: #315fba;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.mfa-resend-button:hover:not(:disabled) {
+  background: #f4f7fc;
+}
+
+.mfa-resend-button:disabled {
+  cursor: not-allowed;
+  opacity: .58;
+}
+
+.mfa-security-note {
+  margin: 13px 0 0;
+  color: #8b98aa;
+  font-size: 8px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.mfa-login-card .form-error {
+  margin-top: 4px;
+}
+
+/* Security / MFA management helpers */
+.mfa-management-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.mfa-management-card {
+  padding: 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+  background: #fff;
+}
+
+.mfa-management-card h3 {
+  margin: 0;
+  color: #172b4d;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.mfa-management-card p {
+  margin: 5px 0 0;
+  color: #7b899d;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.mfa-setup-box {
+  margin-top: 14px;
+  padding: 18px;
+  border: 1px solid #e0e6ef;
+  border-radius: 15px;
+  background: #f8fafd;
+}
+
+.mfa-qr {
+  width: 190px;
+  height: 190px;
+  display: block;
+  margin: 0 auto 14px;
+  padding: 8px;
+  border: 1px solid #e1e7ef;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.mfa-secret {
+  margin: 8px 0 14px;
+  padding: 10px;
+  border: 1px dashed #d8e1ed;
+  border-radius: 9px;
+  background: #fff;
+  color: #263b5c;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  word-break: break-all;
+}
+
+.mfa-recovery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: 7px;
+  margin: 12px 0;
+}
+
+.mfa-recovery-code {
+  padding: 9px;
+  border: 1px solid #e2e7ee;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #263b5c;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .mfa-login-card {
+    max-width: 100%;
+  }
+
+  .mfa-methods {
+    grid-template-columns: 1fr;
+  }
+
+  .mfa-method-card {
+    min-height: 70px;
+  }
+
+  .mfa-management-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .mfa-progress {
+    margin-bottom: 19px;
+  }
+
+  .mfa-panel {
+    padding: 13px;
+  }
+
+  .mfa-panel input {
+    font-size: 18px;
+  }
+}

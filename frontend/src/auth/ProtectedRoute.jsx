@@ -1,9 +1,21 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import { useAuth } from "./AuthContext";
 
-export default function ProtectedRoute() {
-  const { isAuthenticated, loading } = useAuth();
+export default function ProtectedRoute({
+  permission,
+  permissions = [],
+  requireAll = false,
+}) {
+  const {
+    isAuthenticated,
+    loading,
+    hasPermission,
+    hasAnyPermission,
+    hasAllPermissions,
+  } = useAuth();
+
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -14,7 +26,27 @@ export default function ProtectedRoute() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: location.pathname }}
+      />
+    );
+  }
+
+  if (permission && !hasPermission(permission)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  if (permissions.length > 0) {
+    const allowed = requireAll
+      ? hasAllPermissions(permissions)
+      : hasAnyPermission(permissions);
+
+    if (!allowed) {
+      return <Navigate to="/dashboard" replace />;
+    }
   }
 
   return <Outlet />;

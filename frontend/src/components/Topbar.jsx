@@ -8,12 +8,18 @@ const TEXT = {
     live: "LIVE",
     logout: "Logout",
     admin: "Administrator",
+    timeout: "Session",
+    expiresSoon: "Expires soon",
+    expired: "Expired",
   },
   HI: {
     session: "शैक्षणिक सत्र",
     live: "लाइव",
     logout: "लॉगआउट",
     admin: "प्रशासक",
+    timeout: "सेशन",
+    expiresSoon: "जल्द समाप्त होगा",
+    expired: "समाप्त",
   },
 };
 
@@ -33,10 +39,24 @@ function Icon({ name, size = 16 }) {
   const icons = {
     calendar: (
       <>
-        <rect x="3" y="4" width="18" height="17" rx="2" />
+        <rect
+          x="3"
+          y="4"
+          width="18"
+          height="17"
+          rx="2"
+        />
         <path d="M8 2v4M16 2v4M3 10h18" />
       </>
     ),
+
+    clock: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 2" />
+      </>
+    ),
+
     logout: (
       <>
         <path d="M10 17l5-5-5-5" />
@@ -44,19 +64,61 @@ function Icon({ name, size = 16 }) {
         <path d="M21 19V5a2 2 0 0 0-2-2h-5" />
       </>
     ),
+
+    shield: (
+      <>
+        <path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z" />
+        <path d="M12 8v4M12 16h.01" />
+      </>
+    ),
   };
 
-  return <svg {...common}>{icons[name]}</svg>;
+  return (
+    <svg {...common}>
+      {icons[name]}
+    </svg>
+  );
+}
+
+function formatSessionTime(seconds) {
+  if (seconds === null || seconds === undefined) {
+    return "--:--";
+  }
+
+  const safe = Math.max(0, seconds);
+
+  const hours = Math.floor(safe / 3600);
+  const minutes = Math.floor((safe % 3600) / 60);
+  const secs = safe % 60;
+
+  if (hours > 0) {
+    return `${String(hours).padStart(2, "0")}:${String(
+      minutes,
+    ).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  }
+
+  return `${String(minutes).padStart(2, "0")}:${String(
+    secs,
+  ).padStart(2, "0")}`;
 }
 
 export default function Topbar() {
-  const { user, logout } = useAuth();
+  const {
+    user,
+    logout,
+    sessionRemainingSeconds,
+    sessionWarning,
+  } = useAuth();
 
   const [language, setLanguage] = useState(
-    () => localStorage.getItem("edusphere_language") || "EN",
+    () =>
+      localStorage.getItem("edusphere_language") ||
+      "EN",
   );
 
-  const [currentTime, setCurrentTime] = useState(() => new Date());
+  const [currentTime, setCurrentTime] = useState(
+    () => new Date(),
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -64,7 +126,9 @@ export default function Topbar() {
     }, 1000);
 
     const handleLanguageChange = (event) => {
-      const nextLanguage = event.detail === "HI" ? "HI" : "EN";
+      const nextLanguage =
+        event.detail === "HI" ? "HI" : "EN";
+
       setLanguage(nextLanguage);
     };
 
@@ -75,6 +139,7 @@ export default function Topbar() {
 
     return () => {
       clearInterval(timer);
+
       window.removeEventListener(
         "edusphere-language-change",
         handleLanguageChange,
@@ -113,11 +178,20 @@ export default function Topbar() {
     user?.email?.split("@")[0] ||
     "Admin";
 
-  const avatarLetter = firstName.charAt(0).toUpperCase();
+  const avatarLetter =
+    firstName.charAt(0).toUpperCase();
+
+  const sessionTime = formatSessionTime(
+    sessionRemainingSeconds,
+  );
 
   const changeLanguage = (nextLanguage) => {
     setLanguage(nextLanguage);
-    localStorage.setItem("edusphere_language", nextLanguage);
+
+    localStorage.setItem(
+      "edusphere_language",
+      nextLanguage,
+    );
 
     window.dispatchEvent(
       new CustomEvent("edusphere-language-change", {
@@ -151,13 +225,34 @@ export default function Topbar() {
           {t.live}
         </div>
 
+        {/* GLOBAL SESSION TIMEOUT */}
+        <div
+          className={`session-timeout ${
+            sessionWarning ? "warning" : ""
+          }`}
+          title={
+            sessionWarning
+              ? `${t.expiresSoon}: ${sessionTime}`
+              : `${t.timeout}: ${sessionTime}`
+          }
+        >
+          <Icon name="clock" size={14} />
+
+          <div className="session-timeout-copy">
+            <span>{t.timeout}</span>
+            <strong>{sessionTime}</strong>
+          </div>
+        </div>
+
         <div
           className="language-switch"
           aria-label="Language selection"
         >
           <button
             type="button"
-            className={language === "EN" ? "active" : ""}
+            className={
+              language === "EN" ? "active" : ""
+            }
             onClick={() => changeLanguage("EN")}
             aria-label="Switch to English"
           >
@@ -166,7 +261,9 @@ export default function Topbar() {
 
           <button
             type="button"
-            className={language === "HI" ? "active" : ""}
+            className={
+              language === "HI" ? "active" : ""
+            }
             onClick={() => changeLanguage("HI")}
             aria-label="हिंदी में बदलें"
           >
@@ -175,7 +272,12 @@ export default function Topbar() {
         </div>
 
         <div className="user-menu">
-          <div className="user-avatar" title={user?.full_name || user?.email}>
+          <div
+            className="user-avatar"
+            title={
+              user?.full_name || user?.email
+            }
+          >
             {avatarLetter}
           </div>
 

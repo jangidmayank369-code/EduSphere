@@ -7,8 +7,10 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import SchoolProfile from "./pages/SchoolProfile";
 import UserManagement from "./pages/UserManagement";
+import RoleManagement from "./pages/RoleManagement";
 import StudentDashboard from "./pages/StudentDashboard";
 import FeeManagement from "./pages/FeeManagement";
+import SecuritySessions from "./pages/SecuritySessions";
 
 function ShellPage({ children }) {
   return <AppShell>{children}</AppShell>;
@@ -17,15 +19,31 @@ function ShellPage({ children }) {
 export default function App() {
   return (
     <Routes>
-      {/* Public */}
-      <Route path="/login" element={<Login />} />
+      {/* =========================
+          PUBLIC ROUTES
+      ========================== */}
 
-      {/* Protected Application */}
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+      {/* =========================
+          PROTECTED APPLICATION
+      ========================== */}
+
       <Route element={<ProtectedRoute />}>
         {/* Dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ShellPage>
+              <Dashboard />
+            </ShellPage>
+          }
+        />
 
-        {/* School Core */}
+        {/* School Profile */}
         <Route
           path="/school-profile"
           element={
@@ -35,7 +53,7 @@ export default function App() {
           }
         />
 
-        {/* Student 360 / Student Dashboard */}
+        {/* Students */}
         <Route
           path="/students"
           element={
@@ -45,7 +63,7 @@ export default function App() {
           }
         />
 
-        {/* Complete Fee Management */}
+        {/* Fee Management */}
         <Route
           path="/fees"
           element={
@@ -55,21 +73,71 @@ export default function App() {
           }
         />
 
-        {/* Users & Identity */}
+        {/* =========================
+            USERS & IDENTITY
+        ========================== */}
+
         <Route
-          path="/users"
+          element={
+            <ProtectedRoute permission="USER_VIEW" />
+          }
+        >
+          <Route
+            path="/users"
+            element={
+              <ShellPage>
+                <UserManagement />
+              </ShellPage>
+            }
+          />
+        </Route>
+
+        {/* =========================
+            ROLES & PERMISSIONS
+        ========================== */}
+
+        <Route
+          element={
+            <ProtectedRoute permission="RBAC_ROLE_VIEW" />
+          }
+        >
+          <Route
+            path="/roles"
+            element={
+              <ShellPage>
+                <RoleManagement />
+              </ShellPage>
+            }
+          />
+        </Route>
+
+        {/* =========================
+            SECURITY & SESSIONS
+            Self-service page
+        ========================== */}
+
+        <Route
+          path="/security/sessions"
           element={
             <ShellPage>
-              <UserManagement />
+              <SecuritySessions />
             </ShellPage>
           }
         />
       </Route>
 
-      {/* Unknown routes */}
+      {/* =========================
+          FALLBACK
+      ========================== */}
+
       <Route
         path="*"
-        element={<Navigate to="/dashboard" replace />}
+        element={
+          <Navigate
+            to="/dashboard"
+            replace
+          />
+        }
       />
     </Routes>
   );

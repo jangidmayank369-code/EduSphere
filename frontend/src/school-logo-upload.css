@@ -1,0 +1,92 @@
+/* ============================================================================
+   School Profile - Direct Logo Upload
+   ============================================================================ */
+
+.sp-logo-uploader {
+  width: 100%;
+}
+
+.sp-logo-upload-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #dbe3f0;
+  border-radius: 16px;
+  background: #f8fafc;
+  box-sizing: border-box;
+}
+
+.sp-logo-upload-preview {
+  width: 96px;
+  height: 96px;
+  flex: 0 0 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #d7e0ee;
+  border-radius: 14px;
+  background: #ffffff;
+  font-size: 34px;
+}
+
+.sp-logo-upload-preview img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.sp-logo-upload-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.sp-logo-upload-content > strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #172554;
+  font-size: 15px;
+}
+
+.sp-logo-upload-content > p {
+  margin: 0 0 8px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.sp-logo-upload-status {
+  display: block;
+  margin-bottom: 10px;
+  color: #475569;
+  font-size: 12px;
+}
+
+.sp-logo-upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sp-logo-file-input {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .sp-logo-upload-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .sp-logo-upload-preview {
+    width: 88px;
+    height: 88px;
+    flex-basis: 88px;
+  }
+
+  .sp-logo-upload-actions {
+    width: 100%;
+  }
+}

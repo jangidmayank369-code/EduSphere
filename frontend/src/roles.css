@@ -1,0 +1,936 @@
+/* ==========================================================================
+   EduSphere — Roles & Permissions
+   ========================================================================== */
+
+.role-management-page {
+  width: 100%;
+  min-height: calc(100vh - 84px);
+  padding: 32px 34px 48px;
+  box-sizing: border-box;
+}
+
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+
+.role-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.role-page-header h1 {
+  margin: 7px 0 8px;
+  color: #171b4a;
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+}
+
+.role-page-header p {
+  margin: 0;
+  max-width: 720px;
+  color: #68708f;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.page-eyebrow,
+.panel-eyebrow {
+  display: block;
+  color: #70799a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.75px;
+  text-transform: uppercase;
+}
+
+.role-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+
+.role-management-page button,
+.role-management-page input,
+.role-management-page textarea {
+  font-family: inherit;
+}
+
+.role-management-page button {
+  cursor: pointer;
+}
+
+.role-management-page button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 41px;
+  padding: 0 16px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 800;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.primary-button {
+  border: 1px solid #171746;
+  background: #171746;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(23, 23, 70, 0.14);
+}
+
+.primary-button:hover:not(:disabled) {
+  background: #23235c;
+  box-shadow: 0 8px 20px rgba(23, 23, 70, 0.2);
+  transform: translateY(-1px);
+}
+
+.secondary-button {
+  border: 1px solid #dce1ed;
+  background: #fff;
+  color: #414a6b;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: #f7f8fc;
+}
+
+
+/* ==========================================================================
+   ALERTS
+   ========================================================================== */
+
+.role-alert {
+  margin-bottom: 18px;
+  padding: 12px 15px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.role-alert.success {
+  border: 1px solid #c8e9dc;
+  background: #f0fbf6;
+  color: #16764f;
+}
+
+.role-alert.error {
+  border: 1px solid #efcbd1;
+  background: #fff5f6;
+  color: #a72e43;
+}
+
+
+/* ==========================================================================
+   STATS
+   ========================================================================== */
+
+.role-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.role-stat-card {
+  min-height: 82px;
+  padding: 16px 18px;
+  border: 1px solid #e2e6ef;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(31, 35, 75, 0.04);
+  box-sizing: border-box;
+}
+
+.role-stat-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: #747c99;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;
+}
+
+.role-stat-card strong {
+  display: block;
+  overflow: hidden;
+  color: #191d4c;
+  font-size: 23px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   MAIN LAYOUT
+   ========================================================================== */
+
+.role-layout {
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+
+/* ==========================================================================
+   ROLES PANEL
+   ========================================================================== */
+
+/*
+ * IMPORTANT:
+ * Keep the role selector visible while the permission editor is being
+ * scrolled. This fixes the large blank area seen in the screenshot.
+ */
+
+.roles-panel {
+  position: sticky;
+  top: 20px;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e0e4ed;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 7px 24px rgba(32, 37, 78, 0.045);
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 19px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.panel-heading h2 {
+  margin: 5px 0 0;
+  color: #1b1f4d;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.panel-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 27px;
+  height: 27px;
+  padding: 0 7px;
+  border-radius: 7px;
+  background: #f1efff;
+  color: #654bc0;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+
+/* ==========================================================================
+   ROLE SEARCH
+   ========================================================================== */
+
+.role-search {
+  position: relative;
+  margin: 14px;
+}
+
+.role-search > span,
+.permission-search > span {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  z-index: 1;
+  transform: translateY(-50%);
+  color: #8991ac;
+  font-size: 19px;
+  pointer-events: none;
+}
+
+.role-search input,
+.permission-search input {
+  width: 100%;
+  height: 41px;
+  padding: 0 12px 0 38px;
+  border: 1px solid #dfe3ed;
+  border-radius: 9px;
+  outline: none;
+  background: #fbfcff;
+  color: #242950;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.role-search input:focus,
+.permission-search input:focus {
+  border-color: #7060d8;
+  box-shadow: 0 0 0 3px rgba(112, 96, 216, 0.09);
+}
+
+
+/* ==========================================================================
+   ROLE LIST
+   ========================================================================== */
+
+.role-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: min(600px, calc(100vh - 210px));
+  overflow-y: auto;
+  padding: 0 10px 12px;
+}
+
+.role-item {
+  display: flex;
+  align-items: stretch;
+  gap: 5px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.role-item:hover {
+  border-color: #edf0f6;
+  background: #fafbff;
+}
+
+.role-item.selected {
+  border-color: #ddd4fb;
+  background: #f4f1ff;
+}
+
+.role-select {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  padding: 12px 9px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.role-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 35px;
+  width: 35px;
+  height: 35px;
+  border-radius: 9px;
+  background: #f0f2fa;
+  color: #555f9c;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.role-item.selected .role-icon {
+  background: #ded5ff;
+  color: #6044bf;
+}
+
+.role-copy {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.role-copy strong {
+  overflow: hidden;
+  color: #24294f;
+  font-size: 12px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role-copy small {
+  overflow: hidden;
+  color: #858ca5;
+  font-size: 10px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role-copy em {
+  color: #6b56b9;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.danger-icon-button {
+  align-self: center;
+  width: 29px;
+  height: 29px;
+  margin-right: 7px;
+  border: 1px solid #f0d8dc;
+  border-radius: 7px;
+  background: #fff7f8;
+  color: #b6374b;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.danger-icon-button:hover:not(:disabled) {
+  background: #ffecef;
+}
+
+
+/* ==========================================================================
+   ROLE EDITOR
+   ========================================================================== */
+
+.role-editor {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #e0e4ed;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 7px 24px rgba(32, 37, 78, 0.045);
+}
+
+.editor-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding-bottom: 19px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.editor-heading h2 {
+  margin: 5px 0 0;
+  color: #1b1f4d;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.selected-role-badge {
+  max-width: 220px;
+  overflow: hidden;
+  padding: 7px 11px;
+  border: 1px solid #ded6fa;
+  border-radius: 7px;
+  background: #f5f1ff;
+  color: #6849bd;
+  font-size: 10px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   EDITOR INTRO
+   ========================================================================== */
+
+.editor-intro {
+  margin: 18px 0;
+  padding: 20px;
+  border: 1px dashed #d9deeb;
+  border-radius: 11px;
+  background: #fafbfe;
+  text-align: center;
+}
+
+.editor-intro-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  background: #f0edff;
+  color: #6849c1;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.editor-intro h3 {
+  margin: 0 0 5px;
+  color: #272c51;
+  font-size: 14px;
+}
+
+.editor-intro p {
+  margin: 0;
+  color: #858ca5;
+  font-size: 11px;
+}
+
+
+/* ==========================================================================
+   FORM
+   ========================================================================== */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 19px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-field label {
+  color: #414866;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  border: 1px solid #dce1ec;
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: #252a50;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.form-field input {
+  height: 42px;
+  padding: 0 12px;
+}
+
+.form-field textarea {
+  min-height: 85px;
+  padding: 11px 12px;
+  resize: vertical;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: #6c59d8;
+  box-shadow: 0 0 0 3px rgba(108, 89, 216, 0.09);
+}
+
+
+/* ==========================================================================
+   PERMISSION TOOLBAR
+   ========================================================================== */
+
+.permissions-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 24px;
+  margin-bottom: 11px;
+}
+
+.permissions-toolbar h3 {
+  margin: 5px 0 0;
+  color: #252a51;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.permissions-toolbar h3 small {
+  color: #858ca4;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.permission-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.permission-actions button,
+.group-action {
+  min-height: 31px;
+  padding: 0 10px;
+  border: 1px solid #dfe3ed;
+  border-radius: 7px;
+  background: #fff;
+  color: #505875;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.permission-actions button:hover:not(:disabled),
+.group-action:hover:not(:disabled) {
+  background: #f5f6fb;
+}
+
+.permission-search {
+  position: relative;
+  margin-bottom: 13px;
+}
+
+.permission-search input {
+  height: 42px;
+}
+
+
+/* ==========================================================================
+   PERMISSION GROUPS
+   ========================================================================== */
+
+/*
+ * IMPORTANT:
+ * No fixed max-height here.
+ *
+ * The whole page should scroll naturally. This prevents groups at the bottom
+ * from being clipped inside a second scrollbar.
+ */
+
+.permission-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+  padding-right: 0;
+}
+
+
+.permission-group {
+  overflow: hidden;
+  border: 1px solid #e1e5ee;
+  border-radius: 10px;
+  background: #fbfcff;
+}
+
+.permission-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 51px;
+  padding: 0 12px;
+  border-bottom: 1px solid #e7eaf1;
+  background: #f7f8fc;
+}
+
+.group-toggle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 7px 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.group-arrow {
+  width: 15px;
+  color: #68719a;
+  font-size: 14px;
+}
+
+.group-toggle > span:last-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.group-toggle strong {
+  color: #2a3056;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.group-toggle small {
+  color: #8990a8;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.group-action.active {
+  border-color: #d7cdf7;
+  background: #eeeaff;
+  color: #6549bb;
+}
+
+
+/* ==========================================================================
+   PERMISSION GRID
+   ========================================================================== */
+
+.permission-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  padding: 10px;
+}
+
+.permission-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #e5e8ef;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    box-shadow 0.12s ease;
+  box-sizing: border-box;
+}
+
+.permission-item:hover {
+  border-color: #d2d6e4;
+  background: #fafbff;
+}
+
+.permission-item.checked {
+  border-color: #d9d0fa;
+  background: #f7f4ff;
+  box-shadow: 0 2px 8px rgba(100, 73, 190, 0.05);
+}
+
+.permission-item input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.permission-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 17px;
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
+  border: 1px solid #cdd3e1;
+  border-radius: 4px;
+  background: #fff;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.permission-item.checked .permission-check {
+  border-color: #684bc2;
+  background: #684bc2;
+}
+
+.permission-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.permission-copy strong {
+  overflow: hidden;
+  color: #30365a;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.permission-copy small {
+  color: #858ca4;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+
+/* ==========================================================================
+   FORM ACTIONS
+   ========================================================================== */
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 17px;
+  border-top: 1px solid #edf0f5;
+}
+
+
+/* ==========================================================================
+   EMPTY STATES
+   ========================================================================== */
+
+.role-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 130px;
+  padding: 20px;
+  color: #858ca5;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.role-empty.large {
+  min-height: 180px;
+  border: 1px dashed #dce1eb;
+  border-radius: 10px;
+  background: #fafbfe;
+}
+
+
+/* ==========================================================================
+   SCROLLBAR — ROLE LIST ONLY
+   ========================================================================== */
+
+.role-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.role-list::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #d7dbe7;
+}
+
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 1150px) {
+  .role-layout {
+    grid-template-columns: 290px minmax(0, 1fr);
+  }
+
+  .permission-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 900px) {
+  .role-management-page {
+    padding: 24px 20px 40px;
+  }
+
+  .role-page-header {
+    flex-direction: column;
+  }
+
+  .role-header-actions {
+    width: 100%;
+  }
+
+  .role-header-actions button {
+    flex: 1;
+  }
+
+  .role-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /*
+   * Sticky is disabled on mobile because the role selector should stack
+   * naturally above the editor.
+   */
+  .roles-panel {
+    position: static;
+  }
+
+  .role-list {
+    max-height: 360px;
+  }
+}
+
+
+@media (max-width: 650px) {
+  .role-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .permissions-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .permission-actions {
+    width: 100%;
+  }
+
+  .permission-actions button {
+    flex: 1;
+  }
+
+  .permission-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .role-editor {
+    padding: 17px;
+  }
+
+  .editor-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .selected-role-badge {
+    max-width: 100%;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .role-management-page {
+    padding: 18px 13px 30px;
+  }
+
+  .role-page-header h1 {
+    font-size: 28px;
+  }
+
+  .role-header-actions {
+    flex-direction: column;
+  }
+
+  .role-header-actions button {
+    width: 100%;
+  }
+}
