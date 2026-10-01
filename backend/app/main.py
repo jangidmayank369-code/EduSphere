@@ -1,4 +1,5 @@
 import logging
+import re
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -39,12 +40,35 @@ app = FastAPI(
 )
 
 
+# ---------------------------------------------------------------------------
+# CORS
+# ---------------------------------------------------------------------------
+# Local development
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# Current Vercel production/preview deployment URLs.
+#
+# Vercel creates a different preview URL for deployments, for example:
+# https://edusphere-qcsm50kdy-edu-sphere4.vercel.app
+#
+# The regex allows only EduSphere's Vercel deployment naming pattern,
+# instead of allowing every arbitrary vercel.app application.
+allowed_origin_regex = (
+    r"^https://edusphere-[a-z0-9-]+-edu-sphere4\.vercel\.app$"
+)
+
+# Existing production alias, if used.
+allowed_origins.append(
+    "https://edusphere-eight-sooty.vercel.app"
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=allowed_origins,
+    allow_origin_regex=allowed_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -53,6 +77,9 @@ app.add_middleware(
 app.add_middleware(RequestIDMiddleware)
 
 
+# ---------------------------------------------------------------------------
+# EduSphere application exception handler
+# ---------------------------------------------------------------------------
 @app.exception_handler(EduSphereException)
 async def edusphere_exception_handler(
     request: Request,
@@ -90,6 +117,9 @@ async def edusphere_exception_handler(
     )
 
 
+# ---------------------------------------------------------------------------
+# Unexpected exception handler
+# ---------------------------------------------------------------------------
 @app.exception_handler(Exception)
 async def unexpected_exception_handler(
     request: Request,
@@ -127,6 +157,9 @@ async def unexpected_exception_handler(
     )
 
 
+# ---------------------------------------------------------------------------
+# Root
+# ---------------------------------------------------------------------------
 @app.get(
     "/",
     tags=["System"],
@@ -139,6 +172,9 @@ async def root():
     }
 
 
+# ---------------------------------------------------------------------------
+# API routers
+# ---------------------------------------------------------------------------
 app.include_router(
     system_router,
     prefix=settings.api_prefix,
