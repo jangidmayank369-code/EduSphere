@@ -29,6 +29,12 @@ const navigation = [
     icon: "wallet",
   },
   {
+    en: "Accounts",
+    hi: "लेखा-जोखा",
+    path: "/accounts",
+    icon: "accounts",
+  },
+  {
     en: "Users & Identity",
     hi: "यूज़र और पहचान",
     path: "/users",
@@ -114,6 +120,14 @@ function Icon({ name }) {
       </>
     ),
 
+    accounts: (
+      <>
+        <rect x="4" y="3" width="16" height="18" rx="2" />
+        <path d="M8 8h8M8 12h8M8 16h4" />
+        <path d="M7 3v2M17 3v2" />
+      </>
+    ),
+
     identity: (
       <>
         <rect x="4" y="3" width="16" height="18" rx="2" />
@@ -138,11 +152,7 @@ function Icon({ name }) {
     ),
   };
 
-  return (
-    <svg {...common}>
-      {icons[name] || icons.grid}
-    </svg>
-  );
+  return <svg {...common}>{icons[name] || icons.grid}</svg>;
 }
 
 export default function Sidebar() {
@@ -164,24 +174,15 @@ export default function Sidebar() {
       setLanguage(nextLanguage);
     };
 
-    window.addEventListener(
-      "edusphere-language-change",
-      handleLanguageChange,
-    );
+    window.addEventListener("edusphere-language-change", handleLanguageChange);
 
     return () => {
-      window.removeEventListener(
-        "edusphere-language-change",
-        handleLanguageChange,
-      );
+      window.removeEventListener("edusphere-language-change", handleLanguageChange);
     };
   }, []);
 
   const visibleNavigation = navigation.filter((item) => {
-    if (!item.permission) {
-      return true;
-    }
-
+    if (!item.permission) return true;
     return hasPermission(item.permission);
   });
 
@@ -189,7 +190,6 @@ export default function Sidebar() {
     <aside className="sidebar">
       <div className="sidebar-brand">
         <div className="sidebar-logo">E</div>
-
         <div className="sidebar-brand-text">
           <strong>EduSphere</strong>
           <span>School Operating System</span>
@@ -205,29 +205,18 @@ export default function Sidebar() {
           <NavLink
             key={item.path}
             to={item.path}
-            className={({ isActive }) =>
-              `nav-item ${isActive ? "active" : ""}`
-            }
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
           >
             {({ isActive }) => (
               <>
                 <span className="nav-icon">
                   <Icon name={item.icon} />
                 </span>
-
                 <span className="nav-label">
-                  <strong>
-                    {language === "HI" ? item.hi : item.en}
-                  </strong>
-
-                  <small>
-                    {language === "HI" ? item.en : item.hi}
-                  </small>
+                  <strong>{language === "HI" ? item.hi : item.en}</strong>
+                  <small>{language === "HI" ? item.en : item.hi}</small>
                 </span>
-
-                {isActive && (
-                  <span className="nav-active-indicator" />
-                )}
+                {isActive && <span className="nav-active-indicator" />}
               </>
             )}
           </NavLink>
@@ -237,20 +226,15 @@ export default function Sidebar() {
       <div className="sidebar-bottom">
         <div className="sidebar-system">
           <span className="system-live-dot" />
-
           <div>
             <strong>{t.system}</strong>
             <small>{t.services}</small>
           </div>
-
           <span className="sidebar-live">{t.live}</span>
         </div>
 
         <div className="sidebar-footer">
-          <span>
-            {user?.full_name || "EduSphere"}
-          </span>
-
+          <span>{user?.full_name || "EduSphere"}</span>
           <small>v0.1.0</small>
         </div>
       </div>

@@ -1,10 +1,13 @@
 import logging
-import re
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app.api.routes.accounting import router as accounting_router
+from app.api.routes.accounting_transactions import (
+    router as accounting_transactions_router,
+)
 from app.api.routes.admissions import router as admissions_router
 from app.api.routes.audit import router as audit_router
 from app.api.routes.auth import router as auth_router
@@ -18,17 +21,19 @@ from app.api.routes.student_fee_plans import router as student_fee_plans_router
 from app.api.routes.students import router as students_router
 from app.api.routes.system import router as system_router
 from app.api.routes.users import router as users_router
+from app.api.routes.fee_payments import router as fee_payments_router
+
 from app.core.config import get_settings
 from app.core.exceptions import EduSphereException
 from app.core.logging import configure_logging
 from app.middleware.request_id import RequestIDMiddleware
-
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
 
 configure_logging()
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
-
 
 app = FastAPI(
     title=f"{settings.app_name} API",
@@ -38,31 +43,26 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json",
 )
+UPLOAD_ROOT = Path(__file__).resolve().parent.parent / "uploads"
+UPLOAD_ROOT.mkdir(parents=True, exist_ok=True)
 
-
+app.mount(
+    "/uploads",
+    StaticFiles(directory=str(UPLOAD_ROOT)),
+    name="uploads",
+)
 # ---------------------------------------------------------------------------
 # CORS
 # ---------------------------------------------------------------------------
-# Local development
+
 allowed_origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://edusphere-eight-sooty.vercel.app",
 ]
 
-# Current Vercel production/preview deployment URLs.
-#
-# Vercel creates a different preview URL for deployments, for example:
-# https://edusphere-qcsm50kdy-edu-sphere4.vercel.app
-#
-# The regex allows only EduSphere's Vercel deployment naming pattern,
-# instead of allowing every arbitrary vercel.app application.
 allowed_origin_regex = (
-    r"^https://edusphere-[a-z0-9-]+-edu-sphere4\.vercel\.app$"
-)
-
-# Existing production alias, if used.
-allowed_origins.append(
-    "https://edusphere-eight-sooty.vercel.app"
+    r"^https://edusphere-[a-z0-9-]+-edu-sphere[0-9]+\.vercel\.app$"
 )
 
 app.add_middleware(
@@ -76,21 +76,16 @@ app.add_middleware(
 
 app.add_middleware(RequestIDMiddleware)
 
-
 # ---------------------------------------------------------------------------
 # EduSphere application exception handler
 # ---------------------------------------------------------------------------
+
 @app.exception_handler(EduSphereException)
 async def edusphere_exception_handler(
     request: Request,
     exc: EduSphereException,
 ) -> JSONResponse:
-
-    request_id = getattr(
-        request.state,
-        "request_id",
-        "-",
-    )
+    request_id = getattr(request.state, "request_id", "-")
 
     logger.warning(
         "Application error | method=%s | path=%s | code=%s | message=%s",
@@ -111,26 +106,19 @@ async def edusphere_exception_handler(
                 "details": exc.details,
             },
         },
-        headers={
-            "X-Request-ID": request_id,
-        },
+        headers={"X-Request-ID": request_id},
     )
-
 
 # ---------------------------------------------------------------------------
 # Unexpected exception handler
 # ---------------------------------------------------------------------------
+
 @app.exception_handler(Exception)
 async def unexpected_exception_handler(
     request: Request,
     exc: Exception,
 ) -> JSONResponse:
-
-    request_id = getattr(
-        request.state,
-        "request_id",
-        "-",
-    )
+    request_id = getattr(request.state, "request_id", "-")
 
     logger.exception(
         "Unexpected application error | method=%s | path=%s",
@@ -146,24 +134,17 @@ async def unexpected_exception_handler(
             "error": {
                 "code": "INTERNAL_SERVER_ERROR",
                 "message": "An unexpected error occurred.",
-                "details": {
-                    "request_id": request_id,
-                },
+                "details": {"request_id": request_id},
             },
         },
-        headers={
-            "X-Request-ID": request_id,
-        },
+        headers={"X-Request-ID": request_id},
     )
-
 
 # ---------------------------------------------------------------------------
 # Root
 # ---------------------------------------------------------------------------
-@app.get(
-    "/",
-    tags=["System"],
-)
+
+@app.get("/", tags=["System"])
 async def root():
     return {
         "application": settings.app_name,
@@ -171,71 +152,29 @@ async def root():
         "status": "running",
     }
 
-
 # ---------------------------------------------------------------------------
 # API routers
 # ---------------------------------------------------------------------------
+
+app.include_router(system_router, prefix=settings.api_prefix)
+app.include_router(users_router, prefix=settings.api_prefix)
+app.include_router(auth_router, prefix=settings.api_prefix)
+app.include_router(rbac_router, prefix=settings.api_prefix)
+app.include_router(audit_router, prefix=settings.api_prefix)
+app.include_router(notifications_router, prefix=settings.api_prefix)
+app.include_router(school_router, prefix=settings.api_prefix)
+app.include_router(students_router, prefix=settings.api_prefix)
+app.include_router(parents_router, prefix=settings.api_prefix)
+app.include_router(documents_router, prefix=settings.api_prefix)
+app.include_router(admissions_router, prefix=settings.api_prefix)
+app.include_router(fee_structures_router, prefix=settings.api_prefix)
+app.include_router(student_fee_plans_router, prefix=settings.api_prefix)
+app.include_router(accounting_router, prefix=settings.api_prefix)
 app.include_router(
-    system_router,
+    accounting_transactions_router,
     prefix=settings.api_prefix,
 )
-
 app.include_router(
-    users_router,
-    prefix=settings.api_prefix,
-)
-
-app.include_router(
-    auth_router,
-    prefix=settings.api_prefix,
-)
-
-app.include_router(
-    rbac_router,
-    prefix=settings.api_prefix,
-)
-
-app.include_router(
-    audit_router,
-    prefix=settings.api_prefix,
-)
-
-app.include_router(
-    notifications_router,
-    prefix=settings.api_prefix,
-)
-
-app.include_router(
-    school_router,
-    prefix=settings.api_prefix,
-)
-
-app.include_router(
-    students_router,
-    prefix=settings.api_prefix,
-)
-
-app.include_router(
-    parents_router,
-    prefix=settings.api_prefix,
-)
-
-app.include_router(
-    documents_router,
-    prefix=settings.api_prefix,
-)
-
-app.include_router(
-    admissions_router,
-    prefix=settings.api_prefix,
-)
-
-app.include_router(
-    fee_structures_router,
-    prefix=settings.api_prefix,
-)
-
-app.include_router(
-    student_fee_plans_router,
+    fee_payments_router,
     prefix=settings.api_prefix,
 )

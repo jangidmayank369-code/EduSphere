@@ -637,17 +637,10 @@ export function AuthProvider({ children }) {
    * RBAC
    * ---------------------------------------------------------
    *
-   * IMPORTANT:
-   * This is a FUNCTION DECLARATION rather than
-   * `const hasPermission = ...`.
-   *
-   * That prevents the:
-   *
-   * Cannot access 'hasPermission' before initialization
-   *
-   * error that occurred previously.
+   * Stable RBAC callbacks keep the context memoized
+   * without recreating these functions on every render.
    */
-  function hasPermission(permissionCode) {
+  const hasPermission = useCallback((permissionCode) => {
     if (!permissionCode) {
       return true;
     }
@@ -682,13 +675,13 @@ export function AuthProvider({ children }) {
     }
 
     return false;
-  }
+  }, [user]);
 
   /**
    * Check whether the current user has at least one
    * permission from a supplied list.
    */
-  function hasAnyPermission(permissionCodes) {
+  const hasAnyPermission = useCallback((permissionCodes) => {
     if (!Array.isArray(permissionCodes)) {
       return false;
     }
@@ -696,12 +689,12 @@ export function AuthProvider({ children }) {
     return permissionCodes.some((code) =>
       hasPermission(code),
     );
-  }
+  }, [hasPermission]);
 
   /**
    * Check user role.
    */
-  function hasRole(roleName) {
+  const hasRole = useCallback((roleName) => {
     if (!roleName || !user) {
       return false;
     }
@@ -711,7 +704,7 @@ export function AuthProvider({ children }) {
     return roleNames.has(
       String(roleName).trim().toLowerCase(),
     );
-  }
+  }, [user]);
 
   /**
    * Keep session countdown synchronized with JWT expiry.
@@ -873,6 +866,9 @@ export function AuthProvider({ children }) {
       sessionRemainingSeconds,
       sessionRemainingText,
       sessionWarning,
+      hasPermission,
+      hasAnyPermission,
+      hasRole,
     ],
   );
 

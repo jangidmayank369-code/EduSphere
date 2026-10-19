@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+
 :root {
   font-family:
     Inter,
@@ -3636,5 +3638,1294 @@ body {
 
   .mfa-panel input {
     font-size: 18px;
+  }
+}
+
+/* ============================================================================
+   EDUSPHERE — FINAL GLOBAL UI OVERRIDES
+   Shared app shell only. Existing page/module styles and functionality remain.
+   These rules intentionally come last to beat legacy duplicate shell rules.
+   ============================================================================ */
+
+:root {
+  --es-page-bg: #f4f7fb;
+  --es-surface: #ffffff;
+  --es-text: #172744;
+  --es-muted: #687891;
+  --es-border: #e2e8f1;
+  --es-blue: #315fba;
+  --es-radius: 16px;
+  --es-shadow: 0 8px 26px rgba(17, 39, 77, 0.055);
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  min-width: 320px;
+}
+
+body {
+  color: var(--es-text);
+  background: var(--es-page-bg);
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+.app-shell {
+  display: flex !important;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  background: var(--es-page-bg);
+}
+
+.app-shell .app-main {
+  display: flex;
+  flex: 1 1 0 !important;
+  flex-direction: column;
+  width: 0 !important;
+  min-width: 0 !important;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.app-shell .app-content {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  padding: 24px !important;
+  overflow-wrap: anywhere;
+}
+
+/* Desktop sidebar */
+.app-shell .sidebar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  flex: 0 0 258px !important;
+  width: 258px !important;
+  min-width: 258px !important;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  padding: 20px 12px !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%) !important;
+  color: #172744 !important;
+  border-right: 1px solid #e1e8f2 !important;
+  box-shadow: 5px 0 24px rgba(20, 42, 80, 0.035) !important;
+  scrollbar-width: thin;
+  scrollbar-color: #d5deec transparent;
+}
+
+.app-shell .sidebar-brand {
+  min-width: 0;
+  padding: 3px 8px 22px !important;
+}
+
+.app-shell .sidebar-logo {
+  flex: 0 0 auto;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 13px !important;
+}
+
+.app-shell .sidebar-brand-text {
+  min-width: 0;
+}
+
+.app-shell .sidebar-brand-text strong {
+  font-size: 16px !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+}
+
+.app-shell .sidebar-brand-text span {
+  font-size: 11px !important;
+  line-height: 1.4 !important;
+}
+
+.app-shell .sidebar-workspace {
+  min-width: 0;
+  padding-bottom: 10px !important;
+}
+
+.app-shell .sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px !important;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden !important;
+}
+
+.app-shell .sidebar .nav-item {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 11px !important;
+  min-width: 0;
+  min-height: 46px !important;
+  padding: 5px 10px !important;
+  border: 1px solid transparent !important;
+  border-radius: 11px !important;
+  color: #4d5e79 !important;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
+}
+
+.app-shell .sidebar .nav-item:hover {
+  color: #183b72 !important;
+  background: #f0f5ff !important;
+  border-color: #e1eaf9 !important;
+  transform: none;
+}
+
+.app-shell .sidebar .nav-item.active {
+  color: #214f9e !important;
+  background: #eaf1ff !important;
+  border-color: #d8e5ff !important;
+  box-shadow: inset 3px 0 0 #356bc4 !important;
+}
+
+.app-shell .sidebar .nav-icon {
+  flex: 0 0 34px;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 10px !important;
+}
+
+.app-shell .sidebar .nav-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.app-shell .sidebar .nav-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.app-shell .sidebar .nav-label strong {
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  font-weight: 650 !important;
+  overflow-wrap: anywhere;
+}
+
+.app-shell .sidebar .nav-label small {
+  display: none !important;
+}
+
+.app-shell .sidebar .nav-arrow {
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-size: 18px !important;
+}
+
+.app-shell .sidebar .sidebar-system {
+  min-width: 0;
+  margin: 12px 2px !important;
+  padding: 11px !important;
+  border-radius: 12px !important;
+}
+
+.app-shell .sidebar .sidebar-footer {
+  min-width: 0;
+  font-size: 10px !important;
+}
+
+/* Topbar: responsive without changing auth/session controls */
+.app-shell .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 18px !important;
+  width: 100%;
+  min-width: 0;
+  padding: 14px 24px !important;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid var(--es-border);
+  box-shadow: 0 3px 12px rgba(20, 42, 80, 0.025);
+  backdrop-filter: blur(12px);
+}
+
+.app-shell .topbar-left {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.app-shell .topbar-title {
+  max-width: 100%;
+  color: #172744 !important;
+  font-size: 16px !important;
+  font-weight: 750 !important;
+  line-height: 1.35 !important;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.app-shell .session-pill {
+  max-width: 100%;
+  font-size: 11px !important;
+  line-height: 1.4;
+}
+
+.app-shell .topbar-right {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px !important;
+  min-width: 0;
+}
+
+.app-shell .live-time strong,
+.app-shell .user-details strong {
+  color: #1b2d4b !important;
+}
+
+.app-shell .live-time span,
+.app-shell .user-details small {
+  color: #6b7a92 !important;
+}
+
+/* Consistent, accessible focus states; no event or business logic changes. */
+.app-shell button:focus-visible,
+.app-shell a:focus-visible,
+.app-shell input:focus-visible,
+.app-shell select:focus-visible,
+.app-shell textarea:focus-visible {
+  outline: 3px solid rgba(49, 95, 186, 0.28) !important;
+  outline-offset: 2px;
+}
+
+.app-shell input,
+.app-shell select,
+.app-shell textarea {
+  max-width: 100%;
+}
+
+/* Tablet: compact icon rail, preserve all navigation links. */
+@media (max-width: 950px) {
+  .app-shell .sidebar {
+    flex: 0 0 76px !important;
+    width: 76px !important;
+    min-width: 76px !important;
+    padding: 16px 7px !important;
+  }
+
+  .app-shell .sidebar-brand {
+    justify-content: center;
+    padding: 2px 0 18px !important;
+  }
+
+  .app-shell .sidebar-brand-text,
+  .app-shell .sidebar-workspace,
+  .app-shell .sidebar .nav-label,
+  .app-shell .sidebar .nav-arrow,
+  .app-shell .sidebar .sidebar-system,
+  .app-shell .sidebar .sidebar-footer {
+    display: none !important;
+  }
+
+  .app-shell .sidebar .nav-item {
+    justify-content: center;
+    gap: 0 !important;
+    padding: 4px !important;
+  }
+
+  .app-shell .sidebar .nav-icon {
+    flex-basis: 38px;
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .app-shell .app-content {
+    padding: 20px !important;
+  }
+
+  .app-shell .topbar {
+    padding: 13px 18px !important;
+  }
+}
+
+/* Mobile: keep a small icon rail and allow topbar controls to wrap. */
+@media (max-width: 640px) {
+  .app-shell .sidebar {
+    flex: 0 0 58px !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    padding: 12px 5px !important;
+  }
+
+  .app-shell .sidebar-logo {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 11px !important;
+  }
+
+  .app-shell .sidebar-nav {
+    gap: 4px !important;
+  }
+
+  .app-shell .sidebar .nav-item {
+    min-height: 43px !important;
+    border-radius: 10px !important;
+  }
+
+  .app-shell .sidebar .nav-icon {
+    flex-basis: 34px;
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .app-shell .app-content {
+    padding: 13px !important;
+  }
+
+  .app-shell .topbar {
+    position: relative;
+    align-items: flex-start;
+    gap: 9px !important;
+    padding: 12px 13px !important;
+  }
+
+  .app-shell .topbar-left {
+    flex: 1 1 100%;
+  }
+
+  .app-shell .topbar-title {
+    font-size: 14px !important;
+  }
+
+  .app-shell .topbar-right {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    gap: 7px !important;
+  }
+
+  .app-shell .live-time,
+  .app-shell .topbar-live,
+  .app-shell .user-details {
+    display: none !important;
+  }
+
+  .app-shell .session-pill {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-shell .sidebar {
+    flex-basis: 50px !important;
+    width: 50px !important;
+    min-width: 50px !important;
+    padding-right: 4px !important;
+    padding-left: 4px !important;
+  }
+
+  .app-shell .sidebar-logo {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .app-shell .sidebar .nav-icon {
+    flex-basis: 31px;
+    width: 31px !important;
+    height: 31px !important;
+  }
+
+  .app-shell .app-content {
+    padding: 9px !important;
+  }
+
+  .app-shell .topbar {
+    padding: 10px !important;
+  }
+
+  .app-shell .topbar-title {
+    font-size: 13px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell *,
+  .app-shell *::before,
+  .app-shell *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ======================================================================
+   EDUSPHERE — PROFESSIONAL PRODUCT UI
+   Final layout layer. Keeps existing page-specific styles and behaviour.
+   ====================================================================== */
+:root {
+  --es-page: #f5f7fa;
+  --es-surface: #ffffff;
+  --es-ink: #202b3c;
+  --es-muted: #687588;
+  --es-border: #e1e6ed;
+  --es-accent: #315fba;
+  --es-accent-soft: #edf3ff;
+  --es-radius: 12px;
+  --es-shadow: 0 2px 8px rgba(24, 39, 62, .045);
+}
+
+html { color-scheme: light; }
+body {
+  background: var(--es-page);
+  color: var(--es-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button, input, select, textarea { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+
+.app-shell {
+  align-items: stretch;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--es-page);
+}
+.app-content {
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 24px clamp(16px, 2.2vw, 30px);
+}
+
+/* Navigation: restrained, readable, and consistent */
+.app-shell .sidebar {
+  flex: 0 0 244px !important;
+  width: 244px !important;
+  min-width: 244px !important;
+  padding: 22px 14px 16px !important;
+  background: #fff !important;
+  color: #263449 !important;
+  border-right: 1px solid #e5e9ef !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+.app-shell .sidebar-brand {
+  gap: 11px !important;
+  padding: 2px 7px 24px !important;
+}
+.app-shell .sidebar-logo {
+  width: 44px !important;
+  height: 44px !important;
+  flex: 0 0 44px !important;
+  border-radius: 13px !important;
+  box-shadow: 0 4px 10px rgba(49, 95, 186, .15) !important;
+}
+.app-shell .sidebar-brand-text strong {
+  color: #202b3c !important;
+  font-size: 16px !important;
+  font-weight: 750 !important;
+  letter-spacing: -.35px !important;
+}
+.app-shell .sidebar-brand-text span {
+  color: #758195 !important;
+  font-size: 11px !important;
+  font-weight: 450 !important;
+  letter-spacing: 0 !important;
+}
+.app-shell .sidebar-workspace {
+  padding: 0 9px 9px !important;
+}
+.app-shell .sidebar-workspace span {
+  color: #8490a1 !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: .11em !important;
+}
+.app-shell .sidebar-workspace i { display: none !important; }
+.app-shell .sidebar-nav { gap: 4px !important; }
+.app-shell .nav-item {
+  min-height: 43px !important;
+  gap: 11px !important;
+  padding: 0 10px !important;
+  border: 1px solid transparent !important;
+  border-radius: 9px !important;
+  background: transparent !important;
+  color: #526176 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease !important;
+}
+.app-shell .nav-item:hover {
+  background: #f5f7fa !important;
+  border-color: #edf0f4 !important;
+  color: #263449 !important;
+  transform: none !important;
+}
+.app-shell .nav-item.active,
+.app-shell .nav-item[aria-current="page"] {
+  background: #edf3ff !important;
+  border-color: #d9e5ff !important;
+  color: #244f9b !important;
+  box-shadow: inset 3px 0 0 #315fba !important;
+}
+.app-shell .nav-item.active .nav-label,
+.app-shell .nav-item[aria-current="page"] .nav-label {
+  color: #244f9b !important;
+  font-weight: 650 !important;
+}
+.app-shell .nav-item.active .nav-label small { color: #627ba7 !important; }
+.app-shell .nav-icon {
+  width: 34px !important;
+  height: 34px !important;
+  flex: 0 0 34px !important;
+  border-radius: 9px !important;
+  background: #f0f3f8 !important;
+  color: #64748b !important;
+}
+.app-shell .nav-item.active .nav-icon {
+  background: #dfeaff !important;
+  color: #315fba !important;
+}
+.app-shell .nav-label { font-size: 12.5px !important; font-weight: 550 !important; }
+.app-shell .nav-label small { font-size: 10px !important; }
+.app-shell .nav-arrow { opacity: .55; }
+.app-shell .sidebar-system {
+  border: 1px solid #e6ebf2 !important;
+  border-radius: 10px !important;
+  background: #fafbfd !important;
+  padding: 12px !important;
+}
+.app-shell .sidebar-system strong { color: #39485e !important; font-size: 11px !important; }
+.app-shell .sidebar-system small { color: #7c8899 !important; font-size: 10px !important; }
+.app-shell .sidebar-footer {
+  border-top: 1px solid #edf0f4 !important;
+  color: #7d899a !important;
+  font-size: 10px !important;
+}
+
+/* Topbar: less bulky, clearer hierarchy */
+.app-shell .topbar {
+  min-height: 64px;
+  gap: 12px 18px !important;
+  padding: 13px 24px !important;
+  background: rgba(255,255,255,.96) !important;
+  border-bottom: 1px solid #e7ebf1 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.app-shell .topbar-title {
+  color: #202b3c !important;
+  font-size: 16px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+  letter-spacing: -.25px !important;
+}
+.app-shell .session-pill {
+  border: 1px solid #e3e8ef !important;
+  border-radius: 8px !important;
+  background: #f8fafc !important;
+  color: #5f6d80 !important;
+  box-shadow: none !important;
+}
+.app-shell .topbar button,
+.app-shell .language-switch button {
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+/* Common page surfaces: retain each page's own grid and sizing */
+.app-shell .panel,
+.app-shell .card,
+.app-shell .stat-card,
+.app-shell .dashboard-card,
+.app-shell .dash-panel,
+.app-shell .content-card {
+  border-color: var(--es-border);
+  border-radius: var(--es-radius);
+  box-shadow: var(--es-shadow);
+}
+.app-shell table { border-color: var(--es-border); }
+.app-shell th {
+  color: #647287;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .025em;
+}
+.app-shell td { color: #344256; }
+.app-shell input,
+.app-shell select,
+.app-shell textarea {
+  border-color: #d9e0e9;
+  border-radius: 8px;
+  box-shadow: none;
+}
+.app-shell input:focus,
+.app-shell select:focus,
+.app-shell textarea:focus {
+  outline: none;
+  border-color: #7ea3e8;
+  box-shadow: 0 0 0 3px rgba(49,95,186,.10);
+}
+.app-shell button:focus-visible,
+.app-shell a:focus-visible,
+.app-shell [tabindex]:focus-visible {
+  outline: 3px solid rgba(49,95,186,.28);
+  outline-offset: 2px;
+}
+
+/* Tablet */
+@media (max-width: 1100px) {
+  .app-shell .sidebar {
+    flex-basis: 218px !important;
+    width: 218px !important;
+    min-width: 218px !important;
+    padding-right: 10px !important;
+    padding-left: 10px !important;
+  }
+  .app-content { padding: 18px !important; }
+  .app-shell .topbar { padding-right: 18px !important; padding-left: 18px !important; }
+}
+
+/* Mobile: compact navigation rail without hiding any route/icon */
+@media (max-width: 760px) {
+  .app-shell .sidebar {
+    flex: 0 0 64px !important;
+    width: 64px !important;
+    min-width: 64px !important;
+    padding: 14px 6px !important;
+  }
+  .app-shell .sidebar-brand { justify-content: center !important; padding: 0 0 18px !important; }
+  .app-shell .sidebar-brand-text,
+  .app-shell .sidebar-workspace,
+  .app-shell .nav-label,
+  .app-shell .nav-arrow,
+  .app-shell .sidebar-system,
+  .app-shell .sidebar-footer { display: none !important; }
+  .app-shell .sidebar-nav { gap: 6px !important; }
+  .app-shell .nav-item { justify-content: center !important; gap: 0 !important; padding: 0 !important; min-height: 43px !important; }
+  .app-shell .nav-icon { width: 36px !important; height: 36px !important; flex-basis: 36px !important; }
+  .app-content { padding: 14px !important; }
+  .app-shell .topbar { position: relative; align-items: center; padding: 12px 14px !important; }
+  .app-shell .topbar-title { font-size: 14px !important; }
+  .app-shell .topbar-right { flex-wrap: wrap; gap: 7px !important; }
+  .app-shell .live-time { display: none !important; }
+}
+
+@media (max-width: 420px) {
+  .app-shell .sidebar { flex-basis: 56px !important; width: 56px !important; min-width: 56px !important; padding: 12px 4px !important; }
+  .app-shell .sidebar-logo { width: 36px !important; height: 36px !important; flex-basis: 36px !important; }
+  .app-content { padding: 10px !important; }
+  .app-shell .topbar { padding: 10px !important; }
+}
+
+
+/* =====================================================================
+   EDUSPHERE PROFESSIONAL UI FINISH
+   Final global overrides: calm, practical, accessible; no feature logic.
+   Existing page-specific styles above are intentionally preserved.
+   ===================================================================== */
+:root {
+  --es-prof-bg: #f5f7fa;
+  --es-prof-surface: #ffffff;
+  --es-prof-ink: #202b3c;
+  --es-prof-muted: #687588;
+  --es-prof-border: #e0e6ed;
+  --es-prof-blue: #2859a6;
+  --es-prof-blue-soft: #edf3fb;
+  --es-prof-radius: 10px;
+  --es-prof-shadow: 0 1px 3px rgba(24, 39, 60, .045);
+}
+
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--es-prof-bg);
+  color: var(--es-prof-ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+button, input, select, textarea { font-size: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+
+.app-shell {
+  background: var(--es-prof-bg) !important;
+  color: var(--es-prof-ink);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.app-shell .sidebar {
+  flex: 0 0 244px !important;
+  width: 244px !important;
+  min-width: 244px !important;
+  height: 100vh;
+  height: 100dvh;
+  padding: 18px 12px !important;
+  background: #fff !important;
+  color: #263449 !important;
+  border-right: 1px solid var(--es-prof-border) !important;
+  box-shadow: none !important;
+  overflow-x: hidden;
+}
+.app-shell .sidebar-brand {
+  gap: 11px !important;
+  padding: 3px 8px 22px !important;
+}
+.app-shell .sidebar-logo {
+  width: 40px !important;
+  height: 40px !important;
+  flex: 0 0 40px !important;
+  border-radius: 10px !important;
+  background: var(--es-prof-blue) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  font-size: 17px !important;
+}
+.app-shell .sidebar-brand-text strong {
+  color: #202b3c !important;
+  font-size: 15px !important;
+  font-weight: 750 !important;
+  letter-spacing: -.2px;
+}
+.app-shell .sidebar-brand-text span {
+  color: #748094 !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+}
+.app-shell .sidebar-workspace { padding: 0 10px 9px !important; }
+.app-shell .sidebar-workspace span {
+  color: #788498 !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: .09em !important;
+}
+.app-shell .sidebar-nav { gap: 3px !important; padding: 0 0 6px; }
+.app-shell .nav-item {
+  min-height: 43px !important;
+  gap: 10px !important;
+  padding: 0 10px !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: #4b586b !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease !important;
+}
+.app-shell .nav-item:hover {
+  background: #f4f6f9 !important;
+  border-color: #edf0f4 !important;
+  color: #202b3c !important;
+}
+.app-shell .nav-item.active,
+.app-shell .nav-item[aria-current="page"] {
+  background: var(--es-prof-blue-soft) !important;
+  border-color: #d8e4f6 !important;
+  border-left: 3px solid var(--es-prof-blue) !important;
+  color: #214e91 !important;
+  box-shadow: none !important;
+}
+.app-shell .nav-icon {
+  width: 30px !important;
+  height: 30px !important;
+  flex: 0 0 30px !important;
+  border-radius: 7px !important;
+  background: #f0f3f7 !important;
+  color: #637187 !important;
+}
+.app-shell .nav-item.active .nav-icon,
+.app-shell .nav-item[aria-current="page"] .nav-icon {
+  background: #dfeafa !important;
+  color: var(--es-prof-blue) !important;
+}
+.app-shell .nav-label strong {
+  color: inherit !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  font-weight: 650 !important;
+}
+.app-shell .nav-label small { color: #7c8798 !important; font-size: 10px !important; }
+.app-shell .sidebar-system {
+  background: #f8fafc !important;
+  border-color: #e8edf3 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+.app-shell .sidebar-system strong { color: #435168 !important; font-size: 11px !important; }
+.app-shell .sidebar-system small { color: #7b8798 !important; font-size: 10px !important; }
+.app-shell .sidebar-footer {
+  border-color: #edf0f4 !important;
+  color: #7a8698 !important;
+  font-size: 10px !important;
+}
+
+.app-shell .app-main { min-width: 0; background: var(--es-prof-bg); }
+.app-shell .app-content {
+  width: 100%;
+  min-width: 0;
+  padding: 22px !important;
+  background: var(--es-prof-bg);
+}
+.app-shell .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  min-height: 66px !important;
+  gap: 14px !important;
+  padding: 12px 22px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--es-prof-border) !important;
+  border-radius: 0 !important;
+  background: rgba(255,255,255,.98) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.app-shell .topbar-title { color: #202b3c !important; font-size: 16px !important; font-weight: 700 !important; letter-spacing: -.2px !important; }
+.app-shell .session-pill { background: #f7f9fc !important; border-color: #e2e7ee !important; color: #667489 !important; font-size: 10px !important; }
+.app-shell .session-pill strong { color: #34445b !important; }
+.app-shell .live-time strong { color: #344256 !important; font-size: 12px !important; }
+.app-shell .live-time span { color: #7d899a !important; font-size: 10px !important; }
+.app-shell .language-switch { background: #f6f8fb !important; border-color: #e0e6ee !important; }
+.app-shell .language-switch button { min-width: 34px; min-height: 30px; font-size: 11px !important; }
+.app-shell .language-switch button.active { background: var(--es-prof-blue) !important; box-shadow: none !important; }
+.app-shell .user-details strong { color: #344256 !important; font-size: 11px !important; }
+.app-shell .user-details span { color: #7b8798 !important; font-size: 10px !important; }
+.app-shell .logout-button { font-size: 11px !important; }
+
+/* Consistent, restrained page surfaces */
+.app-shell .content-card,
+.app-shell .neo-panel,
+.app-shell .neo-launch,
+.app-shell .panel,
+.app-shell .school-card,
+.app-shell .form-card,
+.app-shell .stat-card,
+.app-shell .neo-stat,
+.app-shell .intelligence-card,
+.app-shell .quick-action {
+  border-color: var(--es-prof-border) !important;
+  border-radius: var(--es-prof-radius) !important;
+  box-shadow: var(--es-prof-shadow) !important;
+}
+.app-shell .content-card,
+.app-shell .neo-panel,
+.app-shell .neo-launch,
+.app-shell .panel,
+.app-shell .school-card,
+.app-shell .form-card,
+.app-shell .stat-card,
+.app-shell .neo-stat,
+.app-shell .intelligence-card { background: #fff !important; }
+.app-shell .content-card:hover,
+.app-shell .stat-card:hover,
+.app-shell .neo-stat:hover,
+.app-shell .quick-action:hover { transform: none !important; box-shadow: 0 3px 10px rgba(24,39,60,.06) !important; }
+.app-shell .page-heading h1 { color: #202b3c !important; font-size: 25px !important; font-weight: 700 !important; letter-spacing: -.45px; }
+.app-shell .page-heading p { color: #6e7b8e !important; font-size: 13px !important; }
+.app-shell .section-heading h2,
+.app-shell .neo-section-heading h2 { color: #263449 !important; font-size: 15px !important; font-weight: 700 !important; }
+.app-shell .section-heading p,
+.app-shell .neo-section-heading p { color: #738095 !important; font-size: 12px !important; }
+.app-shell .stat-label { color: #617086 !important; font-size: 12px !important; font-weight: 650 !important; }
+.app-shell .stat-value { color: #202b3c !important; font-size: 27px !important; font-weight: 750 !important; }
+.app-shell .stat-description { color: #7d899a !important; font-size: 11px !important; }
+.app-shell table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.app-shell th { color: #667489 !important; background: #f7f9fc; font-size: 11px !important; font-weight: 700 !important; }
+.app-shell td { color: #344256; font-size: 12px; }
+.app-shell input,
+.app-shell select,
+.app-shell textarea {
+  min-height: 38px;
+  border: 1px solid #d9e0e9 !important;
+  border-radius: 7px !important;
+  background: #fff !important;
+  color: #263449 !important;
+  box-shadow: none !important;
+  font-size: 13px !important;
+}
+.app-shell textarea { min-height: 84px; }
+.app-shell input:focus,
+.app-shell select:focus,
+.app-shell textarea:focus {
+  outline: none !important;
+  border-color: #7c9fce !important;
+  box-shadow: 0 0 0 3px rgba(40,89,166,.10) !important;
+}
+.app-shell button:focus-visible,
+.app-shell a:focus-visible,
+.app-shell [tabindex]:focus-visible { outline: 2px solid rgba(40,89,166,.45); outline-offset: 2px; }
+.app-shell .primary-button,
+.app-shell .login-button { background: var(--es-prof-blue) !important; box-shadow: none !important; border-radius: 7px !important; font-size: 12px !important; font-weight: 650 !important; }
+.app-shell .secondary-button { border-color: #d7dfe9 !important; background: #fff !important; color: #435168 !important; }
+
+/* Avoid oversized decorative hero treatment; retain dashboard structure/data */
+.app-shell .dashboard-hero,
+.app-shell .neo-hero {
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+.app-shell .dashboard-hero { background: linear-gradient(115deg, #172f52, #244a79) !important; }
+.app-shell .neo-hero { background: linear-gradient(115deg, #172f52, #244a79) !important; border-color: #244a79 !important; }
+.app-shell .neo-hero-grid { display: none !important; }
+.app-shell .dashboard-hero h1 { letter-spacing: -.7px !important; font-weight: 750 !important; }
+.app-shell .neo-hero h1 { font-weight: 750 !important; letter-spacing: -1px !important; }
+.app-shell .neo-stats .neo-stat strong { font-weight: 750 !important; }
+
+@media (max-width: 1100px) {
+  .app-shell .sidebar { flex-basis: 220px !important; width: 220px !important; min-width: 220px !important; }
+  .app-shell .app-content { padding: 18px !important; }
+  .app-shell .topbar { padding-right: 18px !important; padding-left: 18px !important; }
+  .app-shell .dashboard-main-grid,
+  .app-shell .neo-board-grid { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@media (max-width: 760px) {
+  .app-shell .sidebar { flex: 0 0 64px !important; width: 64px !important; min-width: 64px !important; padding: 13px 6px !important; }
+  .app-shell .sidebar-brand { justify-content: center !important; padding: 0 0 16px !important; }
+  .app-shell .sidebar-brand-text,
+  .app-shell .sidebar-workspace,
+  .app-shell .nav-label,
+  .app-shell .nav-arrow,
+  .app-shell .sidebar-system,
+  .app-shell .sidebar-footer { display: none !important; }
+  .app-shell .sidebar-nav { gap: 5px !important; }
+  .app-shell .nav-item { min-height: 42px !important; justify-content: center !important; gap: 0 !important; padding: 0 !important; }
+  .app-shell .nav-icon { width: 34px !important; height: 34px !important; flex-basis: 34px !important; }
+  .app-shell .app-content { padding: 14px !important; }
+  .app-shell .topbar { position: relative; min-height: 60px !important; align-items: center; flex-wrap: wrap; gap: 8px !important; padding: 11px 14px !important; }
+  .app-shell .topbar-title { font-size: 14px !important; }
+  .app-shell .topbar-right { flex-wrap: wrap; gap: 8px !important; }
+  .app-shell .live-time { display: none !important; }
+  .app-shell .stats-grid,
+  .app-shell .neo-stats,
+  .app-shell .intelligence-grid,
+  .app-shell .quick-actions { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .app-shell .three-column-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .app-shell .neo-board-three { grid-template-columns: minmax(0, 1fr) !important; }
+  .app-shell .dashboard-hero,
+  .app-shell .neo-hero { min-height: 0 !important; flex-direction: column; align-items: flex-start; gap: 18px !important; padding: 24px !important; }
+  .app-shell .hero-date,
+  .app-shell .neo-clock { min-width: 0; width: 100%; align-items: flex-start; text-align: left; }
+}
+@media (max-width: 480px) {
+  .app-shell .sidebar { flex-basis: 56px !important; width: 56px !important; min-width: 56px !important; padding: 11px 4px !important; }
+  .app-shell .sidebar-logo { width: 36px !important; height: 36px !important; flex-basis: 36px !important; }
+  .app-shell .app-content { padding: 10px !important; }
+  .app-shell .topbar { padding: 10px !important; }
+  .app-shell .topbar-title { font-size: 13px !important; }
+  .app-shell .stats-grid,
+  .app-shell .neo-stats,
+  .app-shell .intelligence-grid,
+  .app-shell .quick-actions { grid-template-columns: minmax(0, 1fr) !important; }
+  .app-shell .content-card,
+  .app-shell .neo-panel,
+  .app-shell .neo-launch,
+  .app-shell .panel,
+  .app-shell .school-card,
+  .app-shell .form-card { padding: 15px !important; }
+  .app-shell .page-heading { flex-direction: column; gap: 10px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell *, .app-shell *::before, .app-shell *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+/* Final corrective pass: readable active navigation and prevent desktop overflow */
+.app-shell {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+.app-shell .app-main {
+  width: 0;
+  max-width: 100%;
+  min-width: 0 !important;
+  flex: 1 1 auto;
+  overflow-x: clip;
+}
+.app-shell .app-content {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0 !important;
+  overflow-x: clip;
+}
+.app-shell .sidebar {
+  flex: 0 0 252px !important;
+  width: 252px !important;
+  min-width: 252px !important;
+  background: #fff !important;
+  color: #344256 !important;
+  border-right: 1px solid #e1e6ed !important;
+  box-shadow: none !important;
+}
+.app-shell .sidebar-brand-text strong { color: #202b3c !important; }
+.app-shell .sidebar-brand-text span { color: #7b8798 !important; }
+.app-shell .sidebar-workspace span { color: #7b8798 !important; }
+.app-shell .sidebar .nav-item,
+.app-shell .sidebar a.nav-item {
+  color: #4b596d !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.app-shell .sidebar .nav-item .nav-label,
+.app-shell .sidebar .nav-item .nav-label strong,
+.app-shell .sidebar a.nav-item .nav-label,
+.app-shell .sidebar a.nav-item .nav-label strong {
+  color: #4b596d !important;
+  font-weight: 600 !important;
+}
+.app-shell .sidebar .nav-item .nav-icon,
+.app-shell .sidebar a.nav-item .nav-icon {
+  color: #64748b !important;
+  background: #f1f4f8 !important;
+}
+.app-shell .sidebar .nav-item.active,
+.app-shell .sidebar a.nav-item.active,
+.app-shell .sidebar .nav-item[aria-current="page"],
+.app-shell .sidebar a.nav-item[aria-current="page"] {
+  color: #244b87 !important;
+  background: #eaf0fa !important;
+  border-color: #d5e0f3 !important;
+  box-shadow: inset 3px 0 0 #315fba !important;
+}
+.app-shell .sidebar .nav-item.active .nav-label,
+.app-shell .sidebar .nav-item.active .nav-label strong,
+.app-shell .sidebar a.nav-item.active .nav-label,
+.app-shell .sidebar a.nav-item.active .nav-label strong,
+.app-shell .sidebar .nav-item[aria-current="page"] .nav-label,
+.app-shell .sidebar .nav-item[aria-current="page"] .nav-label strong {
+  color: #244b87 !important;
+}
+.app-shell .sidebar .nav-item.active .nav-icon,
+.app-shell .sidebar a.nav-item.active .nav-icon,
+.app-shell .sidebar .nav-item[aria-current="page"] .nav-icon {
+  color: #244b87 !important;
+  background: #dce7f8 !important;
+}
+.app-shell .sidebar .nav-item:hover,
+.app-shell .sidebar a.nav-item:hover {
+  color: #244b87 !important;
+  background: #f5f7fb !important;
+}
+.app-shell .sidebar .nav-item:hover .nav-label,
+.app-shell .sidebar .nav-item:hover .nav-label strong { color: #244b87 !important; }
+.app-shell .dashboard-page,
+.app-shell .neo-dashboard {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+.app-shell .dashboard-main-grid,
+.app-shell .neo-board-grid,
+.app-shell .neo-board-three,
+.app-shell .stats-grid,
+.app-shell .neo-stats,
+.app-shell .intelligence-grid,
+.app-shell .quick-actions,
+.app-shell .three-column-grid {
+  min-width: 0 !important;
+}
+.app-shell .dashboard-main-grid { grid-template-columns: minmax(0, 1.35fr) minmax(280px, .9fr); }
+.app-shell .neo-board-grid { grid-template-columns: minmax(0, 1.35fr) minmax(280px, .9fr); }
+.app-shell .dashboard-hero,
+.app-shell .neo-hero { min-width: 0 !important; max-width: 100% !important; }
+.app-shell .hero-date,
+.app-shell .neo-clock { min-width: 0; }
+.app-shell .topbar,
+.app-shell .topbar-left,
+.app-shell .topbar-right { min-width: 0; }
+.app-shell .topbar-right { flex-shrink: 1; }
+.app-shell table { display: block; max-width: 100%; overflow-x: auto; }
+@media (max-width: 1100px) {
+  .app-shell .sidebar { flex: 0 0 220px !important; width: 220px !important; min-width: 220px !important; }
+  .app-shell .dashboard-main-grid,
+  .app-shell .neo-board-grid { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@media (max-width: 760px) {
+  .app-shell .sidebar { flex: 0 0 64px !important; width: 64px !important; min-width: 64px !important; }
+  .app-shell .sidebar .nav-item.active,
+  .app-shell .sidebar a.nav-item.active,
+  .app-shell .sidebar .nav-item[aria-current="page"] { box-shadow: inset 3px 0 0 #315fba !important; }
+  .app-shell .app-content { padding: 14px !important; }
+  .app-shell .dashboard-hero,
+  .app-shell .neo-hero { padding: 22px !important; }
+  .app-shell .neo-pulse-body { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@media (max-width: 480px) {
+  .app-shell .sidebar { flex: 0 0 56px !important; width: 56px !important; min-width: 56px !important; }
+  .app-shell .app-content { padding: 10px !important; }
+  .app-shell .dashboard-hero h1,
+  .app-shell .neo-hero h1 { font-size: clamp(25px, 8vw, 36px) !important; letter-spacing: -.6px !important; overflow-wrap: anywhere; }
+  .app-shell .neo-commandbar { min-width: 0; }
+  .app-shell .neo-command-copy input { min-width: 0; font-size: 13px !important; }
+}
+
+
+/* =========================================================
+   EDUSPHERE TYPOGRAPHY SYSTEM — GLOBAL CONSISTENCY PASS
+   Keeps existing layouts/colors while improving readability.
+========================================================= */
+:root {
+  --font-body: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-heading: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-size-body: 14px;
+  --font-size-small: 12px;
+  --font-size-label: 11px;
+  --font-size-heading: 18px;
+}
+
+html { font-family: var(--font-body); }
+body, button, input, select, textarea {
+  font-family: var(--font-body);
+  font-optical-sizing: auto;
+}
+body { font-size: var(--font-size-body); line-height: 1.55; }
+
+h1, h2, h3, h4, h5, h6,
+.page-heading h1, .dashboard-hero h1, .neo-hero h1,
+.section-heading h2, .neo-section-heading h2,
+.login-heading h2, .brand h1 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.025em;
+}
+
+/* Replace the overly tiny 8–10px UI text with readable sizes. */
+.sidebar-workspace span,
+.sidebar-brand-text span,
+.sidebar-system small,
+.sidebar-footer,
+.sidebar-footer small,
+.nav-label small,
+.topbar-live,
+.session-pill,
+.live-time span,
+.language-switch button,
+.user-details span,
+.logout-button,
+.command-search-content span,
+.command-search kbd,
+.hero-kicker,
+.hero-meta > span,
+.hero-date span,
+.hero-date small,
+.stat-description,
+.section-heading p,
+.live-badge, .healthy-badge, .ready-badge,
+.pulse-summary > span, .pulse-summary small,
+.empty-state p,
+.feature-status p,
+.intelligence-card small,
+.quick-action-content small,
+.system-connected,
+.brand p,
+.login-heading p,
+.login-card label,
+.login-card input,
+.password-toggle,
+.form-error,
+.form-field label,
+.form-field input,
+.form-field select,
+.form-field textarea,
+.primary-button, .secondary-button, .danger-button {
+  font-size: 11px;
+}
+
+.sidebar-brand-text strong { font-size: 15px; }
+.nav-label strong { font-size: 12px; line-height: 1.35; }
+.sidebar-workspace span { font-size: 10px; }
+.sidebar-system strong { font-size: 11px; }
+.sidebar-system small, .sidebar-footer { font-size: 10px; }
+.topbar-title { font-family: var(--font-heading); font-size: 16px; font-weight: 750; }
+.session-pill { font-size: 11px; }
+.live-time strong { font-size: 12px; }
+.topbar-live { font-size: 11px; }
+.language-switch button { font-size: 11px; }
+.user-details strong { font-size: 12px; }
+.user-details span, .logout-button { font-size: 11px; }
+
+.dashboard-hero h1 { font-family: var(--font-heading); }
+.dashboard-hero p { font-size: 14px; }
+.hero-kicker { font-size: 11px; }
+.hero-meta > span { font-size: 11px; }
+.hero-date span, .hero-date small { font-size: 10px; }
+.hero-date strong { font-family: var(--font-heading); }
+.stat-label { font-size: 12px; line-height: 1.4; }
+.stat-value { font-family: var(--font-heading); }
+.stat-description { font-size: 11px; }
+.section-heading h2 { font-family: var(--font-heading); font-size: 15px; }
+.section-heading p { font-size: 11px; }
+.live-badge, .healthy-badge, .ready-badge { font-size: 10px; }
+.pulse-summary > span { font-size: 11px; }
+.pulse-summary small, .empty-state p, .feature-status p { font-size: 11px; }
+.empty-state strong, .feature-status strong { font-size: 12px; }
+.intelligence-card span { font-size: 11px; }
+.intelligence-card strong, .quick-action-content strong { font-size: 12px; }
+.intelligence-card small, .quick-action-content small { font-size: 11px; }
+.system-item-label { font-size: 11px; }
+.system-connected { font-size: 10px; }
+
+/* Newer Neo dashboard styles */
+.neo-command-copy span { font-size: 11px; }
+.neo-command-copy input { font-size: 15px; }
+.neo-commandbar kbd { font-size: 11px; }
+.neo-result strong { font-size: 14px; }
+.neo-result small, .neo-no-results span { font-size: 12px; }
+.neo-kicker { font-size: 11px; }
+.neo-hero h1 { font-family: var(--font-heading); }
+.neo-hero p { font-size: 15px; }
+.neo-hero-meta > span { font-size: 12px; }
+.neo-clock span, .neo-clock small { font-size: 11px; }
+.neo-stat span { font-size: 12px; }
+.neo-stat small { font-size: 11px; }
+.neo-section-heading h2 { font-family: var(--font-heading); font-size: 17px; }
+.neo-section-heading p { font-size: 12px; }
+.neo-badge { font-size: 11px; }
+.neo-pulse-body > div:first-child > span { font-size: 12px; }
+.neo-pulse-body p, .neo-empty p { font-size: 12px; }
+.neo-empty strong { font-size: 14px; }
+
+/* Common tables and controls across all modules */
+.app-shell table { font-size: 13px; }
+.app-shell th {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.app-shell td { font-size: 13px; line-height: 1.5; }
+.app-shell button, .app-shell input, .app-shell select, .app-shell textarea { line-height: 1.45; }
+.app-shell button { font-weight: 600; }
+.app-shell input::placeholder, .app-shell textarea::placeholder { color: #8794a7; opacity: 1; }
+.app-shell label { line-height: 1.45; }
+
+@media (max-width: 760px) {
+  body { font-size: 14px; }
+  .topbar-title { font-size: 14px; }
+  .dashboard-hero p, .neo-hero p { font-size: 13px; }
+  .app-shell td { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

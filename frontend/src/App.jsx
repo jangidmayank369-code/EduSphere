@@ -10,6 +10,7 @@ import UserManagement from "./pages/UserManagement";
 import RoleManagement from "./pages/RoleManagement";
 import StudentDashboard from "./pages/StudentDashboard";
 import FeeManagement from "./pages/FeeManagement";
+import Accounts from "./pages/Accounts";
 import SecuritySessions from "./pages/SecuritySessions";
 
 function ShellPage({ children }) {
@@ -19,21 +20,11 @@ function ShellPage({ children }) {
 export default function App() {
   return (
     <Routes>
-      {/* =========================
-          PUBLIC ROUTES
-      ========================== */}
+      {/* PUBLIC ROUTES */}
+      <Route path="/login" element={<Login />} />
 
-      <Route
-        path="/login"
-        element={<Login />}
-      />
-
-      {/* =========================
-          PROTECTED APPLICATION
-      ========================== */}
-
+      {/* PROTECTED APPLICATION */}
       <Route element={<ProtectedRoute />}>
-        {/* Dashboard */}
         <Route
           path="/dashboard"
           element={
@@ -43,7 +34,6 @@ export default function App() {
           }
         />
 
-        {/* School Profile */}
         <Route
           path="/school-profile"
           element={
@@ -53,7 +43,6 @@ export default function App() {
           }
         />
 
-        {/* Students */}
         <Route
           path="/students"
           element={
@@ -63,25 +52,16 @@ export default function App() {
           }
         />
 
-        {/* Fee Management */}
+        {/* Student Fees uses the same Accounts workspace, opened on its fees tab. */}
         <Route
           path="/fees"
-          element={
-            <ShellPage>
-              <FeeManagement />
-            </ShellPage>
-          }
+          element={<Accounts initialTab="fees" />}
         />
 
-        {/* =========================
-            USERS & IDENTITY
-        ========================== */}
+        {/* Accounts page includes its own AppShell. */}
+        <Route path="/accounts" element={<Accounts />} />
 
-        <Route
-          element={
-            <ProtectedRoute permission="USER_VIEW" />
-          }
-        >
+        <Route element={<ProtectedRoute permission="USER_VIEW" />}>
           <Route
             path="/users"
             element={
@@ -92,15 +72,7 @@ export default function App() {
           />
         </Route>
 
-        {/* =========================
-            ROLES & PERMISSIONS
-        ========================== */}
-
-        <Route
-          element={
-            <ProtectedRoute permission="RBAC_ROLE_VIEW" />
-          }
-        >
+        <Route element={<ProtectedRoute permission="RBAC_ROLE_VIEW" />}>
           <Route
             path="/roles"
             element={
@@ -110,11 +82,6 @@ export default function App() {
             }
           />
         </Route>
-
-        {/* =========================
-            SECURITY & SESSIONS
-            Self-service page
-        ========================== */}
 
         <Route
           path="/security/sessions"
@@ -126,19 +93,8 @@ export default function App() {
         />
       </Route>
 
-      {/* =========================
-          FALLBACK
-      ========================== */}
-
-      <Route
-        path="*"
-        element={
-          <Navigate
-            to="/dashboard"
-            replace
-          />
-        }
-      />
+      {/* FALLBACK */}
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }

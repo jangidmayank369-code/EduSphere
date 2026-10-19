@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -45,17 +46,15 @@ class MFAChallenge(Base):
         String(64),
         nullable=False,
         unique=True,
-        index=True,
     )
 
-    # Challenge lifetime.
     expires_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
         index=True,
     )
 
-    # Set after the challenge is successfully verified.
+    # Set after successful challenge verification.
     used_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True),
         nullable=True,
@@ -85,7 +84,7 @@ class MFAChallenge(Base):
         server_default="5",
     )
 
-    # Useful security/audit context.
+    # Security and audit context.
     ip_address: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,

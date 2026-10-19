@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "../auth/AuthContext";
+import { getSchools, getAcademicSessions, getCurrentAcademicSession } from "../api/school";
 import {
   getStudents,
   getStudent,
@@ -11,7 +13,7 @@ import "../student-dashboard.css";
 
 const TEXT = {
   en: {
-    title: "Student 360",
+    title: "Students",
     subtitle: "Complete student workspace",
     search: "Search student...",
     all: "All",
@@ -73,6 +75,7 @@ const TEXT = {
     confirmDeactivate: "Deactivate this student?",
     updateFailed: "Unable to update student status.",
     loadFailed: "Unable to load students.",
+    scopeFailed: "Unable to resolve the school and current academic session.",
     studentLoadFailed: "Unable to load student details.",
     parentLoadFailed: "Unable to load parent details.",
     activeStudent: "Active student",
@@ -90,7 +93,7 @@ const TEXT = {
   },
 
   hi: {
-    title: "स्टूडेंट 360",
+    title: "विद्यार्थी",
     subtitle: "विद्यार्थी की पूरी जानकारी और कार्यक्षेत्र",
     search: "विद्यार्थी खोजें...",
     all: "सभी",
@@ -152,6 +155,7 @@ const TEXT = {
     confirmDeactivate: "क्या इस विद्यार्थी को निष्क्रिय करना है?",
     updateFailed: "विद्यार्थी की स्थिति अपडेट नहीं हो सकी।",
     loadFailed: "विद्यार्थियों को लोड नहीं किया जा सका।",
+    scopeFailed: "स्कूल और वर्तमान शैक्षणिक सत्र की जानकारी नहीं मिल सकी।",
     studentLoadFailed: "विद्यार्थी की जानकारी लोड नहीं हो सकी।",
     parentLoadFailed: "अभिभावक की जानकारी लोड नहीं हो सकी।",
     activeStudent: "सक्रिय विद्यार्थी",
@@ -248,6 +252,116 @@ function WorkspacePlaceholder({ title, text }) {
   );
 }
 
+
+function unwrapResponse(value) {
+  let result = value;
+  for (let i = 0; i < 4; i += 1) {
+    if (result && !Array.isArray(result) && result.data !== undefined &&
+        !idFrom(result, ["id", "school_id", "schoolId", "academic_session_id", "session_id"])) {
+      result = result.data;
+    } else {
+      break;
+    }
+  }
+  return result;
+}
+
+function toArray(value) {
+  const result = unwrapResponse(value);
+  if (Array.isArray(result)) return result;
+  const candidates = [
+    result?.items, result?.results, result?.schools, result?.sessions,
+    result?.data, result?.records, result?.students, result?.payload,
+    result?.payload?.items, result?.data?.items, result?.data?.results,
+    result?.data?.schools, result?.data?.sessions,
+  ];
+  return candidates.find(Array.isArray) || [];
+}
+
+function idFrom(record, keys) {
+  for (const key of keys) {
+    const value = record?.[key];
+    if (value !== undefined && value !== null && value !== "") return value;
+  }
+  return null;
+}
+
+function sameId(first, second) {
+  return first !== undefined && first !== null && second !== undefined && second !== null && String(first) === String(second);
+}
+
+function unwrapPayload(value) {
+  let result = value;
+  for (let i = 0; i < 3; i += 1) {
+    if (result && !Array.isArray(result) && result.data && !idFrom(result, ["id", "academic_session_id", "session_id"])) {
+      result = result.data;
+    } else {
+      break;
+    }
+  }
+  return result;
+}
+
+async function resolveStudentScope(user) {
+  const userSchoolId = idFrom(user, ["school_id", "schoolId", "schoolID"]) ||
+    idFrom(user?.school, ["id", "school_id", "schoolId"]);
+  let school = user?.school && typeof user.school === "object" ? user.school : null;
+  let schools = [];
+  let schoolId = userSchoolId;
+
+  try {
+    schools = toArray(await getSchools());
+  } catch (error) {
+    console.warn("Students: unable to fetch schools list; will use explicit account assignment if available.", error);
+  }
+
+  if (schoolId) {
+    school = schools.find((item) => sameId(idFrom(item, ["id", "school_id", "schoolId"]), schoolId)) || school;
+  } else {
+    const associatedId = idFrom(user?.school, ["id", "school_id", "schoolId"]);
+    const associatedName = String(user?.school_name || user?.schoolName || user?.school?.name || "").trim().toLowerCase();
+    school = schools.find((item) => sameId(idFrom(item, ["id", "school_id", "schoolId"]), associatedId)) ||
+      (associatedName ? schools.find((item) => String(item?.name || item?.school_name || "").trim().toLowerCase() === associatedName) : null) ||
+      (schools.length === 1 ? schools[0] : null);
+    schoolId = idFrom(school, ["id", "school_id", "schoolId"]);
+    // Keep the same configured default-school fallback already used by Accounts.jsx.
+    if (!schoolId) {
+      schoolId = 1;
+      school = schools.find((item) => sameId(idFrom(item, ["id", "school_id", "schoolId"]), schoolId)) || school;
+    }
+  }
+
+  if (!schoolId) {
+    throw new Error("School ID could not be resolved. Check the logged-in user's school assignment and Schools API response. Existing student records have not been deleted.");
+  }
+
+  let session = null;
+  try {
+    session = unwrapResponse(await getCurrentAcademicSession(schoolId));
+    if (Array.isArray(session)) session = session[0] || null;
+  } catch (error) {
+    console.warn("Students: current-session endpoint failed; checking session list.", error);
+  }
+
+  let sessionId = idFrom(session, ["id", "academic_session_id", "academicSessionId", "session_id", "sessionId"]);
+  if (!sessionId) {
+    const sessions = toArray(await getAcademicSessions(schoolId));
+    session = sessions.find((item) => item?.is_current === true || item?.isCurrent === true || item?.current === true || String(item?.status || "").toLowerCase() === "current") ||
+      sessions.find((item) => /2026\s*[-–/]\s*(2027|27)/.test(String(item?.name || item?.session_name || item?.academic_year || item?.label || ""))) ||
+      (sessions.length === 1 ? sessions[0] : null);
+    sessionId = idFrom(session, ["id", "academic_session_id", "academicSessionId", "session_id", "sessionId"]);
+  }
+
+  if (!sessionId) throw new Error("Academic session could not be resolved for this school. Check the current session in School Profile.");
+
+  return {
+    schoolId,
+    sessionId,
+    schoolName: school?.name || school?.school_name || user?.school_name || "School",
+    sessionName: session?.name || session?.session_name || session?.academic_year || session?.label || "Current academic session",
+  };
+}
+
 export default function StudentDashboard() {
   const language =
     localStorage.getItem("edusphere-language") === "hi"
@@ -255,7 +369,11 @@ export default function StudentDashboard() {
       : "en";
 
   const text = TEXT[language];
+  const { user, loading: authLoading } = useAuth();
 
+  const [scope, setScope] = useState(null);
+  const [scopeLoading, setScopeLoading] = useState(true);
+  const [scopeError, setScopeError] = useState("");
   const [students, setStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -283,21 +401,27 @@ export default function StudentDashboard() {
     setLoadingStudents(true);
     setStudentsError("");
 
+    if (!scope?.schoolId || !scope?.sessionId) {
+      setLoadingStudents(false);
+      setStudentsError(scopeError || text.scopeFailed);
+      return;
+    }
+
     try {
       const data = await getStudents({
-        schoolId: 1,
-        academicSessionId: 1,
+        schoolId: scope.schoolId,
+        academicSessionId: scope.sessionId,
         page: 1,
         pageSize: 100,
       });
 
-      const list = Array.isArray(data) ? data : [];
+      const list = toArray(data);
 
       setStudents(list);
 
       if (preferredStudentId) {
         const exists = list.some(
-          (student) => student.id === preferredStudentId,
+          (student) => sameId(student.id, preferredStudentId),
         );
 
         if (exists) {
@@ -308,7 +432,7 @@ export default function StudentDashboard() {
 
       if (selectedStudentId) {
         const exists = list.some(
-          (student) => student.id === selectedStudentId,
+          (student) => sameId(student.id, selectedStudentId),
         );
 
         if (exists) {
@@ -366,12 +490,49 @@ export default function StudentDashboard() {
   }
 
   useEffect(() => {
-    loadStudents();
-  }, []);
+    let cancelled = false;
+
+    if (authLoading) {
+      setScopeLoading(true);
+      return () => { cancelled = true; };
+    }
+
+    setScopeLoading(true);
+    setScopeError("");
+    setScope(null);
+
+    resolveStudentScope(user)
+      .then((resolvedScope) => {
+        if (!cancelled) {
+          setScope(resolvedScope);
+          setScopeError("");
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setScope(null);
+          setScopeError(error?.message || text.scopeFailed);
+          setStudentsError(error?.message || text.scopeFailed);
+          setLoadingStudents(false);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setScopeLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [authLoading, user, text.scopeFailed]);
+
+  useEffect(() => {
+    if (scope) loadStudents();
+  }, [scope]);
 
   useEffect(() => {
     if (selectedStudentId) {
       loadStudent(selectedStudentId);
+    } else {
+      setSelectedStudent(null);
+      setParents([]);
     }
   }, [selectedStudentId]);
 
@@ -613,14 +774,19 @@ export default function StudentDashboard() {
           <h1>{text.title}</h1>
 
           <p>{text.subtitle}</p>
+          {scope && (
+            <p className="student-page-scope">
+              {scope.schoolName} · {scope.sessionName}
+            </p>
+          )}
         </div>
 
         <div className="student-page-header-actions">
           <button
             type="button"
             className="student-secondary-button"
-            onClick={loadStudents}
-            disabled={loadingStudents}
+            onClick={() => loadStudents()}
+            disabled={loadingStudents || scopeLoading || !scope}
           >
             ↻ {text.refresh}
           </button>
@@ -629,6 +795,7 @@ export default function StudentDashboard() {
             type="button"
             className="student-primary-button"
             onClick={openCreateForm}
+            disabled={scopeLoading || !scope?.schoolId || !scope?.sessionId}
           >
             + {text.addStudent}
           </button>
@@ -640,6 +807,8 @@ export default function StudentDashboard() {
           <div className="student-form-modal">
             <StudentForm
               student={editingStudent}
+              schoolId={scope?.schoolId}
+              academicSessionId={scope?.sessionId}
               onSuccess={handleStudentSaved}
               onCancel={closeStudentForm}
             />
@@ -790,7 +959,7 @@ export default function StudentDashboard() {
               filteredStudents.length > 0 &&
               filteredStudents.map((student) => {
                 const selected =
-                  student.id === selectedStudentId;
+                  sameId(student.id, selectedStudentId);
 
                 const name = getFullName(student);
 

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import AppShell from "../components/AppShell";
+import "./StudentFeePlans.css";
 import {
   bulkCreateStudentFeePlans,
   createStudentFeePlan,

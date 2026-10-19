@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   createStudent,
   updateStudent,
+  uploadStudentPhoto,
 } from "../../api/students";
 
 const TEXT = {
@@ -10,7 +11,7 @@ const TEXT = {
     editTitle: "Edit Student",
     subtitle: "Enter the student's basic information",
     photo: "Student Photo",
-    photoHint: "Clear front-facing photo. This photo will be used for the student profile and ID card.",
+    photoHint: "Choose a clear front-facing photo. JPG, PNG or WebP, up to 5 MB.",
     choosePhoto: "Choose Photo",
     changePhoto: "Change Photo",
     removePhoto: "Remove Photo",
@@ -45,6 +46,9 @@ const TEXT = {
     other: "Other",
     select: "Select",
     saveFailed: "Unable to save student. Please check the entered details.",
+    scopeMissing: "School and current academic session are missing. Refresh the Students page and try again.",
+    photoUploadFailed: "Student details were saved, but the photo upload failed. Check the connection and press Save again to retry without creating another student.",
+    photoRemoved: "Photo removed.",
   },
 
   hi: {
@@ -52,7 +56,7 @@ const TEXT = {
     editTitle: "विद्यार्थी संपादित करें",
     subtitle: "विद्यार्थी की मूल जानकारी दर्ज करें",
     photo: "विद्यार्थी का फोटो",
-    photoHint: "साफ़ सामने से लिया हुआ फोटो चुनें। यही फोटो प्रोफ़ाइल और ID Card में उपयोग होगा।",
+    photoHint: "साफ़ सामने से लिया हुआ फोटो चुनें। JPG, PNG या WebP, अधिकतम 5 MB।",
     choosePhoto: "फोटो चुनें",
     changePhoto: "फोटो बदलें",
     removePhoto: "फोटो हटाएँ",
@@ -87,6 +91,9 @@ const TEXT = {
     other: "अन्य",
     select: "चुनें",
     saveFailed: "विद्यार्थी सेव नहीं हो सका। दर्ज जानकारी जांचें।",
+    scopeMissing: "स्कूल और वर्तमान शैक्षणिक सत्र नहीं मिला। Students पेज रिफ्रेश करके फिर प्रयास करें।",
+    photoUploadFailed: "विद्यार्थी की जानकारी सेव हो गई, लेकिन फोटो अपलोड नहीं हुआ। कनेक्शन जाँचें और दोबारा सेव करें; नया विद्यार्थी नहीं बनेगा।",
+    photoRemoved: "फोटो हटा दिया गया।",
   },
 };
 
@@ -122,8 +129,8 @@ function normalizeStudent(student) {
     first_name: student.first_name || "",
     middle_name: student.middle_name || "",
     last_name: student.last_name || "",
-    date_of_birth: student.date_of_birth || "",
-    gender: student.gender || "",
+    date_of_birth: student.date_of_birth ? String(student.date_of_birth).slice(0, 10) : "",
+    gender: String(student.gender || "").trim().toLowerCase(),
     blood_group: student.blood_group || "",
     phone: student.phone || "",
     email: student.email || "",
@@ -132,11 +139,11 @@ function normalizeStudent(student) {
     state: student.state || "",
     country: student.country || "India",
     postal_code: student.postal_code || "",
-    status: student.status || "active",
+    status: String(student.status || (student.is_active === false ? "inactive" : "active")).toLowerCase(),
     is_active:
       typeof student.is_active === "boolean"
         ? student.is_active
-        : true,
+        : String(student.status || "active").toLowerCase() !== "inactive",
   };
 }
 
@@ -163,6 +170,8 @@ function Field({
 
 export default function StudentForm({
   student = null,
+  schoolId = null,
+  academicSessionId = null,
   onSuccess,
   onCancel,
 }) {
@@ -173,7 +182,11 @@ export default function StudentForm({
 
   const text = TEXT[language];
 
-  const isEdit = Boolean(student?.id);
+  const [savedStudentId, setSavedStudentId] = useState(null);
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoRemoved, setPhotoRemoved] = useState(false);
+  const currentStudentId = student?.id || savedStudentId;
+  const isEdit = Boolean(currentStudentId);
 
   const [form, setForm] = useState(
     normalizeStudent(student),
@@ -187,6 +200,9 @@ export default function StudentForm({
   useEffect(() => {
     setForm(normalizeStudent(student));
     setPhotoPreview(student?.photo_url || "");
+    setPhotoFile(null);
+    setPhotoRemoved(false);
+    setSavedStudentId(null);
     setPhotoError("");
     setError("");
   }, [student]);
@@ -209,6 +225,9 @@ export default function StudentForm({
       return;
     }
 
+    setPhotoFile(file);
+    setPhotoRemoved(false);
+
     const reader = new FileReader();
     reader.onload = () => setPhotoPreview(String(reader.result || ""));
     reader.readAsDataURL(file);
@@ -216,6 +235,8 @@ export default function StudentForm({
 
   function removePhoto() {
     setPhotoPreview("");
+    setPhotoFile(null);
+    setPhotoRemoved(true);
     setPhotoError("");
   }
 
@@ -228,6 +249,11 @@ export default function StudentForm({
 
   function handleSubmit(event) {
     event.preventDefault();
+
+    if (!isEdit && (!schoolId || !academicSessionId)) {
+      setError(text.scopeMissing);
+      return;
+    }
 
     if (
       !form.admission_number.trim() ||
@@ -264,20 +290,49 @@ export default function StudentForm({
       postal_code: form.postal_code.trim() || null,
       status: form.status,
       is_active: form.is_active,
-      ...(isEdit && form.photo_url ? { photo_url: form.photo_url } : {}),
+      ...(isEdit && photoRemoved ? { photo_url: null } : {}),
     };
 
     try {
       let result;
+      const studentIdBeforeSave = currentStudentId;
 
-      if (isEdit) {
-        result = await updateStudent(student.id, payload);
+      if (studentIdBeforeSave) {
+        result = await updateStudent(studentIdBeforeSave, payload);
       } else {
         result = await createStudent({
-          school_id: 1,
-          academic_session_id: 1,
           ...payload,
+          school_id: schoolId,
+          academic_session_id: academicSessionId,
         });
+      }
+
+      const savedId = result?.id ?? result?.student?.id ?? studentIdBeforeSave;
+
+      if (!savedId) {
+        throw new Error("Student was saved but the API did not return a student ID.");
+      }
+
+      // Remember the new ID immediately. If photo upload fails, retrying Save
+      // updates the same student instead of creating a duplicate record.
+      if (!studentIdBeforeSave) {
+        setSavedStudentId(savedId);
+      }
+
+      if (photoFile) {
+        try {
+          const photoResult = await uploadStudentPhoto(savedId, photoFile);
+          result = { ...result, ...(photoResult || {}) };
+          setPhotoFile(null);
+          setPhotoRemoved(false);
+          setPhotoPreview(
+            photoResult?.photo_url || photoResult?.student?.photo_url || photoPreview
+          );
+        } catch (uploadError) {
+          console.error("Student photo upload error:", uploadError);
+          setError(text.photoUploadFailed);
+          return;
+        }
       }
 
       if (onSuccess) {
@@ -368,7 +423,7 @@ export default function StudentForm({
               <div className="student-form-photo-actions">
                 <label className="student-secondary-button student-photo-picker">
                   {photoPreview ? text.changePhoto : text.choosePhoto}
-                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handlePhotoChange} />
+                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handlePhotoChange} disabled={saving} />
                 </label>
                 {photoPreview && (
                   <button type="button" className="student-secondary-button" onClick={removePhoto} disabled={saving}>
@@ -383,7 +438,7 @@ export default function StudentForm({
 
         <div className="student-form-section">
           <div className="student-form-section-title">
-            {text.createTitle}
+            {isEdit ? text.editTitle : text.createTitle}
           </div>
 
           <div className="student-form-grid">

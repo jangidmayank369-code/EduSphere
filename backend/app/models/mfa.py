@@ -1,3 +1,4 @@
+
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, JSON, String, func
@@ -22,11 +23,9 @@ class UserMFA(Base):
         ),
         nullable=False,
         unique=True,
-        index=True,
     )
 
-    # Encrypted TOTP secret.
-    # The raw secret must never be stored in plaintext.
+    # Encrypted TOTP secret. Never store the raw secret in plaintext.
     secret_encrypted: Mapped[str] = mapped_column(
         String(1024),
         nullable=False,
@@ -41,7 +40,6 @@ class UserMFA(Base):
     )
 
     # Recovery codes are stored as hashes, never plaintext.
-    # JSON array keeps the model simple while allowing one-time consumption.
     recovery_code_hashes: Mapped[list[str] | None] = mapped_column(
         JSON,
         nullable=True,
