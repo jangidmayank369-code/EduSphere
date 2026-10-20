@@ -9,6 +9,7 @@ import {
   bulkUpdateStudentStatus,
 } from "../api/students";
 import StudentForm from "../components/students/StudentForm";
+import StudentFeeSummary from "../components/students/StudentFeeSummary";
 import "../student-dashboard.css";
 
 const TEXT = {
@@ -718,7 +719,7 @@ export default function StudentDashboard() {
     try {
       const updated = await updateStudentStatus(
         selectedStudent.id,
-        nextStatus,
+        { is_active: nextStatus },
       );
 
       const nextStudent = updated || {
@@ -1500,32 +1501,11 @@ export default function StudentDashboard() {
                 )}
 
                 {activeTab === "fees" && (
-                  <section className="student-workspace-card">
-                    <div className="student-workspace-card-header">
-                      <div>
-                        <h3>{text.fees}</h3>
-                        <p>{text.openFees}</p>
-                      </div>
-                    </div>
-
-                    <div className="student-module-empty">
-                      <div className="student-module-empty-icon">
-                        ₹
-                      </div>
-
-                      <strong>{text.openFees}</strong>
-
-                      <span>{text.comingSoon}</span>
-
-                      <button
-                        type="button"
-                        className="student-primary-button"
-                        onClick={openFees}
-                      >
-                        {text.openFees} →
-                      </button>
-                    </div>
-                  </section>
+                  <StudentFeeSummary
+                    student={selectedStudent}
+                    schoolId={scope?.schoolId}
+                    academicSessionId={scope?.sessionId}
+                  />
                 )}
 
                 {activeTab === "academic" && (

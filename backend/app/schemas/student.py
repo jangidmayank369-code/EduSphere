@@ -16,6 +16,8 @@ ALLOWED_STUDENT_STATUSES = {
 class StudentBase(BaseModel):
     admission_number: str = Field(min_length=1, max_length=50)
     roll_number: str | None = Field(default=None, max_length=30)
+    class_name: str | None = Field(default=None, max_length=50)
+    section: str | None = Field(default=None, max_length=30)
 
     first_name: str = Field(min_length=1, max_length=100)
     middle_name: str | None = Field(default=None, max_length=100)
@@ -72,6 +74,8 @@ class StudentUpdate(BaseModel):
         max_length=50,
     )
     roll_number: str | None = Field(default=None, max_length=30)
+    class_name: str | None = Field(default=None, max_length=50)
+    section: str | None = Field(default=None, max_length=30)
 
     first_name: str | None = Field(
         default=None,

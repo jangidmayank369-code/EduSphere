@@ -48,6 +48,16 @@ class Student(Base):
         nullable=True,
     )
 
+    class_name: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
+    section: Mapped[str | None] = mapped_column(
+        String(30),
+        nullable=True,
+    )
+
     first_name: Mapped[str] = mapped_column(
         String(100),
         nullable=False,

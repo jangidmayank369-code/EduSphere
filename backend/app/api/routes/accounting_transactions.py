@@ -6,13 +6,15 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_permission
 from app.core.database import get_db
 from app.models.accounting_transaction import AccountingTransaction
+from app.models.audit import AuditLog
+from app.models.fee_payment import FeePayment
 
 
 router = APIRouter(
@@ -31,6 +33,7 @@ class AccountingTransactionCreate(BaseModel):
     payment_mode: str | None = Field(default=None, max_length=30)
     reference_number: str | None = Field(default=None, max_length=100)
     description: str = Field(min_length=1, max_length=4000)
+    idempotency_key: str | None = Field(default=None, min_length=8, max_length=100)
 
 
 class AccountingTransactionVoid(BaseModel):
@@ -51,6 +54,7 @@ def _transaction_dict(transaction: AccountingTransaction) -> dict:
         "description": transaction.description,
         "source_type": transaction.source_type,
         "source_id": transaction.source_id,
+        "idempotency_key": transaction.idempotency_key,
         "status": transaction.status,
         "created_by": transaction.created_by,
         "created_at": transaction.created_at,
@@ -135,6 +139,36 @@ def create_accounting_transaction(
 ):
     category = payload.category.strip()
     description = payload.description.strip()
+
+    idempotency_key = payload.idempotency_key.strip() if payload.idempotency_key else None
+    if idempotency_key:
+        existing = (
+            db.query(AccountingTransaction)
+            .filter(
+                AccountingTransaction.school_id == payload.school_id,
+                AccountingTransaction.academic_session_id == payload.academic_session_id,
+                AccountingTransaction.idempotency_key == idempotency_key,
+            )
+            .first()
+        )
+        if existing is not None:
+            same_request = (
+                existing.transaction_type == payload.transaction_type
+                and existing.category == category
+                and existing.amount == payload.amount.quantize(Decimal("0.01"))
+                and existing.transaction_date == payload.transaction_date
+                and existing.payment_mode == ((payload.payment_mode.strip() or None) if payload.payment_mode else None)
+                and existing.reference_number == ((payload.reference_number.strip() or None) if payload.reference_number else None)
+                and existing.description == description
+                and existing.source_type == "manual"
+            )
+            if same_request and existing.status == "posted":
+                return _transaction_dict(existing)
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="This idempotency key was already used for a different or voided transaction.",
+            )
+
     if not category:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -164,12 +198,29 @@ def create_accounting_transaction(
         # The model requires a source id and has a unique constraint on it.
         # A UUID gives every manual entry its own stable source identity.
         source_id=uuid4().hex,
+        idempotency_key=idempotency_key,
         status="posted",
         created_by=getattr(current_user, "id", None),
     )
 
     try:
         db.add(transaction)
+        db.flush()
+        db.add(AuditLog(
+            actor_user_id=getattr(current_user, "id", None),
+            action="CREATE",
+            resource_type="ACCOUNTING_TRANSACTION",
+            resource_id=str(transaction.id),
+            details={
+                "school_id": payload.school_id,
+                "academic_session_id": payload.academic_session_id,
+                "transaction_type": payload.transaction_type,
+                "amount": str(transaction.amount),
+                "category": category,
+                "source_type": "manual",
+                "idempotency_key": payload.idempotency_key,
+            },
+        ))
         db.commit()
         db.refresh(transaction)
     except IntegrityError as exc:
@@ -239,6 +290,7 @@ def void_accounting_transaction(
     # original description and append the reason so the existing schema can
     # retain the audit context without requiring a migration in this step.
     original_description = (transaction.description or "").strip()
+    old_status = transaction.status
     reason_note = f"Void reason: {reason}"
     transaction.description = (
         f"{original_description}\n{reason_note}".strip()
@@ -248,6 +300,21 @@ def void_accounting_transaction(
     transaction.status = "voided"
 
     try:
+        db.add(AuditLog(
+            actor_user_id=getattr(current_user, "id", None),
+            action="VOID",
+            resource_type="ACCOUNTING_TRANSACTION",
+            resource_id=str(transaction.id),
+            details={
+                "school_id": school_id,
+                "academic_session_id": academic_session_id,
+                "old_status": old_status,
+                "new_status": "voided",
+                "reason": reason,
+                "amount": str(transaction.amount),
+                "transaction_type": transaction.transaction_type,
+            },
+        ))
         db.commit()
         db.refresh(transaction)
     except SQLAlchemyError as exc:
@@ -258,3 +325,106 @@ def void_accounting_transaction(
         ) from exc
 
     return _transaction_dict(transaction)
+
+
+@router.get("/reconciliation", response_model=dict)
+def reconcile_fee_accounting(
+    school_id: int = Query(gt=0),
+    academic_session_id: int = Query(gt=0),
+    db: Session = Depends(get_db),
+    current_user=Depends(require_permission("FEE_PAYMENT_VIEW")),
+):
+    """Compare original fee payments (including reversed ones) with linked income entries."""
+    payments = (
+        db.query(FeePayment)
+        .filter(
+            FeePayment.school_id == school_id,
+            FeePayment.academic_session_id == academic_session_id,
+            FeePayment.reverses_payment_id.is_(None),
+        )
+        .order_by(FeePayment.id.asc())
+        .all()
+    )
+    discrepancies = []
+    matched_count = 0
+    payment_total = Decimal("0.00")
+    accounting_total = Decimal("0.00")
+
+    for payment in payments:
+        amount = Decimal(str(payment.amount)).quantize(Decimal("0.01"))
+        if payment.status == "posted":
+            payment_total += amount
+        expected_status = "posted" if payment.status == "posted" else "voided"
+        entries = (
+            db.query(AccountingTransaction)
+            .filter(
+                AccountingTransaction.school_id == school_id,
+                AccountingTransaction.academic_session_id == academic_session_id,
+                AccountingTransaction.source_type == "fee_payment",
+                AccountingTransaction.source_id == str(payment.id),
+                AccountingTransaction.transaction_type == "income",
+            )
+            .all()
+        )
+        issue = None
+        if not entries:
+            issue = "missing_accounting_entry"
+        elif len(entries) > 1:
+            issue = "duplicate_accounting_entries"
+        else:
+            entry = entries[0]
+            entry_amount = Decimal(str(entry.amount)).quantize(Decimal("0.01"))
+            if entry_amount != amount:
+                issue = "amount_mismatch"
+            elif entry.status != expected_status:
+                issue = "status_mismatch"
+            else:
+                matched_count += 1
+                if entry.status == "posted":
+                    accounting_total += entry_amount
+        if issue:
+            discrepancies.append({
+                "payment_id": payment.id,
+                "receipt_number": payment.receipt_number,
+                "payment_status": payment.status,
+                "expected_accounting_status": expected_status,
+                "payment_amount": str(amount),
+                "accounting_transaction_ids": [entry.id for entry in entries],
+                "accounting_amounts": [str(entry.amount) for entry in entries],
+                "accounting_statuses": [entry.status for entry in entries],
+                "issue": issue,
+            })
+
+    linked_posted_entries = (
+        db.query(AccountingTransaction)
+        .filter(
+            AccountingTransaction.school_id == school_id,
+            AccountingTransaction.academic_session_id == academic_session_id,
+            AccountingTransaction.source_type == "fee_payment",
+            AccountingTransaction.transaction_type == "income",
+            AccountingTransaction.status == "posted",
+        )
+        .all()
+    )
+    original_payment_ids = {str(payment.id) for payment in payments}
+    orphan_entries = [
+        {
+            "accounting_transaction_id": entry.id,
+            "source_id": entry.source_id,
+            "amount": str(entry.amount),
+        }
+        for entry in linked_posted_entries
+        if entry.source_id not in original_payment_ids
+    ]
+    return {
+        "school_id": school_id,
+        "academic_session_id": academic_session_id,
+        "status": "matched" if not discrepancies and not orphan_entries else "discrepancies_found",
+        "original_payments_checked": len(payments),
+        "matched_payments": matched_count,
+        "posted_fee_payment_total": str(payment_total.quantize(Decimal("0.01"))),
+        "matched_posted_accounting_total": str(accounting_total.quantize(Decimal("0.01"))),
+        "discrepancy_count": len(discrepancies),
+        "discrepancies": discrepancies,
+        "orphan_posted_fee_entries": orphan_entries,
+    }

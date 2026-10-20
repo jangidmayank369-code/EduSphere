@@ -55,7 +55,7 @@ export default function App() {
         {/* Student Fees uses the same Accounts workspace, opened on its fees tab. */}
         <Route
           path="/fees"
-          element={<Accounts initialTab="fees" />}
+          element={<Navigate to="/accounts" replace />}
         />
 
         {/* Accounts page includes its own AppShell. */}

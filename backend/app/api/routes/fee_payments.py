@@ -224,6 +224,14 @@ def get_fee_payment_receipt(
         plan_total - total_paid,
     )
 
+    # A reversal receipt references its original payment's accounting entry.
+    # The original income entry is retained with status="voided" for auditability;
+    # reversals do not create a second income entry.
+    accounting_payment_id = (
+        payment.reverses_payment_id
+        if payment.reverses_payment_id is not None
+        else payment.id
+    )
     accounting = (
         db.query(AccountingTransaction)
         .filter(
@@ -231,7 +239,7 @@ def get_fee_payment_receipt(
             AccountingTransaction.academic_session_id
             == academic_session_id,
             AccountingTransaction.source_type == "fee_payment",
-            AccountingTransaction.source_id == str(payment.id),
+            AccountingTransaction.source_id == str(accounting_payment_id),
             AccountingTransaction.transaction_type == "income",
         )
         .first()

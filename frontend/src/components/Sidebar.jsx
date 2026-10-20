@@ -22,12 +22,7 @@ const navigation = [
     path: "/students",
     icon: "users",
   },
-  {
-    en: "Fee Management",
-    hi: "फीस प्रबंधन",
-    path: "/fees",
-    icon: "wallet",
-  },
+
   {
     en: "Accounts",
     hi: "लेखा-जोखा",

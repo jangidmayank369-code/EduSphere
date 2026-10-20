@@ -175,6 +175,19 @@ function transactionSource(row) {
   return labels[source] || source.replaceAll("_", " ").replace(/^./, (s) => s.toUpperCase());
 }
 
+function transactionFingerprint(row) {
+  const normal = (value) => String(value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
+  return [
+    normal(row.transaction_date || transactionDate(row)),
+    normal(row.transaction_type || transactionType(row)),
+    normal(row.category),
+    Number(row.amount ?? 0).toFixed(2),
+    normal(row.payment_mode),
+    normal(row.reference_number),
+    normal(row.description),
+  ].join("|" );
+}
+
 function csvCell(value) {
   const text = value == null ? "" : String(value);
   return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
@@ -426,15 +439,39 @@ export default function Accounts({ initialTab = "overview" } = {}) {
     }
 
     const { schoolId, sessionId } = activeScope;
+    // The accounting endpoint caps each response at 2,000 rows. Walk offsets
+    // until the final short page so older transactions do not disappear from
+    // totals, reports, exports, or duplicate-import checks.
+    const fetchAllTransactions = async () => {
+      const pageSize = 2000;
+      const collected = [];
+      for (let offset = 0; ; offset += pageSize) {
+        const response = await apiClient.get(TXN_ENDPOINT, {
+          params: {
+            school_id: schoolId,
+            academic_session_id: sessionId,
+            limit: pageSize,
+            offset,
+          },
+        });
+        const page = rowsOf(response?.data);
+        collected.push(...page);
+        if (page.length < pageSize) break;
+      }
+      // Defensive de-duplication in case concurrent inserts shift offset pages.
+      const unique = new Map();
+      for (const row of collected) unique.set(String(row.id), row);
+      return [...unique.values()];
+    };
     const [txnResult, paymentResult, planResult, studentsResult] = await Promise.allSettled([
-      apiClient.get(TXN_ENDPOINT, { params: { school_id: schoolId, academic_session_id: sessionId, limit: 1000, offset: 0 } }),
+      fetchAllTransactions(),
       fetchPagedResource(listFeePayments, { school_id: schoolId, academic_session_id: sessionId }, "offset"),
       fetchPagedResource(listStudentFeePlans, { school_id: schoolId, academic_session_id: sessionId, is_active: true }, "page"),
       fetchPagedResource(getStudents, { school_id: schoolId, academic_session_id: sessionId, is_active: true }, "page"),
     ]);
 
     if (txnResult.status === "fulfilled") {
-      setTransactions(rowsOf(txnResult.value?.data));
+      setTransactions(txnResult.value);
     } else {
       setTransactions([]);
       setTxnError(txnResult.reason?.response?.data?.detail || txnResult.reason?.message || "Accounting ledger load nahi ho paaya. Backend endpoint connection required hai.");
@@ -702,18 +739,40 @@ export default function Accounts({ initialTab = "overview" } = {}) {
       const required = ["transaction_date", "transaction_type", "category", "amount", "description"];
       const missing = required.filter((key) => !(key in rows[0]));
       if (missing.length) throw new Error(`CSV columns missing: ${missing.join(", ")}`);
+      const seenInFile = new Set();
+      const existingManualFingerprints = new Set(
+        transactions
+          .filter((item) => String(item.source_type || "manual").toLowerCase() === "manual")
+          .map(transactionFingerprint)
+      );
       const previewRows = rows.map((row, index) => {
         const errors = [];
         const type = String(row.transaction_type || "").toLowerCase().trim();
         const amount = Number(row.amount);
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(row.transaction_date || "")) errors.push("date must be YYYY-MM-DD");
+        const normalizedRow = {
+          ...row,
+          transaction_date: String(row.transaction_date || "").trim(),
+          transaction_type: type,
+          category: String(row.category || "").trim(),
+          amount,
+          payment_mode: String(row.payment_mode || "").trim(),
+          reference_number: String(row.reference_number || "").trim(),
+          description: String(row.description || "").trim(),
+        };
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(normalizedRow.transaction_date)) errors.push("date must be YYYY-MM-DD");
         if (!["income", "expense"].includes(type)) errors.push("type must be income or expense");
-        if (!row.category) errors.push("category is required");
-        if (!row.description) errors.push("description is required");
+        if (!normalizedRow.category) errors.push("category is required");
+        if (!normalizedRow.description) errors.push("description is required");
         if (!Number.isFinite(amount) || amount <= 0) errors.push("amount must be > 0");
-        if (type === "income" && !INCOME_CATEGORIES.includes(row.category)) errors.push("income category must be Other Income");
-        if (type === "expense" && !EXPENSE_CATEGORIES.includes(row.category)) errors.push("unsupported expense category");
-        return { line: index + 2, row: { ...row, transaction_type: type, amount }, errors };
+        if (type === "income" && !INCOME_CATEGORIES.includes(normalizedRow.category)) errors.push("unsupported income category");
+        if (type === "expense" && !EXPENSE_CATEGORIES.includes(normalizedRow.category)) errors.push("unsupported expense category");
+        if (!errors.length) {
+          const fingerprint = transactionFingerprint(normalizedRow);
+          if (existingManualFingerprints.has(fingerprint)) errors.push("duplicate matches an existing manual transaction");
+          else if (seenInFile.has(fingerprint)) errors.push("duplicate row in this CSV");
+          seenInFile.add(fingerprint);
+        }
+        return { line: index + 2, row: normalizedRow, errors };
       });
       setImportPreview({ name: file.name, rows: previewRows });
     } catch (err) {
@@ -751,7 +810,8 @@ export default function Accounts({ initialTab = "overview" } = {}) {
     }
     setImporting(false);
     setImportPreview(null);
-    setNotice(`CSV import result: ${imported} imported, ${errors.length + (importPreview.rows.length - validRows.length)} failed/skipped.${errors.length ? ` First issue: ${errors[0]}` : ""}`);
+    const skipped = importPreview.rows.length - validRows.length;
+    setNotice(`CSV import result: ${imported} imported, ${skipped} invalid/duplicate rows skipped, ${errors.length} API failures.${errors.length ? ` First issue: ${errors[0]}` : ""}`);
     await loadData(true);
   }
 

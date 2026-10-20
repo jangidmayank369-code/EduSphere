@@ -13,6 +13,7 @@ from app.core.exceptions import (
     NotFoundError,
 )
 from app.models.accounting_transaction import AccountingTransaction
+from app.models.audit import AuditLog
 from app.models.fee_payment import FeePayment
 from app.models.school import AcademicSession, School
 from app.models.student import Student
@@ -358,6 +359,28 @@ class FeePaymentService:
             self.db.add(accounting)
             self.db.flush()
 
+            # Keep the audit event in the same database transaction as the
+            # payment and accounting entry so all three commit or roll back.
+            self.db.add(
+                AuditLog(
+                    actor_user_id=received_by,
+                    action="CREATE",
+                    resource_type="FEE_PAYMENT",
+                    resource_id=str(payment.id),
+                    details={
+                        "school_id": payment.school_id,
+                        "academic_session_id": payment.academic_session_id,
+                        "student_id": payment.student_id,
+                        "fee_plan_id": payment.student_fee_plan_id,
+                        "installment_id": payment.installment_id,
+                        "receipt_number": payment.receipt_number,
+                        "amount": str(payment.amount),
+                        "payment_mode": payment.payment_mode,
+                        "accounting_transaction_id": accounting.id,
+                    },
+                )
+            )
+
             self.db.commit()
             self.db.refresh(payment)
             return payment
@@ -466,6 +489,27 @@ class FeePaymentService:
 
             self.db.add(reversal)
             self.db.flush()
+
+            self.db.add(
+                AuditLog(
+                    actor_user_id=received_by,
+                    action="REVERSE",
+                    resource_type="FEE_PAYMENT",
+                    resource_id=str(payment.id),
+                    details={
+                        "school_id": payment.school_id,
+                        "academic_session_id": payment.academic_session_id,
+                        "student_id": payment.student_id,
+                        "original_receipt_number": payment.receipt_number,
+                        "reversal_receipt_number": reversal.receipt_number,
+                        "amount": str(payment.amount),
+                        "reason": reason,
+                        "accounting_transaction_id": accounting.id,
+                        "accounting_previous_status": "posted",
+                        "accounting_new_status": "voided",
+                    },
+                )
+            )
 
             if payment.installment_id is not None:
                 installment = (

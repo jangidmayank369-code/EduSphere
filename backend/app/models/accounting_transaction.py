@@ -45,6 +45,12 @@ class AccountingTransaction(Base):
             "transaction_type",
             name="uq_accounting_transaction_source",
         ),
+        UniqueConstraint(
+            "school_id",
+            "academic_session_id",
+            "idempotency_key",
+            name="uq_accounting_transaction_idempotency",
+        ),
         Index(
             "ix_accounting_transactions_school_session",
             "school_id",
@@ -118,6 +124,13 @@ class AccountingTransaction(Base):
     source_id: Mapped[str] = mapped_column(
         String(100),
         nullable=False,
+    )
+
+    # Optional for backwards compatibility; clients should reuse the same key
+    # when retrying a manual transaction request.
+    idempotency_key: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
     )
 
     status: Mapped[str] = mapped_column(

@@ -35,6 +35,12 @@ import {
 
 import "../fee-management.css";
 
+function createPaymentIdempotencyKey() {
+  if (globalThis.crypto?.randomUUID) {
+    return `fee-${globalThis.crypto.randomUUID()}`;
+  }
+  return `fee-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+}
 
 const TEXT = {
   en: {
@@ -415,6 +421,9 @@ export default function FeeManagement() {
   const [paymentMode, setPaymentMode] = useState("cash");
   const [referenceNumber, setReferenceNumber] = useState("");
   const [remarks, setRemarks] = useState("");
+  const [paymentIdempotencyKey, setPaymentIdempotencyKey] = useState(
+    () => createPaymentIdempotencyKey()
+  );
 
   const [selectedPaymentId, setSelectedPaymentId] = useState(null);
   const [receipt, setReceipt] = useState(null);
@@ -647,6 +656,7 @@ export default function FeeManagement() {
     setPaymentMode("cash");
     setReferenceNumber("");
     setRemarks("");
+    setPaymentIdempotencyKey(createPaymentIdempotencyKey());
   }
 
   async function handleCreatePayment(event) {
@@ -686,7 +696,7 @@ export default function FeeManagement() {
         payment_mode: paymentMode,
         reference_number: referenceNumber.trim() || null,
         remarks: remarks.trim() || null,
-        idempotency_key: `fee-${selectedPlan.id}-${Date.now()}`,
+        idempotency_key: paymentIdempotencyKey,
       };
 
       const created = await createFeePayment(payload);

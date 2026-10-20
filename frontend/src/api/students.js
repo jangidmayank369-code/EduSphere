@@ -4,7 +4,18 @@ import apiClient from "./client";
 const BASE_URL = "/students";
 
 function unwrapResponse(response) {
-  return response?.data ?? response;
+  const body = response?.data ?? response;
+
+  if (
+    body &&
+    !Array.isArray(body) &&
+    body.success === true &&
+    Object.prototype.hasOwnProperty.call(body, "data")
+  ) {
+    return body.data;
+  }
+
+  return body;
 }
 
 function getErrorMessage(error) {
@@ -28,7 +39,28 @@ function getErrorMessage(error) {
 
 export async function getStudents(params = {}) {
   try {
-    const response = await apiClient.get(BASE_URL, { params });
+    const normalizedParams = { ...params };
+
+    if (normalizedParams.schoolId !== undefined) {
+      normalizedParams.school_id = normalizedParams.schoolId;
+      delete normalizedParams.schoolId;
+    }
+
+    if (normalizedParams.academicSessionId !== undefined) {
+      normalizedParams.academic_session_id =
+        normalizedParams.academicSessionId;
+      delete normalizedParams.academicSessionId;
+    }
+
+    if (normalizedParams.pageSize !== undefined) {
+      normalizedParams.page_size = normalizedParams.pageSize;
+      delete normalizedParams.pageSize;
+    }
+
+    const response = await apiClient.get(BASE_URL, {
+      params: normalizedParams,
+    });
+
     return unwrapResponse(response);
   } catch (error) {
     throw new Error(getErrorMessage(error));
@@ -40,6 +72,7 @@ export async function getStudent(studentId) {
     const response = await apiClient.get(
       `${BASE_URL}/${encodeURIComponent(studentId)}`
     );
+
     return unwrapResponse(response);
   } catch (error) {
     throw new Error(getErrorMessage(error));
@@ -61,6 +94,7 @@ export async function updateStudent(studentId, payload) {
       `${BASE_URL}/${encodeURIComponent(studentId)}`,
       payload
     );
+
     return unwrapResponse(response);
   } catch (error) {
     throw new Error(getErrorMessage(error));
@@ -73,6 +107,7 @@ export async function updateStudentStatus(studentId, payload) {
       `${BASE_URL}/${encodeURIComponent(studentId)}/status`,
       payload
     );
+
     return unwrapResponse(response);
   } catch (error) {
     throw new Error(getErrorMessage(error));
@@ -81,10 +116,11 @@ export async function updateStudentStatus(studentId, payload) {
 
 export async function bulkUpdateStudentStatus(payload) {
   try {
-    const response = await apiClient.patch(
+    const response = await apiClient.post(
       `${BASE_URL}/bulk-status`,
       payload
     );
+
     return unwrapResponse(response);
   } catch (error) {
     throw new Error(getErrorMessage(error));
@@ -96,6 +132,7 @@ export async function getStudentParents(studentId) {
     const response = await apiClient.get(
       `${BASE_URL}/${encodeURIComponent(studentId)}/parents`
     );
+
     return unwrapResponse(response);
   } catch (error) {
     throw new Error(getErrorMessage(error));
@@ -108,6 +145,7 @@ export async function linkStudentParent(studentId, payload) {
       `${BASE_URL}/${encodeURIComponent(studentId)}/parents`,
       payload
     );
+
     return unwrapResponse(response);
   } catch (error) {
     throw new Error(getErrorMessage(error));
@@ -119,6 +157,7 @@ export async function unlinkStudentParent(studentId, parentId) {
     const response = await apiClient.delete(
       `${BASE_URL}/${encodeURIComponent(studentId)}/parents/${encodeURIComponent(parentId)}`
     );
+
     return unwrapResponse(response);
   } catch (error) {
     throw new Error(getErrorMessage(error));
