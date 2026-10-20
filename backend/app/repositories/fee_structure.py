@@ -14,7 +14,6 @@ class FeeStructureRepository:
         self.db.add(fee_structure)
         self.db.commit()
         self.db.refresh(fee_structure)
-
         return fee_structure
 
     def get_by_id(
@@ -44,7 +43,9 @@ class FeeStructureRepository:
         )
 
         if exclude_id is not None:
-            query = query.where(FeeStructure.id != exclude_id)
+            query = query.where(
+                FeeStructure.id != exclude_id
+            )
 
         return self.db.scalar(query)
 
@@ -61,15 +62,17 @@ class FeeStructureRepository:
         page: int = 1,
         page_size: int = 50,
     ) -> tuple[list[FeeStructure], int]:
-
         filters = []
 
         if school_id is not None:
-            filters.append(FeeStructure.school_id == school_id)
+            filters.append(
+                FeeStructure.school_id == school_id
+            )
 
         if academic_session_id is not None:
             filters.append(
-                FeeStructure.academic_session_id == academic_session_id
+                FeeStructure.academic_session_id
+                == academic_session_id
             )
 
         if class_name is not None:
@@ -104,9 +107,14 @@ class FeeStructureRepository:
                 )
             )
 
-        total = self.db.scalar(
-            select(func.count(FeeStructure.id)).where(*filters)
-        ) or 0
+        total = (
+            self.db.scalar(
+                select(func.count(FeeStructure.id)).where(
+                    *filters
+                )
+            )
+            or 0
+        )
 
         query = (
             select(FeeStructure)
@@ -125,9 +133,11 @@ class FeeStructureRepository:
 
         return items, total
 
-    def save(self, fee_structure: FeeStructure) -> FeeStructure:
+    def save(
+        self,
+        fee_structure: FeeStructure,
+    ) -> FeeStructure:
         self.db.add(fee_structure)
         self.db.commit()
         self.db.refresh(fee_structure)
-
         return fee_structure

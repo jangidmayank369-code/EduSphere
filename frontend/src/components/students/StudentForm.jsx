@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./StudentForm.css";
 import {
   createStudent,
   updateStudent,
@@ -19,6 +20,16 @@ const TEXT = {
     photoSizeError: "Photo must be 5 MB or smaller.",
     admissionNumber: "Admission Number",
     rollNumber: "Roll Number",
+    className: "Class",
+    section: "Section",
+    enrollmentNumber: "Enrollment Number",
+    governmentId: "Aadhaar / Other ID",
+    house: "House",
+    category: "Category",
+    religion: "Religion / Community",
+    previousSchool: "Previous School",
+    admissionDate: "Admission Date",
+    contactInfo: "Contact Information",
     firstName: "First Name",
     middleName: "Middle Name",
     lastName: "Last Name",
@@ -64,6 +75,16 @@ const TEXT = {
     photoSizeError: "फोटो का आकार 5 MB या उससे कम होना चाहिए।",
     admissionNumber: "प्रवेश संख्या",
     rollNumber: "रोल नंबर",
+    className: "कक्षा",
+    section: "सेक्शन",
+    enrollmentNumber: "नामांकन संख्या",
+    governmentId: "आधार / अन्य पहचान संख्या",
+    house: "हाउस",
+    category: "श्रेणी",
+    religion: "धर्म / समुदाय",
+    previousSchool: "पिछला विद्यालय",
+    admissionDate: "प्रवेश दिनांक",
+    contactInfo: "संपर्क जानकारी",
     firstName: "पहला नाम",
     middleName: "मध्य नाम",
     lastName: "उपनाम",
@@ -100,6 +121,15 @@ const TEXT = {
 const EMPTY_FORM = {
   admission_number: "",
   roll_number: "",
+  class_name: "",
+  section: "",
+  enrollment_number: "",
+  government_id_number: "",
+  house: "",
+  category: "",
+  religion: "",
+  previous_school: "",
+  admission_date: "",
   first_name: "",
   middle_name: "",
   last_name: "",
@@ -126,6 +156,15 @@ function normalizeStudent(student) {
   return {
     admission_number: student.admission_number || "",
     roll_number: student.roll_number || "",
+    class_name: student.class_name || "",
+    section: student.section || "",
+    enrollment_number: student.enrollment_number || "",
+    government_id_number: student.government_id_number || "",
+    house: student.house || "",
+    category: student.category || "",
+    religion: student.religion || "",
+    previous_school: student.previous_school || "",
+    admission_date: student.admission_date ? String(student.admission_date).slice(0, 10) : "",
     first_name: student.first_name || "",
     middle_name: student.middle_name || "",
     last_name: student.last_name || "",
@@ -275,6 +314,15 @@ export default function StudentForm({
     const payload = {
       admission_number: form.admission_number.trim(),
       roll_number: form.roll_number.trim() || null,
+      class_name: form.class_name.trim() || null,
+      section: form.section.trim() || null,
+      enrollment_number: form.enrollment_number.trim() || null,
+      government_id_number: form.government_id_number.trim() || null,
+      house: form.house.trim() || null,
+      category: form.category.trim() || null,
+      religion: form.religion.trim() || null,
+      previous_school: form.previous_school.trim() || null,
+      admission_date: form.admission_date || null,
       first_name: form.first_name.trim(),
       middle_name: form.middle_name.trim() || null,
       last_name: form.last_name.trim() || null,
@@ -473,6 +521,54 @@ export default function StudentForm({
                 }
                 maxLength={30}
               />
+            </Field>
+
+            <Field label={text.className}>
+              <input
+                type="text"
+                value={form.class_name}
+                onChange={(event) => updateField("class_name", event.target.value)}
+                maxLength={50}
+                placeholder={language === "hi" ? "जैसे 1, 2, 10" : "e.g. 1, 2, 10"}
+              />
+            </Field>
+
+            <Field label={text.section}>
+              <input
+                type="text"
+                value={form.section}
+                onChange={(event) => updateField("section", event.target.value)}
+                maxLength={30}
+                placeholder={language === "hi" ? "जैसे A, B" : "e.g. A, B"}
+              />
+            </Field>
+
+            <Field label={text.enrollmentNumber}>
+              <input type="text" value={form.enrollment_number} onChange={(event) => updateField("enrollment_number", event.target.value)} maxLength={50} />
+            </Field>
+
+            <Field label={text.governmentId}>
+              <input type="text" value={form.government_id_number} onChange={(event) => updateField("government_id_number", event.target.value)} maxLength={50} autoComplete="off" />
+            </Field>
+
+            <Field label={text.house}>
+              <input type="text" value={form.house} onChange={(event) => updateField("house", event.target.value)} maxLength={80} />
+            </Field>
+
+            <Field label={text.category}>
+              <input type="text" value={form.category} onChange={(event) => updateField("category", event.target.value)} maxLength={80} />
+            </Field>
+
+            <Field label={text.religion}>
+              <input type="text" value={form.religion} onChange={(event) => updateField("religion", event.target.value)} maxLength={80} />
+            </Field>
+
+            <Field label={text.previousSchool}>
+              <input type="text" value={form.previous_school} onChange={(event) => updateField("previous_school", event.target.value)} maxLength={200} />
+            </Field>
+
+            <Field label={text.admissionDate}>
+              <input type="date" value={form.admission_date} onChange={(event) => updateField("admission_date", event.target.value)} />
             </Field>
 
             <Field label={text.firstName} required>

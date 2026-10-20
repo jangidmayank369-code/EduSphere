@@ -3,6 +3,7 @@ import AppShell from "../components/AppShell";
 import apiClient from "../api/client";
 import { createFeePayment, listFeePayments } from "../api/feePayments";
 import { listStudentFeePlans } from "../api/studentFeePlans";
+import { reconcileFeeAccounting } from "../api/ledger";
 import { getStudents } from "../api/students";
 import { useAuth } from "../auth/AuthContext";
 import { getSchools, getAcademicSessions, getCurrentAcademicSession } from "../api/school";
@@ -321,62 +322,125 @@ function idFrom(value, keys) {
 }
 
 async function resolveAccountsScope(user) {
-  // Match Dashboard's school/session resolution so Accounts uses the same scope.
-  // The authenticated user may not include school_id for administrator accounts.
-  const userSchoolId = idFrom(user, ["school_id", "schoolId"])
-    || idFrom(user?.school, ["id", "school_id", "schoolId"]);
+  const schoolKeys = ["id", "school_id", "schoolId"];
+  const sessionKeys = ["id", "academic_session_id", "session_id", "sessionId"];
 
-  let school = user?.school && typeof user.school === "object" ? user.school : null;
-  let schools = [];
-  let schoolId = userSchoolId;
-
-  try {
-    schools = toArray(await getSchools());
-  } catch {
-    // If the school-list endpoint is restricted, use an explicit user assignment only.
-  }
-
-  if (schoolId) {
-    school = schools.find((item) => idFrom(item, ["id", "school_id", "schoolId"]) === schoolId) || school;
-  } else {
-    const associatedId = idFrom(user?.school, ["id", "school_id", "schoolId"]);
-    school = schools.find((item) => idFrom(item, ["id", "school_id", "schoolId"]) === associatedId)
-      || (schools.length === 1 ? schools[0] : null);
-    schoolId = idFrom(school, ["id", "school_id", "schoolId"]);
-    // Dashboard currently uses school ID 1 as its configured default for admin accounts.
-    if (!schoolId) {
-      schoolId = 1;
-      school = schools.find((item) => idFrom(item, ["id", "school_id", "schoolId"]) === schoolId) || null;
+  const getId = (value, keys) => {
+    for (const key of keys) {
+      const candidate = value?.[key];
+      if (candidate === undefined || candidate === null || candidate === "") continue;
+      const numeric = Number(candidate);
+      if (Number.isInteger(numeric) && numeric > 0) return numeric;
     }
+    return null;
+  };
+
+  const getRows = (value) => {
+    const data = unwrapPayload(value);
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.items)) return data.items;
+    if (Array.isArray(data?.results)) return data.results;
+    if (Array.isArray(data?.schools)) return data.schools;
+    if (Array.isArray(data?.sessions)) return data.sessions;
+    if (Array.isArray(data?.data)) return data.data;
+    return [];
+  };
+
+  const describeRequestError = (error) => ({
+    status: error?.response?.status,
+    detail: error?.response?.data?.detail ?? error?.response?.data?.message,
+    message: error?.message,
+  });
+
+  let schools = [];
+  try {
+    schools = getRows(await getSchools());
+  } catch (error) {
+    console.error("Accounts: failed to load schools", describeRequestError(error));
   }
 
-  if (!schoolId) throw new Error("Logged-in user ke liye school resolve nahi hua. User profile/school assignment check karo.");
+  const assignedSchoolId =
+    getId(user, ["school_id", "schoolId"]) ??
+    getId(user?.school, schoolKeys);
+
+  let school =
+    schools.find((item) => getId(item, schoolKeys) === assignedSchoolId) ??
+    (user?.school && typeof user.school === "object" ? user.school : null);
+
+  let schoolId = assignedSchoolId ?? getId(school, schoolKeys);
+
+  // Keep Accounts consistent with Dashboard: admin profiles may omit school_id.
+  // Prefer the authenticated user's assignment, then an accessible single school.
+  if (!schoolId && schools.length === 1) {
+    school = schools[0];
+    schoolId = getId(school, schoolKeys);
+  }
+
+  // Dashboard already uses school 1 as the configured fallback for admin users.
+  // Use it only when no assignment/list result was available, and let the API
+  // validate access; do not create or modify any school record here.
+  if (!schoolId) {
+    schoolId = 1;
+    school = schools.find((item) => getId(item, schoolKeys) === schoolId) ?? school;
+  }
+
+  if (!schoolId) {
+    throw new Error(
+      "Logged-in user ke liye school resolve nahi hua. Login profile mein school_id/school assignment aur GET /schools response check karein."
+    );
+  }
 
   let session = null;
   try {
     session = unwrapPayload(await getCurrentAcademicSession(schoolId));
-    if (session?.data && !idFrom(session, ["id", "academic_session_id", "session_id"])) session = session.data;
-    if (Array.isArray(session)) session = session[0] || null;
-  } catch {
-    // Fall back to the session list below.
-  }
-
-  let sessionId = idFrom(session, ["id", "academic_session_id", "session_id"]);
-  if (!sessionId) {
-    const sessions = toArray(await getAcademicSessions(schoolId));
-    const currentSession = sessions.find((item) => item?.is_current === true || item?.isCurrent === true || item?.current === true || String(item?.status || "").toLowerCase() === "current");
-    const yearSession = sessions.find((item) => {
-      const label = String(item?.name || item?.session_name || item?.academic_year || item?.label || "");
-      return /2026\s*[-–/]\s*2027|2026\s*[-–/]\s*27/.test(label);
+    if (Array.isArray(session)) session = session[0] ?? null;
+    if (session?.data && !getId(session, sessionKeys)) session = session.data;
+  } catch (error) {
+    console.error("Accounts: failed to load current academic session", {
+      schoolId,
+      ...describeRequestError(error),
     });
-    session = currentSession || yearSession || (sessions.length === 1 ? sessions[0] : null);
-    sessionId = idFrom(session, ["id", "academic_session_id", "session_id"]);
   }
 
-  if (!sessionId) throw new Error("Academic session ID resolve nahi hua. School Settings mein 2026–27 session ko current set karo.");
+  let sessionId = getId(session, sessionKeys);
+  if (!sessionId) {
+    try {
+      const sessions = getRows(await getAcademicSessions(schoolId));
+      const currentSession = sessions.find((item) =>
+        item?.is_current === true ||
+        item?.isCurrent === true ||
+        item?.current === true ||
+        String(item?.status ?? "").toLowerCase() === "current"
+      );
+      const sessionForDisplayedYear = sessions.find((item) =>
+        /2026\s*[-–/]\s*(2027|27)/.test(String(
+          item?.name ?? item?.session_name ?? item?.academic_year ?? item?.label ?? ""
+        ))
+      );
+      session = currentSession ?? sessionForDisplayedYear ?? (sessions.length === 1 ? sessions[0] : null);
+      sessionId = getId(session, sessionKeys);
+    } catch (error) {
+      console.error("Accounts: failed to load academic sessions", {
+        schoolId,
+        ...describeRequestError(error),
+      });
+    }
+  }
 
-  const sessionName = session?.name || session?.session_name || session?.academic_year || session?.label || "Selected academic session";
-  return { schoolId, sessionId, schoolName: school?.name || school?.school_name || user?.school_name || user?.school?.name || "School", sessionName };
+  if (!sessionId) {
+    throw new Error(
+      `School ID ${schoolId} mil gaya, lekin academic session ID nahi mila. School Settings mein academic session create/activate karein aur GET /schools/${schoolId}/academic-sessions response check karein.`
+    );
+  }
+
+  return {
+    schoolId,
+    sessionId,
+    schoolName:
+      school?.name ?? school?.school_name ?? user?.school_name ?? user?.school?.name ?? "School",
+    sessionName:
+      session?.name ?? session?.session_name ?? session?.academic_year ?? session?.label ?? "Selected academic session",
+  };
 }
 
 export default function Accounts({ initialTab = "overview" } = {}) {
@@ -394,6 +458,9 @@ export default function Accounts({ initialTab = "overview" } = {}) {
   const [refreshing, setRefreshing] = useState(false);
   const [txnError, setTxnError] = useState("");
   const [paymentsError, setPaymentsError] = useState("");
+  const [reconciliation, setReconciliation] = useState(null);
+  const [reconciling, setReconciling] = useState(false);
+  const [reconciliationError, setReconciliationError] = useState("");
   const [notice, setNotice] = useState("");
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
@@ -601,6 +668,27 @@ export default function Accounts({ initialTab = "overview" } = {}) {
       grouped.set(key, (grouped.get(key) || 0) + transactionAmount(row));
     });
     return [...grouped.entries()].map(([label, amount]) => ({ label, amount })).sort((a, b) => b.amount - a.amount);
+  }
+
+  async function runFeeReconciliation() {
+    if (!scope?.schoolId || !scope?.sessionId) {
+      setReconciliationError("School aur academic session resolve hone ka wait karo.");
+      return;
+    }
+    setReconciling(true);
+    setReconciliationError("");
+    try {
+      const result = await reconcileFeeAccounting({
+        school_id: scope.schoolId,
+        academic_session_id: scope.sessionId,
+      });
+      setReconciliation(result);
+    } catch (error) {
+      setReconciliation(null);
+      setReconciliationError(error?.response?.data?.detail || error?.message || "Fee-accounting reconciliation run nahi ho payi.");
+    } finally {
+      setReconciling(false);
+    }
   }
 
   function startCreate(type = "expense") {
@@ -1105,6 +1193,15 @@ export default function Accounts({ initialTab = "overview" } = {}) {
                 <div className="ac-panel" style={{ gridColumn: "1 / -1" }}>
                   <div className="ac-panel-head"><div><h3>Accounting statement</h3><p className="ac-panel-sub">Session/date-filtered summary; reversed/voided transactions are excluded from totals</p></div><button type="button" className="ac-btn" onClick={() => exportRows(rangeTransactions)}><Download size={14} /> Export detailed report</button></div>
                   <div className="ac-mini-stats"><div className="ac-mini-stat"><span>Income</span><strong>{money(totalIncome)}</strong></div><div className="ac-mini-stat"><span>Expenses</span><strong>{money(totalExpenses)}</strong></div><div className="ac-mini-stat"><span>Net movement</span><strong style={{ color: netBalance >= 0 ? "#059669" : "#e11d48" }}>{money(netBalance)}</strong></div></div>
+                </div>
+                <div className="ac-panel" style={{ gridColumn: "1 / -1" }}>
+                  <div className="ac-panel-head"><div><h3>Fee ↔ Accounts reconciliation</h3><p className="ac-panel-sub">Checks posted fee payments against their linked accounting entries for the selected school and session.</p></div><button type="button" className="ac-btn primary" onClick={runFeeReconciliation} disabled={reconciling || !scope?.schoolId || !scope?.sessionId}><RefreshCw size={14} />{reconciling ? "Checking..." : "Run reconciliation"}</button></div>
+                  {reconciliationError ? <div className="ac-alert error" role="alert">{reconciliationError}</div> : null}
+                  {!reconciliation && !reconciliationError ? <p className="ac-muted-line">Run this check to find missing, duplicated, mismatched or incorrectly reversed fee-accounting entries. This check does not modify financial records.</p> : null}
+                  {reconciliation ? <><div className="ac-mini-stats"><div className="ac-mini-stat"><span>Result</span><strong style={{ color: reconciliation.status === "matched" ? "#047857" : "#b91c1c" }}>{reconciliation.status === "matched" ? "All matched" : "Issues found"}</strong></div><div className="ac-mini-stat"><span>Payments checked</span><strong>{Number(reconciliation.original_payments_checked || 0).toLocaleString()}</strong></div><div className="ac-mini-stat"><span>Matched</span><strong>{Number(reconciliation.matched_payments || 0).toLocaleString()}</strong></div><div className="ac-mini-stat"><span>Discrepancies</span><strong>{Number(reconciliation.discrepancy_count || 0) + (reconciliation.orphan_posted_fee_entries || []).length}</strong></div><div className="ac-mini-stat"><span>Posted fee total</span><strong>{money(reconciliation.posted_fee_payment_total || 0)}</strong></div><div className="ac-mini-stat"><span>Linked accounts total</span><strong>{money(reconciliation.matched_posted_accounting_total || 0)}</strong></div></div>
+                    {(reconciliation.discrepancies || []).length > 0 ? <div className="ac-table-scroll" style={{ marginTop: 14 }}><table className="ac-table"><thead><tr><th>Receipt</th><th>Payment ID</th><th>Payment status</th><th>Issue</th><th>Payment amount</th><th>Accounting IDs</th></tr></thead><tbody>{reconciliation.discrepancies.map((item) => <tr key={item.payment_id}><td>{item.receipt_number || "—"}</td><td>{item.payment_id}</td><td>{item.payment_status}</td><td><span className="ac-status voided">{String(item.issue || "unknown").replaceAll("_", " ")}</span></td><td>{money(item.payment_amount || 0)}</td><td>{(item.accounting_transaction_ids || []).join(", ") || "None"}</td></tr>)}</tbody></table></div> : null}
+                    {(reconciliation.orphan_posted_fee_entries || []).length > 0 ? <div className="ac-table-scroll" style={{ marginTop: 12 }}><table className="ac-table"><thead><tr><th>Orphan accounting entry</th><th>Source ID</th><th>Amount</th></tr></thead><tbody>{reconciliation.orphan_posted_fee_entries.map((item) => <tr key={item.accounting_transaction_id}><td>{item.accounting_transaction_id}</td><td>{item.source_id}</td><td>{money(item.amount || 0)}</td></tr>)}</tbody></table></div> : null}
+                  </> : null}
                 </div>
               </div>
             )}

@@ -3,6 +3,7 @@ import { useAuth } from "../auth/AuthContext";
 import { getSchools, getAcademicSessions, getCurrentAcademicSession } from "../api/school";
 import {
   getStudents,
+  createStudent,
   getStudent,
   getStudentParents,
   updateStudentStatus,
@@ -10,6 +11,7 @@ import {
 } from "../api/students";
 import StudentForm from "../components/students/StudentForm";
 import StudentFeeSummary from "../components/students/StudentFeeSummary";
+import StudentSessionImport from "../components/students/StudentSessionImport";
 import "../student-dashboard.css";
 
 const TEXT = {
@@ -22,6 +24,26 @@ const TEXT = {
     inactive: "Inactive",
     refresh: "Refresh",
     addStudent: "Add Student",
+    sessionImport: "Import from Session",
+    bulkImport: "Bulk Import",
+    bulkExport: "Export CSV",
+    importTitle: "Bulk Import Students",
+    importHelp: "Upload a CSV file. Required columns: admission_number, first_name. Optional columns include roll_number, middle_name, last_name, date_of_birth, gender, blood_group, phone, email, address, city, state, country, postal_code, class_name, section, enrollment_number, government_id_number, house, category, religion, previous_school, admission_date.",
+    chooseCsv: "Choose CSV",
+    downloadTemplate: "Download template",
+    previewRows: "Preview rows",
+    importRows: "Import valid rows",
+    importingRows: "Importing…",
+    importSummary: "Import summary",
+    importNoFile: "Choose a CSV file first.",
+    importRequired: "Each row must include admission_number and first_name.",
+    importComplete: "Bulk import finished. Review the row results below.",
+    close: "Close",
+    row: "Row",
+    result: "Result",
+    success: "Imported",
+    failed: "Failed",
+    duplicate: "Duplicate admission number in this file or current session",
     editStudent: "Edit Student",
     loading: "Loading students...",
     loadingStudent: "Loading student...",
@@ -102,6 +124,26 @@ const TEXT = {
     inactive: "निष्क्रिय",
     refresh: "रिफ्रेश",
     addStudent: "विद्यार्थी जोड़ें",
+    sessionImport: "दूसरे सेशन से इम्पोर्ट",
+    bulkImport: "बल्क इम्पोर्ट",
+    bulkExport: "CSV एक्सपोर्ट",
+    importTitle: "विद्यार्थियों का बल्क इम्पोर्ट",
+    importHelp: "CSV फ़ाइल अपलोड करें। जरूरी कॉलम: admission_number, first_name. बाकी कॉलम वैकल्पिक हैं।",
+    chooseCsv: "CSV चुनें",
+    downloadTemplate: "टेम्पलेट डाउनलोड",
+    previewRows: "पंक्तियाँ देखें",
+    importRows: "सही पंक्तियाँ इम्पोर्ट करें",
+    importingRows: "इम्पोर्ट हो रहा है…",
+    importSummary: "इम्पोर्ट सारांश",
+    importNoFile: "पहले CSV फ़ाइल चुनें।",
+    importRequired: "हर पंक्ति में admission_number और first_name जरूरी हैं।",
+    importComplete: "बल्क इम्पोर्ट पूरा हुआ। नीचे परिणाम देखें।",
+    close: "बंद करें",
+    row: "पंक्ति",
+    result: "परिणाम",
+    success: "इम्पोर्ट हुआ",
+    failed: "असफल",
+    duplicate: "इस फ़ाइल या मौजूदा सत्र में admission number दोहराया गया है",
     editStudent: "विद्यार्थी संपादित करें",
     loading: "विद्यार्थी लोड हो रहे हैं...",
     loadingStudent: "विद्यार्थी की जानकारी लोड हो रही है...",
@@ -397,6 +439,13 @@ export default function StudentDashboard() {
   const [bulkUpdating, setBulkUpdating] = useState(false);
   const [showStudentForm, setShowStudentForm] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
+  const [showBulkImport, setShowBulkImport] = useState(false);
+  const [showSessionImport, setShowSessionImport] = useState(false);
+  const [bulkImportFile, setBulkImportFile] = useState(null);
+  const [bulkImportRows, setBulkImportRows] = useState([]);
+  const [bulkImportResults, setBulkImportResults] = useState([]);
+  const [bulkImporting, setBulkImporting] = useState(false);
+  const [bulkImportError, setBulkImportError] = useState("");
 
   async function loadStudents(preferredStudentId = null) {
     setLoadingStudents(true);
@@ -416,7 +465,27 @@ export default function StudentDashboard() {
         pageSize: 100,
       });
 
-      const list = toArray(data);
+      const responseList = toArray(data);
+
+      // Enforce the selected academic session in the UI as a safety check.
+      // The API request above also sends academic_session_id; never display a
+      // record explicitly tagged to a different session under this session label.
+      const list = responseList.filter((student) => {
+        const studentSessionId = idFrom(student, [
+          "academic_session_id",
+          "academicSessionId",
+          "session_id",
+          "sessionId",
+        ]);
+        return studentSessionId !== null && sameId(studentSessionId, scope.sessionId);
+      });
+
+      if (responseList.length > 0 && list.length === 0) {
+        console.error(
+          "Student session mismatch: API returned students, but none belong to selected session.",
+          { selectedSessionId: scope.sessionId, returnedSessionIds: responseList.map((student) => idFrom(student, ["academic_session_id", "academicSessionId", "session_id", "sessionId"])) }
+        );
+      }
 
       setStudents(list);
 
@@ -668,6 +737,143 @@ export default function StudentDashboard() {
     }
   }
 
+  function parseStudentCsv(textValue) {
+    const lines = String(textValue || "").replace(/^\uFEFF/, "").split(/\r?\n/).filter((line) => line.trim());
+    if (lines.length < 2) return [];
+    const parseLine = (line) => {
+      const cells = [];
+      let value = "";
+      let quoted = false;
+      for (let i = 0; i < line.length; i += 1) {
+        const char = line[i];
+        if (char === '"' && quoted && line[i + 1] === '"') { value += '"'; i += 1; }
+        else if (char === '"') quoted = !quoted;
+        else if (char === "," && !quoted) { cells.push(value.trim()); value = ""; }
+        else value += char;
+      }
+      cells.push(value.trim());
+      return cells;
+    };
+    const headers = parseLine(lines[0]).map((header) => header.trim().toLowerCase().replace(/[\s-]+/g, "_"));
+    return lines.slice(1).map((line, index) => {
+      const cells = parseLine(line);
+      const row = { _rowNumber: index + 2 };
+      headers.forEach((header, i) => { if (header) row[header] = cells[i] ?? ""; });
+      return row;
+    });
+  }
+
+  function downloadStudentCsvTemplate() {
+    const headers = ["admission_number","first_name","middle_name","last_name","roll_number","class_name","section","enrollment_number","date_of_birth","gender","blood_group","phone","email","address","city","state","country","postal_code","admission_date","government_id_number","house","category","religion","previous_school"];
+    const blob = new Blob([headers.join(",") + "\r\n"], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "edusphere-student-import-template.csv";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportStudentsCsv() {
+    const headers = ["admission_number","first_name","middle_name","last_name","roll_number","class_name","section","date_of_birth","gender","blood_group","phone","email","address","city","state","country","postal_code","status"];
+    const escape = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+    const rows = filteredStudents.map((student) => headers.map((key) => escape(student[key])).join(","));
+    const blob = new Blob([[headers.join(","), ...rows].join("\r\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `students-${scope?.sessionName || "session"}.csv`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  async function readBulkImportFile(file) {
+    setBulkImportError("");
+    setBulkImportResults([]);
+    setBulkImportFile(file || null);
+    if (!file) { setBulkImportRows([]); return; }
+    if (!/\.csv$/i.test(file.name) && file.type !== "text/csv") {
+      setBulkImportError("Please choose a .csv file. Excel files must be saved as CSV first.");
+      setBulkImportRows([]);
+      return;
+    }
+    try {
+      const parsed = parseStudentCsv(await file.text());
+      if (!parsed.length) throw new Error("CSV is empty or has no data rows.");
+      const seen = new Set();
+      const existing = new Set(students.map((student) => String(student.admission_number || "").trim().toLowerCase()));
+      const checked = parsed.map((row) => {
+        const admission = String(row.admission_number || row.admission_no || row.sr_no || "").trim().toLowerCase();
+        const name = String(row.first_name || row.name || "").trim();
+        let error = "";
+        if (!admission || !name) error = text.importRequired;
+        else if (existing.has(admission) || seen.has(admission)) error = text.duplicate;
+        if (admission) seen.add(admission);
+        return { ...row, admission_number: row.admission_number || row.admission_no || row.sr_no || "", first_name: row.first_name || row.name || "", _error: error };
+      });
+      setBulkImportRows(checked);
+    } catch (error) {
+      setBulkImportRows([]);
+      setBulkImportError(error.message || "Unable to read CSV.");
+    }
+  }
+
+  async function runBulkImport() {
+    if (!scope?.schoolId || !scope?.sessionId || bulkImporting) return;
+    const validRows = bulkImportRows.filter((row) => !row._error);
+    if (!bulkImportFile) { setBulkImportError(text.importNoFile); return; }
+    if (!validRows.length) { setBulkImportError(text.importRequired); return; }
+    if (!window.confirm(`Import ${validRows.length} student(s) into ${scope.sessionName}? Existing records will not be overwritten.`)) return;
+    setBulkImporting(true);
+    setBulkImportError("");
+    const results = [];
+    for (const row of validRows) {
+      const payload = {
+        school_id: scope.schoolId,
+        academic_session_id: scope.sessionId,
+        admission_number: String(row.admission_number).trim(),
+        first_name: String(row.first_name).trim(),
+        middle_name: row.middle_name || null,
+        last_name: row.last_name || null,
+        roll_number: row.roll_number || null,
+        class_name: row.class_name || null,
+        section: row.section || null,
+        enrollment_number: row.enrollment_number || null,
+        date_of_birth: row.date_of_birth || null,
+        gender: row.gender || null,
+        blood_group: row.blood_group || null,
+        phone: row.phone || null,
+        email: row.email || null,
+        address: row.address || null,
+        city: row.city || null,
+        state: row.state || null,
+        country: row.country || "India",
+        postal_code: row.postal_code || null,
+        admission_date: row.admission_date || null,
+        government_id_number: row.government_id_number || null,
+        house: row.house || null,
+        category: row.category || null,
+        religion: row.religion || null,
+        previous_school: row.previous_school || null,
+        status: "active",
+        is_active: true,
+      };
+      try {
+        await createStudent(payload);
+        results.push({ row: row._rowNumber, admission: payload.admission_number, status: "success", message: text.success });
+      } catch (error) {
+        results.push({ row: row._rowNumber, admission: payload.admission_number, status: "failed", message: error.message || text.failed });
+      }
+    }
+    setBulkImportResults(results);
+    setBulkImporting(false);
+    await loadStudents();
+  }
+
   function openEditForm() {
     if (!selectedStudent) {
       return;
@@ -768,21 +974,46 @@ export default function StudentDashboard() {
 
   return (
     <main className="student-dashboard-page">
+      <section className="student-command-bar" aria-label="Student dashboard summary">
+        <div className="student-command-brand">
+          <div className="student-command-mark">E</div>
+          <div className="student-command-brand-copy">
+            <strong>EDUSPHERE</strong>
+            <span>{scope?.schoolName || "School"}</span>
+          </div>
+        </div>
+        <div className="student-command-metric student-command-session">
+          <span>ACADEMIC SESSION</span>
+          <strong>{scope?.sessionName || "—"}</strong>
+        </div>
+        <div className="student-command-metric">
+          <span>TOTAL STUDENTS</span>
+          <strong>{students.length}</strong>
+        </div>
+        <div className="student-command-metric">
+          <span>ACTIVE</span>
+          <strong>{students.filter((item) => item.is_active !== false && String(item.status || "active").toLowerCase() !== "inactive").length}</strong>
+        </div>
+        <div className="student-command-metric">
+          <span>INACTIVE</span>
+          <strong>{students.filter((item) => item.is_active === false || String(item.status || "").toLowerCase() === "inactive").length}</strong>
+        </div>
+        <div className="student-command-selected" title={fullName || "No student selected"}>
+          <span>SELECTED STUDENT</span>
+          <strong>{fullName || "Select a student"}</strong>
+          <small>{selectedStudent?.admission_number || "Choose from records below"}</small>
+        </div>
+      </section>
       <header className="student-page-header">
-        <div>
-          <div className="student-page-eyebrow">EDUSPHERE</div>
-
+        <div className="student-page-heading-compact">
           <h1>{text.title}</h1>
-
           <p>{text.subtitle}</p>
-          {scope && (
-            <p className="student-page-scope">
-              {scope.schoolName} · {scope.sessionName}
-            </p>
-          )}
         </div>
 
         <div className="student-page-header-actions">
+          <button type="button" className="student-secondary-button" onClick={() => setShowSessionImport(true)} disabled={scopeLoading || !scope?.schoolId || !scope?.sessionId}>⇄ {text.sessionImport}</button>
+          <button type="button" className="student-secondary-button" onClick={() => { setShowBulkImport(true); setBulkImportError(""); setBulkImportResults([]); }} disabled={scopeLoading || !scope?.schoolId || !scope?.sessionId}>⇧ {text.bulkImport}</button>
+          <button type="button" className="student-secondary-button" onClick={exportStudentsCsv} disabled={!filteredStudents.length}>↓ {text.bulkExport}</button>
           <button
             type="button"
             className="student-secondary-button"
@@ -817,6 +1048,49 @@ export default function StudentDashboard() {
         </div>
       )}
 
+      {showSessionImport && scope && (
+        <StudentSessionImport
+          scope={scope}
+          language={language}
+          onClose={() => setShowSessionImport(false)}
+          onComplete={async () => { setShowSessionImport(false); await loadStudents(selectedStudentId); }}
+        />
+      )}
+
+      {showBulkImport && (
+        <div className="student-form-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !bulkImporting) setShowBulkImport(false); }}>
+          <section className="student-form-modal student-bulk-import-modal" role="dialog" aria-modal="true" aria-labelledby="bulk-import-title">
+            <header className="student-bulk-import-header">
+              <div><span className="student-page-eyebrow">EDUSPHERE · STUDENTS</span><h2 id="bulk-import-title">{text.importTitle}</h2><p>{text.importHelp}</p></div>
+              <button type="button" className="student-secondary-button" onClick={() => setShowBulkImport(false)} disabled={bulkImporting} aria-label={text.close}>×</button>
+            </header>
+            <div className="student-bulk-import-body">
+              <div className="student-bulk-import-actions">
+                <label className="student-secondary-button student-csv-picker">{text.chooseCsv}<input type="file" accept=".csv,text/csv" onChange={(event) => readBulkImportFile(event.target.files?.[0])} disabled={bulkImporting} /></label>
+                <button type="button" className="student-secondary-button" onClick={downloadStudentCsvTemplate}>{text.downloadTemplate}</button>
+                {bulkImportFile && <span className="student-csv-file-name">{bulkImportFile.name}</span>}
+              </div>
+              {bulkImportError && <div className="student-form-error" role="alert">{bulkImportError}</div>}
+              {bulkImportRows.length > 0 && <>
+                <div className="student-import-stats"><span>{bulkImportRows.length} {text.previewRows}</span><span>{bulkImportRows.filter((row) => !row._error).length} valid</span><span>{bulkImportRows.filter((row) => row._error).length} skipped</span></div>
+                <div className="student-import-table-wrap"><table className="student-import-table"><thead><tr><th>{text.row}</th><th>Admission No.</th><th>Name</th><th>Class</th><th>Section</th><th>{text.result}</th></tr></thead><tbody>{bulkImportRows.map((row) => <tr key={row._rowNumber}><td>{row._rowNumber}</td><td>{row.admission_number}</td><td>{[row.first_name,row.middle_name,row.last_name].filter(Boolean).join(" ")}</td><td>{row.class_name || "—"}</td><td>{row.section || "—"}</td><td>{row._error ? <span className="student-import-error">{row._error}</span> : <span className="student-import-valid">Ready</span>}</td></tr>)}</tbody></table></div>
+              </>}
+              {bulkImportResults.length > 0 && <div className="student-import-results"><h3>{text.importSummary}</h3><p>{bulkImportResults.filter((item) => item.status === "success").length} {text.success} · {bulkImportResults.filter((item) => item.status === "failed").length} {text.failed}</p><div className="student-import-results-list">{bulkImportResults.map((item) => <div key={`${item.row}-${item.admission}`}><span>Row {item.row} · {item.admission}</span><strong className={item.status === "success" ? "student-import-valid" : "student-import-error"}>{item.message}</strong></div>)}</div></div>}
+            </div>
+            <footer className="student-bulk-import-footer"><button type="button" className="student-secondary-button" onClick={() => setShowBulkImport(false)} disabled={bulkImporting}>{text.close}</button><button type="button" className="student-primary-button" onClick={runBulkImport} disabled={bulkImporting || !bulkImportRows.some((row) => !row._error)}>{bulkImporting ? text.importingRows : text.importRows}</button></footer>
+          </section>
+        </div>
+      )}
+
+      {selectedStudentIds.length > 0 && (
+        <section className="student-bulk-toolbar" aria-label="Bulk student actions">
+          <div><strong>{selectedStudentIds.length} student(s) selected</strong><span>Apply actions to the selected records in this session.</span></div>
+          <button type="button" className="student-secondary-button" onClick={() => setSelectedStudentIds([])} disabled={bulkUpdating}>Clear selection</button>
+          <button type="button" className="student-secondary-button" onClick={() => handleBulkStatusChange(true)} disabled={bulkUpdating}>{bulkUpdating ? "Updating…" : "Activate selected"}</button>
+          <button type="button" className="student-secondary-button" onClick={() => handleBulkStatusChange(false)} disabled={bulkUpdating}>{bulkUpdating ? "Updating…" : "Deactivate selected"}</button>
+          <button type="button" className="student-secondary-button" onClick={exportStudentsCsv} disabled={!filteredStudents.length}>Export filtered CSV</button>
+        </section>
+      )}
       <section className="student-dashboard-layout">
         <aside className="student-list-panel">
           <div className="student-list-header">

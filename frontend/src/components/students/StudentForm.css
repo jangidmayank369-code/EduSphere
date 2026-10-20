@@ -1,0 +1,34 @@
+.student-form-card{width:100%;min-width:0;background:#fff;color:#27324d;box-sizing:border-box}
+.student-form-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:24px 26px 0}
+.student-form-header>div{min-width:0;flex:1}
+.student-form-header h2{margin:8px 0 7px;color:#202b45;font-size:27px;line-height:1.2;font-weight:800;letter-spacing:-.03em}
+.student-form-header p{margin:0;color:#7b86a1;font-size:14px;line-height:1.5}
+.student-form-close{flex:0 0 42px;width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:1px solid #e1e6f0!important;border-radius:12px!important;background:#f5f7fb!important;color:#303951!important;font-family:Arial,sans-serif!important;font-size:27px!important;font-weight:400!important;line-height:1!important;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+.student-form-close:hover{background:#eceffd!important;border-color:#cfd5f1!important;transform:translateY(-1px)}
+.student-form-close:focus-visible{outline:3px solid #8b83ed;outline-offset:2px}
+.student-form-close:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.student-form-error{margin:18px 26px 0;padding:11px 13px;border:1px solid #fecaca;border-radius:10px;background:#fff1f2;color:#9f1239;font-size:13px;line-height:1.45}
+.student-form-card>.student-form{padding:24px 26px 26px}
+.student-form-photo-box{display:flex;align-items:center;gap:16px;min-width:0}
+.student-form-photo-preview{display:flex;flex:0 0 76px;width:76px;height:76px;align-items:center;justify-content:center;overflow:hidden;border:1px dashed #cfd5e7;border-radius:14px;background:#f0efff;color:#6962bf;font-size:26px}
+.student-form-photo-preview img{width:100%;height:100%;object-fit:cover}
+.student-form-photo-content{min-width:0;flex:1}
+.student-form-photo-content p{margin:5px 0 12px;color:#7b86a1;font-size:13px;line-height:1.5}
+.student-form-photo-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.student-photo-picker{position:relative;overflow:hidden}
+.student-photo-picker input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.student-form-photo-error{margin-top:8px;color:#b42318;font-size:12px}
+.student-form-required{margin-left:3px;color:#c24155;font-style:normal}
+.student-form-section{margin-top:24px}
+.student-form-section-title{margin-bottom:14px;color:#2b3650;font-size:14px;font-weight:800}
+.student-form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;gap:16px;min-width:0;width:100%}
+.student-form-field{display:flex;flex-direction:column;align-items:stretch;gap:7px;min-width:0;width:100%;margin:0;line-height:1.4}
+.student-form-label{display:block;width:100%;color:#45516d;font-size:12px;font-weight:700}
+.student-form-field input,.student-form-field select,.student-form-field textarea{display:block;box-sizing:border-box;width:100%;min-width:0;max-width:100%;min-height:43px;margin:0;padding:10px 12px;border:1px solid #d9dfed;border-radius:10px;background:#fff;color:#252c45;font:inherit;outline:none}
+.student-form-field input:focus,.student-form-field select:focus,.student-form-field textarea:focus{border-color:#7770d7;box-shadow:0 0 0 3px #7770d71c}
+.student-form-field textarea{min-height:88px;resize:vertical}
+.student-form-field-full{grid-column:1/-1}
+.student-form-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px;margin-top:26px;padding-top:16px;border-top:1px solid #edf0f7;background:#fff}
+.student-form-actions button{min-height:42px}
+@media(max-width:760px){.student-form-header{padding:20px 18px 0}.student-form-card>.student-form{padding:20px 18px}.student-form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.student-form-error{margin-left:18px;margin-right:18px}.student-form-header h2{font-size:23px}}
+@media(max-width:480px){.student-form-header{padding:16px 14px 0;gap:10px}.student-form-close{flex-basis:38px;width:38px;height:38px}.student-form-card>.student-form{padding:18px 14px}.student-form-grid{grid-template-columns:minmax(0,1fr)}.student-form-field-full{grid-column:auto}.student-form-error{margin-left:14px;margin-right:14px}.student-form-photo-box{align-items:flex-start}.student-form-photo-preview{flex-basis:60px;width:60px;height:60px}.student-form-actions{position:sticky;bottom:0;padding:12px 0 0}}

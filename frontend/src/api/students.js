@@ -1,204 +1,397 @@
 
-import apiClient from "./client";
+const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://127.0.0.1:8000/api/v1"
+).replace(/\/+$/, "");
 
-const BASE_URL = "/students";
+const TOKEN_KEY = "edusphere_access_token";
 
-function unwrapResponse(response) {
-  const body = response?.data ?? response;
+async function parseResponse(response) {
+  const contentType = response.headers.get("content-type") || "";
+  let data = null;
 
-  if (
-    body &&
-    !Array.isArray(body) &&
-    body.success === true &&
-    Object.prototype.hasOwnProperty.call(body, "data")
-  ) {
-    return body.data;
+  if (contentType.includes("application/json")) {
+    data = await response.json();
+  } else {
+    const responseText = await response.text();
+    data = responseText ? { detail: responseText } : null;
   }
 
-  return body;
+  if (!response.ok) {
+    const detail = data?.detail || data?.message;
+    const error = new Error(
+      typeof detail === "string"
+        ? detail
+        : `Request failed (${response.status})`
+    );
+    error.status = response.status;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
 }
 
-function getErrorMessage(error) {
-  const detail = error?.response?.data?.detail;
+function getHeaders({ json = true } = {}) {
+  const token = localStorage.getItem(TOKEN_KEY);
+  const headers = {};
 
-  if (typeof detail === "string") return detail;
+  if (json) headers["Content-Type"] = "application/json";
+  if (token) headers.Authorization = `Bearer ${token}`;
 
-  if (Array.isArray(detail)) {
-    return detail
-      .map((item) => item.msg || JSON.stringify(item))
-      .join(", ");
+  return headers;
+}
+
+async function request(path, options = {}) {
+  const isFormData =
+    typeof FormData !== "undefined" && options.body instanceof FormData;
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers: {
+      ...getHeaders({ json: !isFormData }),
+      ...options.headers,
+    },
+  });
+
+  return parseResponse(response);
+}
+
+function queryString(params = {}) {
+  const search = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      search.set(key, String(value));
+    }
+  });
+
+  const result = search.toString();
+  return result ? `?${result}` : "";
+}
+
+function normalizeList(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.items)) return data.items;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.students)) return data.students;
+  if (Array.isArray(data?.parents)) return data.parents;
+  return [];
+}
+
+function unwrap(data) {
+  return data?.data ?? data;
+}
+
+function normalizeStatus(status) {
+  if (typeof status === "boolean") {
+    return status ? "active" : "inactive";
   }
 
-  return (
-    error?.response?.data?.message ||
-    error?.response?.data?.error?.message ||
-    error?.message ||
-    "Something went wrong"
-  );
+  const value = String(status ?? "").trim().toLowerCase();
+
+  if (!["active", "inactive"].includes(value)) {
+    throw new Error("Status must be active or inactive.");
+  }
+
+  return value;
 }
 
 export async function getStudents(params = {}) {
-  try {
-    const normalizedParams = { ...params };
-
-    if (normalizedParams.schoolId !== undefined) {
-      normalizedParams.school_id = normalizedParams.schoolId;
-      delete normalizedParams.schoolId;
-    }
-
-    if (normalizedParams.academicSessionId !== undefined) {
-      normalizedParams.academic_session_id =
-        normalizedParams.academicSessionId;
-      delete normalizedParams.academicSessionId;
-    }
-
-    if (normalizedParams.pageSize !== undefined) {
-      normalizedParams.page_size = normalizedParams.pageSize;
-      delete normalizedParams.pageSize;
-    }
-
-    const response = await apiClient.get(BASE_URL, {
-      params: normalizedParams,
-    });
-
-    return unwrapResponse(response);
-  } catch (error) {
-    throw new Error(getErrorMessage(error));
-  }
+  const data = await request(`/students${queryString(params)}`);
+  return normalizeList(unwrap(data));
 }
 
 export async function getStudent(studentId) {
-  try {
-    const response = await apiClient.get(
-      `${BASE_URL}/${encodeURIComponent(studentId)}`
-    );
+  if (!studentId) throw new Error("Student ID is required.");
 
-    return unwrapResponse(response);
-  } catch (error) {
-    throw new Error(getErrorMessage(error));
-  }
+  const data = await request(
+    `/students/${encodeURIComponent(studentId)}`
+  );
+
+  return unwrap(data);
 }
 
 export async function createStudent(payload) {
-  try {
-    const response = await apiClient.post(BASE_URL, payload);
-    return unwrapResponse(response);
-  } catch (error) {
-    throw new Error(getErrorMessage(error));
-  }
+  const data = await request("/students", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+  return unwrap(data);
 }
 
 export async function updateStudent(studentId, payload) {
-  try {
-    const response = await apiClient.patch(
-      `${BASE_URL}/${encodeURIComponent(studentId)}`,
-      payload
-    );
+  if (!studentId) throw new Error("Student ID is required.");
 
-    return unwrapResponse(response);
-  } catch (error) {
-    throw new Error(getErrorMessage(error));
-  }
+  const data = await request(
+    `/students/${encodeURIComponent(studentId)}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    }
+  );
+
+  return unwrap(data);
 }
 
-export async function updateStudentStatus(studentId, payload) {
-  try {
-    const response = await apiClient.patch(
-      `${BASE_URL}/${encodeURIComponent(studentId)}/status`,
-      payload
-    );
+export async function deleteStudent(studentId) {
+  if (!studentId) throw new Error("Student ID is required.");
 
-    return unwrapResponse(response);
-  } catch (error) {
-    throw new Error(getErrorMessage(error));
-  }
-}
+  const data = await request(
+    `/students/${encodeURIComponent(studentId)}`,
+    { method: "DELETE" }
+  );
 
-export async function bulkUpdateStudentStatus(payload) {
-  try {
-    const response = await apiClient.post(
-      `${BASE_URL}/bulk-status`,
-      payload
-    );
-
-    return unwrapResponse(response);
-  } catch (error) {
-    throw new Error(getErrorMessage(error));
-  }
+  return unwrap(data);
 }
 
 export async function getStudentParents(studentId) {
-  try {
-    const response = await apiClient.get(
-      `${BASE_URL}/${encodeURIComponent(studentId)}/parents`
-    );
+  if (!studentId) throw new Error("Student ID is required.");
 
-    return unwrapResponse(response);
-  } catch (error) {
-    throw new Error(getErrorMessage(error));
-  }
+  const data = await request(
+    `/students/${encodeURIComponent(studentId)}/parents`
+  );
+
+  return normalizeList(unwrap(data));
 }
 
-export async function linkStudentParent(studentId, payload) {
-  try {
-    const response = await apiClient.post(
-      `${BASE_URL}/${encodeURIComponent(studentId)}/parents`,
-      payload
-    );
+export async function updateStudentStatus(studentId, status) {
+  if (!studentId) throw new Error("Student ID is required.");
 
-    return unwrapResponse(response);
-  } catch (error) {
-    throw new Error(getErrorMessage(error));
-  }
+  const data = await request(
+    `/students/${encodeURIComponent(studentId)}/status`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ status: normalizeStatus(status) }),
+    }
+  );
+
+  return unwrap(data);
 }
 
-export async function unlinkStudentParent(studentId, parentId) {
-  try {
-    const response = await apiClient.delete(
-      `${BASE_URL}/${encodeURIComponent(studentId)}/parents/${encodeURIComponent(parentId)}`
-    );
-
-    return unwrapResponse(response);
-  } catch (error) {
-    throw new Error(getErrorMessage(error));
+export async function bulkUpdateStudentStatus(studentIds, status) {
+  if (!Array.isArray(studentIds) || studentIds.length === 0) {
+    throw new Error("Select at least one student.");
   }
+
+  const uniqueIds = [...new Set(studentIds)];
+
+  const data = await request("/students/bulk-status", {
+    method: "PATCH",
+    body: JSON.stringify({
+      student_ids: uniqueIds,
+      status: normalizeStatus(status),
+    }),
+  });
+
+  return unwrap(data);
+}
+
+export async function importStudentsFromSession(payload) {
+  if (!payload?.source_session || !payload?.target_session) {
+    throw new Error("Source and target sessions are required.");
+  }
+
+  if (!Array.isArray(payload.students) || payload.students.length === 0) {
+    throw new Error("Select at least one student to import.");
+  }
+
+  const data = await request("/students/import-from-session", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+  return unwrap(data);
+}
+
+function parseCsvLine(line) {
+  const values = [];
+  let value = "";
+  let insideQuotes = false;
+
+  for (let index = 0; index < line.length; index += 1) {
+    const character = line[index];
+
+    if (character === '"') {
+      if (insideQuotes && line[index + 1] === '"') {
+        value += '"';
+        index += 1;
+      } else {
+        insideQuotes = !insideQuotes;
+      }
+    } else if (character === "," && !insideQuotes) {
+      values.push(value);
+      value = "";
+    } else {
+      value += character;
+    }
+  }
+
+  values.push(value);
+  return values;
+}
+
+export async function bulkImportStudents(file) {
+  if (!(file instanceof File)) {
+    throw new Error("Choose a valid CSV file.");
+  }
+
+  const content = await file.text();
+  const lines = content
+    .replace(/^\uFEFF/, "")
+    .split(/\r?\n/)
+    .filter((line) => line.trim());
+
+  if (lines.length < 2) {
+    throw new Error("CSV file has no student rows.");
+  }
+
+  const headers = parseCsvLine(lines[0]).map((header) =>
+    header.trim()
+  );
+
+  if (headers.some((header) => !header)) {
+    throw new Error("CSV contains an empty column heading.");
+  }
+
+  const rows = lines.slice(1).map((line) => {
+    const values = parseCsvLine(line);
+
+    return headers.reduce((record, header, index) => {
+      record[header] = (values[index] ?? "").trim();
+      return record;
+    }, {});
+  });
+
+  const results = [];
+
+  for (let index = 0; index < rows.length; index += 1) {
+    try {
+      const student = await createStudent(rows[index]);
+
+      results.push({
+        row: index + 2,
+        success: true,
+        data: student,
+      });
+    } catch (error) {
+      results.push({
+        row: index + 2,
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+
+  return {
+    total: rows.length,
+    succeeded: results.filter((item) => item.success).length,
+    failed: results.filter((item) => !item.success).length,
+    results,
+  };
+}
+
+export async function exportStudentsCsv(params = {}) {
+  const students = await getStudents(params);
+
+  if (students.length === 0) {
+    throw new Error("No student records available to export.");
+  }
+
+  const columns = [
+    "admission_number",
+    "enrollment_number",
+    "roll_number",
+    "first_name",
+    "middle_name",
+    "last_name",
+    "class_name",
+    "section",
+    "date_of_birth",
+    "gender",
+    "blood_group",
+    "government_id_number",
+    "house",
+    "category",
+    "religion",
+    "previous_school",
+    "admission_date",
+    "phone",
+    "email",
+    "address",
+    "city",
+    "state",
+    "country",
+    "postal_code",
+    "status",
+  ];
+
+  const escapeCsv = (value) => {
+    const text =
+      value !== null && typeof value === "object"
+        ? JSON.stringify(value)
+        : String(value ?? "");
+
+    return `"${text.replace(/"/g, '""')}"`;
+  };
+
+  const csv = [
+    columns.join(","),
+    ...students.map((student) =>
+      columns.map((column) => escapeCsv(student[column])).join(",")
+    ),
+  ].join("\r\n");
+
+  const blob = new Blob(["\uFEFF", csv], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+
+  anchor.href = url;
+  anchor.download = "edusphere-students.csv";
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+
+  return { exported: students.length };
 }
 
 export async function uploadStudentPhoto(studentId, file) {
-  if (!studentId) {
-    throw new Error("Student ID is required.");
-  }
+  if (!studentId) throw new Error("Student ID is required.");
 
-  if (!file || typeof file !== "object" || typeof file.name !== "string") {
-    throw new Error("Please select a photo.");
-  }
-
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-
-  if (!allowedTypes.includes(file.type)) {
-    throw new Error("Only JPG, PNG and WebP photos are allowed.");
-  }
-
-  if (file.size > 5 * 1024 * 1024) {
-    throw new Error("Photo must not exceed 5 MB.");
+  if (!(file instanceof File)) {
+    throw new Error("Choose a valid photo.");
   }
 
   const formData = new FormData();
-  formData.append("photo", file, file.name);
+  formData.append("file", file);
 
-  try {
-    const response = await apiClient.post(
-      `${BASE_URL}/${encodeURIComponent(studentId)}/photo`,
-      formData,
-      {
-        headers: {
-          "Content-Type": undefined,
-        },
-      }
-    );
+  const data = await request(
+    `/students/${encodeURIComponent(studentId)}/photo`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
 
-    return unwrapResponse(response);
-  } catch (error) {
-    throw new Error(getErrorMessage(error));
-  }
+  return unwrap(data);
 }
+
+export default {
+  getStudents,
+  getStudent,
+  createStudent,
+  updateStudent,
+  deleteStudent,
+  getStudentParents,
+  updateStudentStatus,
+  bulkUpdateStudentStatus,
+  importStudentsFromSession,
+  bulkImportStudents,
+  exportStudentsCsv,
+  uploadStudentPhoto,
+};

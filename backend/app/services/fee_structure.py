@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
 
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import ConflictError, EduSphereException, NotFoundError
+from app.core.exceptions import (
+    ConflictError,
+    EduSphereException,
+    NotFoundError,
+)
 from app.models.fee_structure import FeeStructure
 from app.models.school import AcademicSession, School
 from app.repositories.fee_structure import FeeStructureRepository
@@ -35,7 +40,6 @@ class FeeStructureService:
         school_id: int,
         academic_session_id: int,
     ) -> tuple[School, AcademicSession]:
-
         school = self.db.get(School, school_id)
 
         if not school:
@@ -80,7 +84,6 @@ class FeeStructureService:
         effective_from: date,
         effective_to: date | None,
     ) -> None:
-
         if effective_to is not None and effective_to < effective_from:
             raise EduSphereException(
                 "Effective-to date cannot be earlier than effective-from date.",
@@ -105,7 +108,6 @@ class FeeStructureService:
         is_optional: bool,
         is_active: bool,
     ) -> FeeStructure:
-
         self._validate_school_and_session(
             school_id=school_id,
             academic_session_id=academic_session_id,
@@ -183,7 +185,6 @@ class FeeStructureService:
         self,
         fee_structure_id: int,
     ) -> FeeStructure:
-
         fee_structure = self.repository.get_by_id(
             fee_structure_id
         )
@@ -209,7 +210,6 @@ class FeeStructureService:
         page: int = 1,
         page_size: int = 50,
     ) -> tuple[list[FeeStructure], int]:
-
         if page < 1:
             raise self._validation_error(
                 "Page must be greater than or equal to 1.",
@@ -239,7 +239,6 @@ class FeeStructureService:
         fee_structure_id: int,
         **changes,
     ) -> FeeStructure:
-
         fee_structure = self.get(fee_structure_id)
 
         if (
@@ -357,13 +356,11 @@ class FeeStructureService:
                 )
 
         for field, value in changes.items():
-
             if field in {
                 "name",
                 "fee_head",
                 "frequency",
             } and isinstance(value, str):
-
                 value = value.strip()
 
                 if field == "frequency":
@@ -388,9 +385,7 @@ class FeeStructureService:
         fee_structure_id: int,
         is_active: bool,
     ) -> FeeStructure:
-
         fee_structure = self.get(fee_structure_id)
-
         fee_structure.is_active = is_active
 
         return self.repository.save(fee_structure)

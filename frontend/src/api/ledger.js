@@ -24,6 +24,7 @@ export async function voidAccountingTransaction(
     payload,
     { params }
   );
+
   return response.data;
 }
 
@@ -32,6 +33,7 @@ export async function getAccountingSummary(params = {}) {
     `${ACCOUNTING_URL}/summary`,
     { params }
   );
+
   return response.data;
 }
 
@@ -40,5 +42,15 @@ export async function listAccountingRecords(params = {}) {
     `${ACCOUNTING_URL}/transactions`,
     { params }
   );
+
+  return response.data;
+}
+
+export async function reconcileFeeAccounting(params = {}) {
+  const response = await apiClient.get(
+    `${TRANSACTIONS_URL}/reconciliation`,
+    { params }
+  );
+
   return response.data;
 }

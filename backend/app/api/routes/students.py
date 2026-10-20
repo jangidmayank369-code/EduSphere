@@ -4,6 +4,9 @@ import logging
 import uuid
 from pathlib import Path
 
+from pydantic import BaseModel, Field, field_validator
+from sqlalchemy.exc import IntegrityError
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -19,6 +22,8 @@ from sqlalchemy.orm import Session
 from app.api.dependencies import require_permission
 from app.core.database import get_db
 from app.models.student import Student
+from app.models.school import AcademicSession
+from app.models.audit import AuditLog
 from app.models.user import User
 from app.schemas.bulk import BulkStudentStatusUpdate
 from app.schemas.student import (
@@ -173,6 +178,138 @@ def bulk_update_student_status(
             "requested": len(set(payload.student_ids)),
             "updated": len(students),
             "is_active": payload.is_active,
+        },
+    }
+
+
+class StudentSessionImportItem(BaseModel):
+    student_id: int = Field(gt=0)
+    class_name: str | None = Field(default=None, max_length=50)
+    section: str | None = Field(default=None, max_length=30)
+
+
+class StudentSessionImportRequest(BaseModel):
+    school_id: int = Field(gt=0)
+    source_academic_session_id: int = Field(gt=0)
+    target_academic_session_id: int = Field(gt=0)
+    students: list[StudentSessionImportItem] = Field(min_length=1, max_length=500)
+
+    @field_validator("students")
+    @classmethod
+    def unique_student_ids(cls, value):
+        ids = [item.student_id for item in value]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Each student may be selected only once.")
+        return value
+
+
+# ---------------------------------------------------------------------------
+# IMPORT / PROMOTE STUDENTS FROM ANOTHER SESSION
+# ---------------------------------------------------------------------------
+
+@router.post("/import-from-session")
+def import_students_from_session(
+    payload: StudentSessionImportRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("STUDENT_UPDATE")),
+):
+    """Move selected student records into a new academic session.
+
+    Student IDs and admission numbers remain stable. Existing fee plans and
+    payments remain attached to their original academic session; this endpoint
+    changes only the student's current session/class placement.
+    """
+    if payload.source_academic_session_id == payload.target_academic_session_id:
+        raise HTTPException(status_code=422, detail="Source and target sessions must be different.")
+
+    source_session = db.get(AcademicSession, payload.source_academic_session_id)
+    target_session = db.get(AcademicSession, payload.target_academic_session_id)
+
+    if source_session is None or source_session.school_id != payload.school_id:
+        raise HTTPException(status_code=404, detail="Source academic session not found for this school.")
+    if target_session is None or target_session.school_id != payload.school_id:
+        raise HTTPException(status_code=404, detail="Target academic session not found for this school.")
+    if not target_session.is_active:
+        raise HTTPException(status_code=409, detail="Target academic session must be active.")
+
+    requested_ids = [item.student_id for item in payload.students]
+    students = (
+        db.query(Student)
+        .filter(
+            Student.school_id == payload.school_id,
+            Student.academic_session_id == payload.source_academic_session_id,
+            Student.id.in_(requested_ids),
+        )
+        .with_for_update()
+        .all()
+    )
+    by_id = {student.id: student for student in students}
+    missing_ids = [student_id for student_id in requested_ids if student_id not in by_id]
+    if missing_ids:
+        raise HTTPException(
+            status_code=404,
+            detail={
+                "message": "Some selected students do not belong to the source session and school.",
+                "student_ids": missing_ids,
+            },
+        )
+
+    placements = {item.student_id: item for item in payload.students}
+    before = []
+    try:
+        for student_id in requested_ids:
+            student = by_id[student_id]
+            item = placements[student_id]
+            before.append({
+                "student_id": student.id,
+                "admission_number": student.admission_number,
+                "previous_class": student.class_name,
+                "previous_section": student.section,
+            })
+            student.academic_session_id = payload.target_academic_session_id
+            if "class_name" in item.model_fields_set:
+                student.class_name = item.class_name.strip() if item.class_name else None
+            if "section" in item.model_fields_set:
+                student.section = item.section.strip() if item.section else None
+
+        db.add(AuditLog(
+            actor_user_id=getattr(current_user, "id", None),
+            action="STUDENTS_IMPORTED_TO_SESSION",
+            resource_type="STUDENT",
+            resource_id=",".join(str(value) for value in requested_ids[:100]),
+            details={
+                "school_id": payload.school_id,
+                "source_academic_session_id": payload.source_academic_session_id,
+                "target_academic_session_id": payload.target_academic_session_id,
+                "count": len(requested_ids),
+                "previous_placements": before,
+                "new_placements": [
+                    {"student_id": by_id[sid].id, "class_name": by_id[sid].class_name, "section": by_id[sid].section}
+                    for sid in requested_ids
+                ],
+            },
+        ))
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Student session import conflicts with existing data; no records were changed.") from exc
+    except Exception:
+        db.rollback()
+        raise
+
+    for student in students:
+        db.refresh(student)
+
+    return {
+        "success": True,
+        "message": f"{len(students)} student(s) moved to the target academic session.",
+        "data": [StudentResponse.model_validate(by_id[student_id]).model_dump() for student_id in requested_ids],
+        "meta": {
+            "school_id": payload.school_id,
+            "source_academic_session_id": payload.source_academic_session_id,
+            "target_academic_session_id": payload.target_academic_session_id,
+            "requested": len(requested_ids),
+            "updated": len(students),
         },
     }
 

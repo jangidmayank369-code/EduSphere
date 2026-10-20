@@ -64,6 +64,51 @@ settings = get_settings()
 _email_otp_ip_lock = threading.Lock()
 _email_otp_ip_requests: dict[str, list[float]] = {}
 
+# Login throttling is intentionally separate from OTP throttling. This
+# in-process limiter uses the existing LOGIN_RATE_LIMIT settings. A shared
+# store is required when deploying multiple workers/replicas; see the Phase 01
+# implementation notes.
+_login_ip_lock = threading.Lock()
+_login_ip_requests: dict[str, list[float]] = {}
+
+
+def _check_login_ip_rate_limit(request: Request) -> None:
+    limit = settings.login_rate_limit
+    window_seconds = settings.login_rate_window_seconds
+
+    if limit <= 0 or window_seconds <= 0:
+        return
+
+    client_ip = _get_client_ip(request)
+    if not client_ip:
+        return
+
+    now = time.monotonic()
+    cutoff = now - window_seconds
+
+    with _login_ip_lock:
+        timestamps = _login_ip_requests.get(client_ip, [])
+        timestamps = [timestamp for timestamp in timestamps if timestamp > cutoff]
+
+        if len(timestamps) >= limit:
+            retry_after = max(1, int(window_seconds - (now - timestamps[0])))
+            _login_ip_requests[client_ip] = timestamps
+            raise RateLimitError(
+                (
+                    "Too many login attempts from this network. "
+                    "Please wait before trying again."
+                ),
+                code="LOGIN_IP_RATE_LIMITED",
+                details={
+                    "retry_after_seconds": retry_after,
+                    "limit": limit,
+                    "window_seconds": window_seconds,
+                },
+            )
+
+        timestamps.append(now)
+        _login_ip_requests[client_ip] = timestamps
+
 
 def _check_email_otp_ip_rate_limit(request: Request) -> None:
     limit = settings.email_otp_rate_limit
@@ -294,6 +339,10 @@ def login(
     request: Request,
     db: Session = Depends(get_db),
 ) -> TokenResponse:
+    # Count failed and successful attempts alike so repeated invalid passwords
+    # are throttled before expensive password verification.
+    _check_login_ip_rate_limit(request)
+
     user = _authenticate_user(
         db=db,
         email=payload.email,

@@ -108,8 +108,10 @@ class FeePaymentService:
                         existing.student_id == payload.student_id
                         and existing.student_fee_plan_id
                         == payload.student_fee_plan_id
-                        and existing.installment_id
-                        == payload.installment_id
+                        and (
+                            payload.installment_id is None
+                            or existing.installment_id == payload.installment_id
+                        )
                         and existing.amount == amount
                         and existing.payment_date == payload.payment_date
                         and existing.payment_mode == payload.payment_mode
@@ -490,6 +492,30 @@ class FeePaymentService:
             self.db.add(reversal)
             self.db.flush()
 
+            # Preserve the original posted accounting record as voided and
+            # write a separately traceable offsetting entry. The accounting
+            # model accepts positive amounts only, so the reversal is recorded
+            # as an expense rather than a negative income transaction.
+            reversal_accounting = AccountingTransaction(
+                school_id=payment.school_id,
+                academic_session_id=payment.academic_session_id,
+                transaction_type="expense",
+                category="Fee Payment Reversal",
+                amount=self.money(payment.amount),
+                transaction_date=date.today(),
+                description=(
+                    f"Reversal of fee receipt {payment.receipt_number}: {reason}"
+                ),
+                payment_mode=payment.payment_mode,
+                reference_number=reversal.receipt_number[:100],
+                source_type="fee_payment_reversal",
+                source_id=str(reversal.id),
+                status="posted",
+                created_by=received_by,
+            )
+            self.db.add(reversal_accounting)
+            self.db.flush()
+
             self.db.add(
                 AuditLog(
                     actor_user_id=received_by,
@@ -505,6 +531,7 @@ class FeePaymentService:
                         "amount": str(payment.amount),
                         "reason": reason,
                         "accounting_transaction_id": accounting.id,
+                        "reversal_accounting_transaction_id": reversal_accounting.id,
                         "accounting_previous_status": "posted",
                         "accounting_new_status": "voided",
                     },

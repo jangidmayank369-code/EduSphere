@@ -1018,3 +1018,89 @@
     padding-right: 6px !important;
   }
 }
+
+/* --------------------------------------------------------------------------
+   User table layout refinement — preserve existing visual theme and features
+   -------------------------------------------------------------------------- */
+.users-page .users-table {
+  table-layout: auto;
+  min-width: 1120px;
+}
+
+.users-page .users-table th,
+.users-page .users-table td {
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
+.users-page .users-table th:first-child,
+.users-page .users-table td:first-child {
+  width: 48px;
+  min-width: 48px;
+}
+
+.users-page .users-table th:nth-child(2),
+.users-page .users-table td:nth-child(2) {
+  min-width: 220px;
+}
+
+.users-page .users-table th:nth-child(3),
+.users-page .users-table td:nth-child(3) {
+  min-width: 250px;
+}
+
+.users-page .users-table th:nth-child(4),
+.users-page .users-table td:nth-child(4) {
+  min-width: 125px;
+}
+
+.users-page .users-table th:nth-child(5),
+.users-page .users-table td:nth-child(5) {
+  min-width: 105px;
+}
+
+.users-page .users-table th:nth-child(6),
+.users-page .users-table td:nth-child(6) {
+  min-width: 330px;
+}
+
+.users-page .users-table td:nth-child(3) {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.users-page .role-chip,
+.users-page .status-chip {
+  flex-shrink: 0;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.users-page .row-actions {
+  align-items: center;
+  gap: 7px;
+  min-width: 300px;
+}
+
+.users-page .row-actions button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-height: 34px;
+  padding: 0 11px;
+}
+
+@media (max-width: 760px) {
+  .users-page .users-table {
+    min-width: 1080px;
+  }
+
+  .users-page .users-table th,
+  .users-page .users-table td {
+    padding: 13px 11px;
+  }
+
+  .users-page .row-actions {
+    min-width: 300px;
+  }
+}

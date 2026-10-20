@@ -66,7 +66,7 @@ def list_parents(
     ),
     db: Session = Depends(get_db),
     current_user: User = Depends(
-        require_permission("PARENT_CREATE")
+        require_permission("PARENT_VIEW")
     ),
 ):
     service = ParentService(db)
@@ -147,7 +147,7 @@ def list_parent_students(
     parent_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(
-        require_permission("PARENT_CREATE")
+        require_permission("PARENT_VIEW")
     ),
 ):
     service = ParentService(db)
@@ -182,7 +182,7 @@ def get_parent(
     parent_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(
-        require_permission("PARENT_CREATE")
+        require_permission("PARENT_VIEW")
     ),
 ):
     service = ParentService(db)

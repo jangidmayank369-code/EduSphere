@@ -132,6 +132,12 @@ PERMISSIONS = {
     ),
 
     # ------------------------------------------------------------------
+    # Accounting
+    # ------------------------------------------------------------------
+    "ACCOUNTING_TRANSACTION_VIEW": "View accounting transactions and summaries.",
+    "ACCOUNTING_TRANSACTION_CREATE": "Create accounting transactions.",
+
+    # ------------------------------------------------------------------
     # Audit
     # ------------------------------------------------------------------
     "AUDIT_VIEW": "View audit records.",

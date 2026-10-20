@@ -15,6 +15,7 @@ from app.core.database import get_db
 from app.models.accounting_transaction import AccountingTransaction
 from app.models.audit import AuditLog
 from app.models.fee_payment import FeePayment
+from app.models.school import AcademicSession, School
 
 
 router = APIRouter(
@@ -38,6 +39,57 @@ class AccountingTransactionCreate(BaseModel):
 
 class AccountingTransactionVoid(BaseModel):
     reason: str = Field(min_length=5, max_length=500)
+
+
+def _normalized_optional(value: str | None) -> str | None:
+    return value.strip() or None if value is not None else None
+
+
+def _same_manual_request(
+    existing: AccountingTransaction,
+    payload: AccountingTransactionCreate,
+    *,
+    category: str,
+    description: str,
+) -> bool:
+    return (
+        existing.transaction_type == payload.transaction_type
+        and existing.category == category
+        and existing.amount == payload.amount.quantize(Decimal("0.01"))
+        and existing.transaction_date == payload.transaction_date
+        and existing.payment_mode == _normalized_optional(payload.payment_mode)
+        and existing.reference_number == _normalized_optional(payload.reference_number)
+        and existing.description == description
+        and existing.source_type == "manual"
+    )
+
+
+def _fee_payment_reconciliation_issue(
+    payment,
+    linked: list[AccountingTransaction],
+) -> str | None:
+    """Return the first reconciliation problem for a fee payment and its entries."""
+    if not linked:
+        return "missing_accounting_entry"
+
+    if len(linked) > 1:
+        return "duplicate_accounting_entries"
+
+    entry = linked[0]
+    payment_amount = Decimal(str(payment.amount)).quantize(Decimal("0.01"))
+    entry_amount = Decimal(str(entry.amount)).quantize(Decimal("0.01"))
+
+    if payment_amount != entry_amount:
+        return "amount_mismatch"
+
+    if entry.transaction_date != payment.payment_date:
+        return "date_mismatch"
+
+    expected_status = "posted" if payment.status == "posted" else "voided"
+    if entry.status != expected_status:
+        return "status_mismatch"
+
+    return None
 
 
 def _transaction_dict(transaction: AccountingTransaction) -> dict:
@@ -141,6 +193,27 @@ def create_accounting_transaction(
     description = payload.description.strip()
 
     idempotency_key = payload.idempotency_key.strip() if payload.idempotency_key else None
+
+    school = db.query(School).filter(
+        School.id == payload.school_id,
+        School.is_active.is_(True),
+    ).first()
+    session = db.query(AcademicSession).filter(
+        AcademicSession.id == payload.academic_session_id,
+        AcademicSession.school_id == payload.school_id,
+        AcademicSession.is_active.is_(True),
+    ).first()
+    if school is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Active school not found.",
+        )
+    if session is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Active academic session not found for this school.",
+        )
+
     if idempotency_key:
         existing = (
             db.query(AccountingTransaction)
@@ -152,15 +225,11 @@ def create_accounting_transaction(
             .first()
         )
         if existing is not None:
-            same_request = (
-                existing.transaction_type == payload.transaction_type
-                and existing.category == category
-                and existing.amount == payload.amount.quantize(Decimal("0.01"))
-                and existing.transaction_date == payload.transaction_date
-                and existing.payment_mode == ((payload.payment_mode.strip() or None) if payload.payment_mode else None)
-                and existing.reference_number == ((payload.reference_number.strip() or None) if payload.reference_number else None)
-                and existing.description == description
-                and existing.source_type == "manual"
+            same_request = _same_manual_request(
+                existing,
+                payload,
+                category=category,
+                description=description,
             )
             if same_request and existing.status == "posted":
                 return _transaction_dict(existing)
@@ -225,11 +294,37 @@ def create_accounting_transaction(
         db.refresh(transaction)
     except IntegrityError as exc:
         db.rollback()
+        # A concurrent retry may have inserted the same idempotency key after
+        # our initial lookup. Re-read only after rollback has cleared the failed
+        # SQLAlchemy transaction, then reuse it only when the request matches.
+        if idempotency_key:
+            existing = (
+                db.query(AccountingTransaction)
+                .filter(
+                    AccountingTransaction.school_id == payload.school_id,
+                    AccountingTransaction.academic_session_id == payload.academic_session_id,
+                    AccountingTransaction.idempotency_key == idempotency_key,
+                )
+                .first()
+            )
+            if existing is not None:
+                same_request = _same_manual_request(
+                    existing,
+                    payload,
+                    category=category,
+                    description=description,
+                )
+                if same_request and existing.status == "posted":
+                    return _transaction_dict(existing)
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="This idempotency key was already used for a different or voided transaction.",
+                ) from exc
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=(
-                "Could not save this transaction. Check that the school and "
-                "academic session exist and that the amount is valid."
+                "Could not save this transaction. Check the source record and "
+                "database constraints."
             ),
         ) from exc
     except SQLAlchemyError as exc:
@@ -366,22 +461,13 @@ def reconcile_fee_accounting(
             )
             .all()
         )
-        issue = None
-        if not entries:
-            issue = "missing_accounting_entry"
-        elif len(entries) > 1:
-            issue = "duplicate_accounting_entries"
-        else:
-            entry = entries[0]
-            entry_amount = Decimal(str(entry.amount)).quantize(Decimal("0.01"))
-            if entry_amount != amount:
-                issue = "amount_mismatch"
-            elif entry.status != expected_status:
-                issue = "status_mismatch"
-            else:
-                matched_count += 1
-                if entry.status == "posted":
-                    accounting_total += entry_amount
+        issue = _fee_payment_reconciliation_issue(payment, entries)
+        if issue is None:
+            matched_count += 1
+            if entries[0].status == "posted":
+                accounting_total += Decimal(str(entries[0].amount)).quantize(
+                    Decimal("0.01")
+                )
         if issue:
             discrepancies.append({
                 "payment_id": payment.id,

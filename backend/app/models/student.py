@@ -58,6 +58,41 @@ class Student(Base):
         nullable=True,
     )
 
+    enrollment_number: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
+    government_id_number: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
+    house: Mapped[str | None] = mapped_column(
+        String(80),
+        nullable=True,
+    )
+
+    category: Mapped[str | None] = mapped_column(
+        String(80),
+        nullable=True,
+    )
+
+    religion: Mapped[str | None] = mapped_column(
+        String(80),
+        nullable=True,
+    )
+
+    previous_school: Mapped[str | None] = mapped_column(
+        String(200),
+        nullable=True,
+    )
+
+    admission_date: Mapped[date | None] = mapped_column(
+        Date,
+        nullable=True,
+    )
+
     first_name: Mapped[str] = mapped_column(
         String(100),
         nullable=False,

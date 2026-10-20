@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from datetime import date
@@ -36,7 +35,9 @@ def post_source_transaction(
     Retries return the existing source-linked record.
     """
     if transaction_type not in {"income", "expense"}:
-        raise ValueError("transaction_type must be 'income' or 'expense'.")
+        raise ValueError(
+            "transaction_type must be 'income' or 'expense'."
+        )
 
     category = category.strip()
     source_type = source_type.strip().lower()
@@ -44,17 +45,26 @@ def post_source_transaction(
     description = description.strip()
 
     value = Decimal(str(amount)).quantize(
-        CENT, rounding=ROUND_HALF_UP
+        CENT,
+        rounding=ROUND_HALF_UP,
     )
 
     if not category:
         raise ValueError("category is required.")
+
     if not source_type or len(source_type) > 50:
-        raise ValueError("source_type must contain 1 to 50 characters.")
+        raise ValueError(
+            "source_type must contain 1 to 50 characters."
+        )
+
     if not source_id or len(source_id) > 100:
-        raise ValueError("source_id must contain 1 to 100 characters.")
+        raise ValueError(
+            "source_id must contain 1 to 100 characters."
+        )
+
     if not description:
         raise ValueError("description is required.")
+
     if value <= 0:
         raise ValueError("amount must be greater than zero.")
 
@@ -78,6 +88,7 @@ def post_source_transaction(
                 "This source transaction was already voided. "
                 "Use a new source ID for a correcting transaction."
             )
+
         return existing
 
     row = AccountingTransaction(
@@ -103,18 +114,19 @@ def post_source_transaction(
     db.add(row)
 
     try:
-        # Flush checks database constraints without committing.
         db.flush()
     except IntegrityError:
-        # The caller should roll back its transaction before retrying.
         db.rollback()
+
         existing = (
             db.query(AccountingTransaction)
             .filter_by(**filters)
             .one_or_none()
         )
+
         if existing is not None and existing.status == "posted":
             return existing
+
         raise
 
     return row

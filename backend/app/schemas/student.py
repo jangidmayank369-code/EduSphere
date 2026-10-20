@@ -19,6 +19,14 @@ class StudentBase(BaseModel):
     class_name: str | None = Field(default=None, max_length=50)
     section: str | None = Field(default=None, max_length=30)
 
+    enrollment_number: str | None = Field(default=None, max_length=50)
+    government_id_number: str | None = Field(default=None, max_length=50)
+    house: str | None = Field(default=None, max_length=80)
+    category: str | None = Field(default=None, max_length=80)
+    religion: str | None = Field(default=None, max_length=80)
+    previous_school: str | None = Field(default=None, max_length=200)
+    admission_date: date | None = None
+
     first_name: str = Field(min_length=1, max_length=100)
     middle_name: str | None = Field(default=None, max_length=100)
     last_name: str | None = Field(default=None, max_length=100)
@@ -76,6 +84,14 @@ class StudentUpdate(BaseModel):
     roll_number: str | None = Field(default=None, max_length=30)
     class_name: str | None = Field(default=None, max_length=50)
     section: str | None = Field(default=None, max_length=30)
+
+    enrollment_number: str | None = Field(default=None, max_length=50)
+    government_id_number: str | None = Field(default=None, max_length=50)
+    house: str | None = Field(default=None, max_length=80)
+    category: str | None = Field(default=None, max_length=80)
+    religion: str | None = Field(default=None, max_length=80)
+    previous_school: str | None = Field(default=None, max_length=200)
+    admission_date: date | None = None
 
     first_name: str | None = Field(
         default=None,

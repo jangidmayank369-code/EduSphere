@@ -295,14 +295,15 @@ class StudentFeePlanService:
             )
 
         elif mode == "equal":
-            base = self.money(
-                net_amount / count
-            )
+            if count < 1:
+                self.bad_request(
+                    "Installment count must be at least one.",
+                    code="INVALID_INSTALLMENT_COUNT",
+                )
 
-            amounts = [
-                base
-                for _ in range(count)
-            ]
+            base = self.money(net_amount / count)
+
+            amounts = [base for _ in range(count)]
 
             difference = self.money(
                 net_amount - sum(amounts)
@@ -323,9 +324,7 @@ class StudentFeePlanService:
                         name=f"Installment {index}",
                         due_date=(
                             date.today()
-                            + timedelta(
-                                days=30 * (index - 1)
-                            )
+                            + timedelta(days=30 * (index - 1))
                         ),
                         amount=amount,
                     )
@@ -339,10 +338,7 @@ class StudentFeePlanService:
                 )
 
             custom_total = self.money(
-                sum(
-                    item.amount
-                    for item in custom_installments
-                )
+                sum(item.amount for item in custom_installments)
             )
 
             if custom_total != self.money(net_amount):
@@ -350,12 +346,8 @@ class StudentFeePlanService:
                     "Custom installment total must equal net fee amount.",
                     code="INSTALLMENT_TOTAL_MISMATCH",
                     details={
-                        "net_amount": str(
-                            self.money(net_amount)
-                        ),
-                        "installment_total": str(
-                            custom_total
-                        ),
+                        "net_amount": str(self.money(net_amount)),
+                        "installment_total": str(custom_total),
                     },
                 )
 
@@ -364,37 +356,33 @@ class StudentFeePlanService:
             for item in custom_installments:
                 if item.installment_number in seen_numbers:
                     self.bad_request(
-                        "Duplicate installment number.",
+                        "Installment numbers must be unique.",
                         code="DUPLICATE_INSTALLMENT_NUMBER",
                     )
 
-                seen_numbers.add(
-                    item.installment_number
-                )
+                seen_numbers.add(item.installment_number)
+
+                if item.amount <= 0:
+                    self.bad_request(
+                        "Installment amounts must be greater than zero.",
+                        code="INVALID_INSTALLMENT_AMOUNT",
+                    )
 
                 rows.append(
                     StudentFeePlanInstallment(
                         student_fee_plan_id=plan_id,
-                        installment_number=(
-                            item.installment_number
-                        ),
+                        installment_number=item.installment_number,
                         name=item.name,
                         due_date=item.due_date,
                         amount=self.money(item.amount),
                     )
                 )
 
-            rows.sort(
-                key=lambda item:
-                item.installment_number
-            )
+            rows.sort(key=lambda row: row.installment_number)
 
         return rows
 
-    def create(
-        self,
-        payload: StudentFeePlanCreate,
-    ) -> StudentFeePlan:
+    def create(self, payload: StudentFeePlanCreate):
         self._validate_school_session(
             payload.school_id,
             payload.academic_session_id,
@@ -415,9 +403,12 @@ class StudentFeePlanService:
             self.bad_request(
                 "A fee plan already exists for this student and academic session.",
                 code="FEE_PLAN_ALREADY_EXISTS",
-                details={
-                    "plan_id": existing.id,
-                },
+            )
+
+        if not payload.items:
+            self.bad_request(
+                "At least one fee item is required.",
+                code="FEE_PLAN_ITEMS_REQUIRED",
             )
 
         structures = self._get_fee_structures(
@@ -426,71 +417,49 @@ class StudentFeePlanService:
             payload.items,
         )
 
-        (
-            calculated_items,
-            gross,
-            item_discount,
-        ) = self._calculate_items(
-            payload.items,
-            structures,
-        )
-
-        amount_after_item_discount = self.money(
-            gross - item_discount
+        calculated_items, gross, item_discount = (
+            self._calculate_items(payload.items, structures)
         )
 
         plan_discount = self._calculate_plan_discount(
-            amount_after_item_discount,
+            self.money(gross - item_discount),
             payload.discount_type,
             payload.discount_value,
         )
 
         net_amount = self.money(
-            amount_after_item_discount
-            - plan_discount
+            gross - item_discount - plan_discount
         )
 
         if net_amount <= 0:
             self.bad_request(
-                "Fee plan payable amount must be greater than zero.",
+                "Net fee amount must be greater than zero.",
                 code="INVALID_NET_AMOUNT",
             )
 
         plan = StudentFeePlan(
             school_id=payload.school_id,
             student_id=payload.student_id,
-            academic_session_id=(
-                payload.academic_session_id
-            ),
+            academic_session_id=payload.academic_session_id,
             name=payload.name,
             effective_from=payload.effective_from,
             effective_to=payload.effective_to,
             discount_type=payload.discount_type,
             discount_value=payload.discount_value,
             scholarship_name=payload.scholarship_name,
-            concession_reason=(
-                payload.concession_reason
-            ),
+            concession_reason=payload.concession_reason,
             notes=payload.notes,
-            is_active=payload.is_active,
-            status=(
-                "active"
-                if payload.is_active
-                else "inactive"
-            ),
+            installment_mode=payload.installment_mode,
+            installment_count=payload.installment_count,
             gross_amount=gross,
             item_discount_amount=item_discount,
             plan_discount_amount=plan_discount,
             net_amount=net_amount,
-            installment_mode=(
-                payload.installment_mode
-            ),
-            installment_count=(
-                payload.installment_count
-            ),
+            status="active",
+            is_active=True,
         )
 
-        self.repo.create(plan)
+        plan = self.repo.create(plan)
 
         for item_data in calculated_items:
             self.repo.create_item(
@@ -500,7 +469,7 @@ class StudentFeePlanService:
                 )
             )
 
-        installment_rows = self._build_installments(
+        installments = self._build_installments(
             plan.id,
             net_amount,
             payload.installment_mode,
@@ -508,19 +477,13 @@ class StudentFeePlanService:
             payload.installments,
         )
 
-        for installment in installment_rows:
-            self.repo.create_installment(
-                installment
-            )
+        for installment in installments:
+            self.repo.create_installment(installment)
 
         self.db.commit()
-
         return self.repo.get_by_id(plan.id)
 
-    def get(
-        self,
-        plan_id: int,
-    ) -> StudentFeePlan:
+    def get(self, plan_id: int):
         plan = self.repo.get_by_id(plan_id)
 
         if not plan:
@@ -531,26 +494,25 @@ class StudentFeePlanService:
 
         return plan
 
-    def get_items(
+    def list(
         self,
-        plan_id: int,
+        school_id: int,
+        academic_session_id: int,
+        *,
+        student_id: int | None = None,
+        is_active: bool | None = None,
     ):
-        self.get(plan_id)
-
-        return self.repo.list_items(plan_id)
-
-    def get_installments(
-        self,
-        plan_id: int,
-    ):
-        self.get(plan_id)
-
-        return self.repo.list_installments(
-            plan_id
+        self._validate_school_session(
+            school_id,
+            academic_session_id,
         )
 
-    def list(self, **kwargs):
-        return self.repo.list(**kwargs)
+        return self.repo.list(
+            school_id=school_id,
+            academic_session_id=academic_session_id,
+            student_id=student_id,
+            is_active=is_active,
+        )
 
     def update(
         self,
@@ -559,73 +521,40 @@ class StudentFeePlanService:
     ):
         plan = self.get(plan_id)
 
-        if plan.status == "cancelled":
-            self.bad_request(
-                "Cancelled fee plans cannot be updated.",
-                code="FEE_PLAN_CANCELLED",
-            )
+        if payload.name is not None:
+            plan.name = payload.name
 
-        data = payload.model_dump(
-            exclude_unset=True,
-            exclude={
-                "items",
-                "installments",
-                "installment_mode",
-                "installment_count",
-            },
-        )
+        if payload.effective_from is not None:
+            plan.effective_from = payload.effective_from
 
-        for key, value in data.items():
-            setattr(plan, key, value)
+        if payload.effective_to is not None:
+            plan.effective_to = payload.effective_to
 
-        requires_recalculation = (
-            payload.items is not None
-            or payload.discount_type is not None
-            or payload.discount_value is not None
-        )
+        if payload.scholarship_name is not None:
+            plan.scholarship_name = payload.scholarship_name
 
-        if requires_recalculation:
-            item_payloads = (
-                payload.items
-                if payload.items is not None
-                else [
-                    StudentFeePlanItemCreate(
-                        fee_structure_id=(
-                            item.fee_structure_id
-                        ),
-                        custom_amount=(
-                            item.custom_amount
-                        ),
-                        item_discount_type=(
-                            item.item_discount_type
-                        ),
-                        item_discount_value=(
-                            item.item_discount_value
-                        ),
-                        is_selected=(
-                            item.is_selected
-                        ),
-                        notes=item.notes,
-                    )
-                    for item in self.repo.list_items(
-                        plan.id
-                    )
-                ]
-            )
+        if payload.concession_reason is not None:
+            plan.concession_reason = payload.concession_reason
 
+        if payload.notes is not None:
+            plan.notes = payload.notes
+
+        if payload.items is not None:
+            if not payload.items:
+                self.bad_request(
+                    "At least one fee item is required.",
+                    code="FEE_PLAN_ITEMS_REQUIRED",
+                )
+
+            item_payloads = payload.items
             structures = self._get_fee_structures(
                 plan.school_id,
                 plan.academic_session_id,
                 item_payloads,
             )
 
-            (
-                calculated_items,
-                gross,
-                item_discount,
-            ) = self._calculate_items(
-                item_payloads,
-                structures,
+            calculated_items, gross, item_discount = (
+                self._calculate_items(item_payloads, structures)
             )
 
             discount_type = (
@@ -640,31 +569,27 @@ class StudentFeePlanService:
                 else plan.discount_value
             )
 
-            plan_discount = (
-                self._calculate_plan_discount(
-                    self.money(
-                        gross - item_discount
-                    ),
-                    discount_type,
-                    discount_value,
-                )
+            plan_discount = self._calculate_plan_discount(
+                self.money(gross - item_discount),
+                discount_type,
+                discount_value,
             )
 
             net_amount = self.money(
-                gross
-                - item_discount
-                - plan_discount
+                gross - item_discount - plan_discount
             )
+
+            if net_amount <= 0:
+                self.bad_request(
+                    "Net fee amount must be greater than zero.",
+                    code="INVALID_NET_AMOUNT",
+                )
 
             plan.discount_type = discount_type
             plan.discount_value = discount_value
             plan.gross_amount = gross
-            plan.item_discount_amount = (
-                item_discount
-            )
-            plan.plan_discount_amount = (
-                plan_discount
-            )
+            plan.item_discount_amount = item_discount
+            plan.plan_discount_amount = plan_discount
             plan.net_amount = net_amount
 
             self.repo.delete_items(plan.id)
@@ -689,28 +614,121 @@ class StudentFeePlanService:
                 else plan.installment_count
             )
 
-            custom_installments = (
-                payload.installments
-            )
+            custom_installments = payload.installments
 
-            self.repo.delete_installments(
-                plan.id
-            )
+            self.repo.delete_installments(plan.id)
 
-            installment_rows = (
-                self._build_installments(
-                    plan.id,
-                    net_amount,
-                    mode,
-                    count,
-                    custom_installments,
-                )
+            installment_rows = self._build_installments(
+                plan.id,
+                net_amount,
+                mode,
+                count,
+                custom_installments,
             )
 
             for installment in installment_rows:
-                self.repo.create_installment(
-                    installment
+                self.repo.create_installment(installment)
+
+            plan.installment_mode = mode
+            plan.installment_count = count
+
+        elif (
+            payload.discount_type is not None
+            or payload.discount_value is not None
+        ):
+            item_payloads = [
+                StudentFeePlanItemCreate(
+                    fee_structure_id=item.fee_structure_id,
+                    custom_amount=item.custom_amount,
+                    item_discount_type=item.item_discount_type,
+                    item_discount_value=item.item_discount_value,
+                    is_selected=item.is_selected,
+                    notes=item.notes,
                 )
+                for item in self.repo.list_items(plan.id)
+            ]
+
+            structures = self._get_fee_structures(
+                plan.school_id,
+                plan.academic_session_id,
+                item_payloads,
+            )
+
+            calculated_items, gross, item_discount = (
+                self._calculate_items(item_payloads, structures)
+            )
+
+            discount_type = (
+                payload.discount_type
+                if payload.discount_type is not None
+                else plan.discount_type
+            )
+
+            discount_value = (
+                payload.discount_value
+                if payload.discount_value is not None
+                else plan.discount_value
+            )
+
+            plan_discount = self._calculate_plan_discount(
+                self.money(gross - item_discount),
+                discount_type,
+                discount_value,
+            )
+
+            net_amount = self.money(
+                gross - item_discount - plan_discount
+            )
+
+            if net_amount <= 0:
+                self.bad_request(
+                    "Net fee amount must be greater than zero.",
+                    code="INVALID_NET_AMOUNT",
+                )
+
+            plan.discount_type = discount_type
+            plan.discount_value = discount_value
+            plan.gross_amount = gross
+            plan.item_discount_amount = item_discount
+            plan.plan_discount_amount = plan_discount
+            plan.net_amount = net_amount
+
+            self.repo.delete_items(plan.id)
+
+            for item_data in calculated_items:
+                self.repo.create_item(
+                    StudentFeePlanItem(
+                        student_fee_plan_id=plan.id,
+                        **item_data,
+                    )
+                )
+
+            mode = (
+                payload.installment_mode
+                if payload.installment_mode is not None
+                else plan.installment_mode
+            )
+
+            count = (
+                payload.installment_count
+                if payload.installment_count is not None
+                else plan.installment_count
+            )
+
+            custom_installments = payload.installments
+
+            self.repo.delete_installments(plan.id)
+
+            installment_rows = self._build_installments(
+                plan.id,
+                net_amount,
+                mode,
+                count,
+                custom_installments,
+            )
+
+            for installment in installment_rows:
+                self.repo.create_installment(installment)
 
             plan.installment_mode = mode
             plan.installment_count = count
@@ -728,26 +746,17 @@ class StudentFeePlanService:
         plan = self.get(plan_id)
 
         plan.is_active = is_active
-        plan.status = (
-            "active"
-            if is_active
-            else "inactive"
-        )
+        plan.status = "active" if is_active else "inactive"
 
         self.repo.save(plan)
         self.db.commit()
 
         return self.repo.get_by_id(plan.id)
 
-    def recalculate(
-        self,
-        plan_id: int,
-    ):
+    def recalculate(self, plan_id: int):
         plan = self.get(plan_id)
 
-        item_rows = self.repo.list_items(
-            plan.id
-        )
+        item_rows = self.repo.list_items(plan.id)
 
         if not item_rows:
             self.bad_request(
@@ -757,16 +766,10 @@ class StudentFeePlanService:
 
         payload_items = [
             StudentFeePlanItemCreate(
-                fee_structure_id=(
-                    item.fee_structure_id
-                ),
+                fee_structure_id=item.fee_structure_id,
                 custom_amount=item.custom_amount,
-                item_discount_type=(
-                    item.item_discount_type
-                ),
-                item_discount_value=(
-                    item.item_discount_value
-                ),
+                item_discount_type=item.item_discount_type,
+                item_discount_value=item.item_discount_value,
                 is_selected=item.is_selected,
                 notes=item.notes,
             )
@@ -779,29 +782,18 @@ class StudentFeePlanService:
             payload_items,
         )
 
-        (
-            calculated_items,
-            gross,
-            item_discount,
-        ) = self._calculate_items(
-            payload_items,
-            structures,
+        calculated_items, gross, item_discount = (
+            self._calculate_items(payload_items, structures)
         )
 
-        plan_discount = (
-            self._calculate_plan_discount(
-                self.money(
-                    gross - item_discount
-                ),
-                plan.discount_type,
-                plan.discount_value,
-            )
+        plan_discount = self._calculate_plan_discount(
+            self.money(gross - item_discount),
+            plan.discount_type,
+            plan.discount_value,
         )
 
         net_amount = self.money(
-            gross
-            - item_discount
-            - plan_discount
+            gross - item_discount - plan_discount
         )
 
         if net_amount <= 0:
@@ -811,12 +803,8 @@ class StudentFeePlanService:
             )
 
         plan.gross_amount = gross
-        plan.item_discount_amount = (
-            item_discount
-        )
-        plan.plan_discount_amount = (
-            plan_discount
-        )
+        plan.item_discount_amount = item_discount
+        plan.plan_discount_amount = plan_discount
         plan.net_amount = net_amount
 
         self.repo.delete_items(plan.id)
@@ -828,10 +816,6 @@ class StudentFeePlanService:
                     **item_data,
                 )
             )
-
-        self.repo.delete_installments(
-            plan.id
-        )
 
         existing_installments = self.repo.list_installments(plan.id)
 
@@ -847,6 +831,8 @@ class StudentFeePlanService:
                 for item in existing_installments
             ]
 
+        self.repo.delete_installments(plan.id)
+
         installments = self._build_installments(
             plan.id,
             net_amount,
@@ -856,115 +842,64 @@ class StudentFeePlanService:
         )
 
         for installment in installments:
-            self.repo.create_installment(
-                installment
-            )
+            self.repo.create_installment(installment)
 
         self.repo.save(plan)
         self.db.commit()
 
         return self.repo.get_by_id(plan.id)
 
-    def bulk_create(
-        self,
-        payload: BulkStudentFeePlanCreate,
-    ):
+    def bulk_create(self, payload: BulkStudentFeePlanCreate):
         self._validate_school_session(
             payload.school_id,
             payload.academic_session_id,
         )
 
-        requested_ids = list(
-            dict.fromkeys(
-                payload.student_ids
-            )
-        )
+        requested_ids = list(dict.fromkeys(payload.student_ids))
 
         created_plan_ids = []
         skipped_student_ids = []
         failed_student_ids = []
 
         for student_id in requested_ids:
-            existing = (
-                self.repo.get_by_student_session(
-                    student_id,
-                    payload.academic_session_id,
-                )
+            existing = self.repo.get_by_student_session(
+                student_id,
+                payload.academic_session_id,
             )
 
             if existing:
-                skipped_student_ids.append(
-                    student_id
-                )
+                skipped_student_ids.append(student_id)
                 continue
 
             try:
-                plan_payload = (
-                    StudentFeePlanCreate(
-                        school_id=payload.school_id,
-                        student_id=student_id,
-                        academic_session_id=(
-                            payload.academic_session_id
-                        ),
-                        name=payload.name,
-                        effective_from=(
-                            payload.effective_from
-                        ),
-                        effective_to=(
-                            payload.effective_to
-                        ),
-                        discount_type=(
-                            payload.discount_type
-                        ),
-                        discount_value=(
-                            payload.discount_value
-                        ),
-                        scholarship_name=(
-                            payload.scholarship_name
-                        ),
-                        concession_reason=(
-                            payload.concession_reason
-                        ),
-                        notes=payload.notes,
-                        installment_mode=(
-                            payload.installment_mode
-                        ),
-                        installment_count=(
-                            payload.installment_count
-                        ),
-                        items=payload.items,
-                    )
+                plan_payload = StudentFeePlanCreate(
+                    school_id=payload.school_id,
+                    student_id=student_id,
+                    academic_session_id=payload.academic_session_id,
+                    name=payload.name,
+                    effective_from=payload.effective_from,
+                    effective_to=payload.effective_to,
+                    discount_type=payload.discount_type,
+                    discount_value=payload.discount_value,
+                    scholarship_name=payload.scholarship_name,
+                    concession_reason=payload.concession_reason,
+                    notes=payload.notes,
+                    installment_mode=payload.installment_mode,
+                    installment_count=payload.installment_count,
+                    items=payload.items,
                 )
 
-                plan = self.create(
-                    plan_payload
-                )
+                plan = self.create(plan_payload)
+                created_plan_ids.append(plan.id)
 
-                created_plan_ids.append(
-                    plan.id
-                )
-
-            except (
-                EduSphereException,
-                ValueError,
-            ):
+            except (EduSphereException, ValueError):
                 self.db.rollback()
-                failed_student_ids.append(
-                    student_id
-                )
+                failed_student_ids.append(student_id)
 
         return {
             "created_plan_ids": created_plan_ids,
-            "skipped_student_ids": (
-                skipped_student_ids
-            ),
-            "failed_student_ids": (
-                failed_student_ids
-            ),
-            "total_requested": len(
-                requested_ids
-            ),
-            "total_created": len(
-                created_plan_ids
-            ),
+            "skipped_student_ids": skipped_student_ids,
+            "failed_student_ids": failed_student_ids,
+            "total_requested": len(requested_ids),
+            "total_created": len(created_plan_ids),
         }
